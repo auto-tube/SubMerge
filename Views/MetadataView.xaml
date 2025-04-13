@@ -1,0 +1,115 @@
+<UserControl x:Class="AutoTubeWpf.Views.MetadataView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:AutoTubeWpf.Views"
+             xmlns:viewmodels="clr-namespace:AutoTubeWpf.ViewModels"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance Type=viewmodels:MetadataViewModel}">
+
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/> <!-- Context Input -->
+            <RowDefinition Height="*"/>    <!-- Output Area -->
+        </Grid.RowDefinitions>
+
+        <!-- Context Input Area -->
+        <GroupBox Header="Context / Topic / Description" Grid.Row="0" Padding="10" Margin="0,0,0,10">
+            <TextBox Text="{Binding ContextText, UpdateSourceTrigger=PropertyChanged}"
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"
+                     VerticalScrollBarVisibility="Auto"
+                     MinHeight="80"
+                     SpellCheck.IsEnabled="True"
+                     Language="en-US"/>
+        </GroupBox>
+
+        <!-- Output Area -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/> <!-- Hashtags -->
+                <ColumnDefinition Width="*"/> <!-- Tags -->
+                <ColumnDefinition Width="*"/> <!-- Titles -->
+            </Grid.ColumnDefinitions>
+
+            <!-- Hashtags Column -->
+            <GroupBox Header="Hashtags" Grid.Column="0" Padding="10" Margin="0,0,5,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/> <!-- Options -->
+                        <RowDefinition Height="*"/>    <!-- Output -->
+                        <RowDefinition Height="Auto"/> <!-- Button -->
+                    </Grid.RowDefinitions>
+
+                    <!-- Hashtag Options -->
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                        <TextBlock Text="Count:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <!-- TODO: Replace with NumericUpDown -->
+                        <Slider Minimum="1" Maximum="30" Value="{Binding HashtagCount}" TickFrequency="1" IsSnapToTickEnabled="True" Width="100" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding HashtagCount}" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                    </StackPanel>
+
+                    <!-- Hashtag Output -->
+                    <TextBox Grid.Row="1" Text="{Binding HashtagsOutput}" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+
+                    <!-- Hashtag Button -->
+                    <Button Grid.Row="2" Content="Generate Hashtags" Command="{Binding GenerateHashtagsAsyncCommand}" IsEnabled="{Binding CanGenerateMetadata}" Padding="10,5" Margin="0,10,0,0" HorizontalAlignment="Center"/>
+                </Grid>
+            </GroupBox>
+
+            <!-- Tags Column -->
+            <GroupBox Header="Tags / Keywords" Grid.Column="1" Padding="10" Margin="5,0,5,0">
+                 <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/> <!-- Options -->
+                        <RowDefinition Height="*"/>    <!-- Output -->
+                        <RowDefinition Height="Auto"/> <!-- Button -->
+                    </Grid.RowDefinitions>
+
+                    <!-- Tag Options -->
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                        <TextBlock Text="Count:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <!-- TODO: Replace with NumericUpDown -->
+                        <Slider Minimum="1" Maximum="50" Value="{Binding TagCount}" TickFrequency="1" IsSnapToTickEnabled="True" Width="100" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding TagCount}" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                    </StackPanel>
+
+                    <!-- Tag Output -->
+                    <TextBox Grid.Row="1" Text="{Binding TagsOutput}" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+
+                    <!-- Tag Button -->
+                    <Button Grid.Row="2" Content="Generate Tags" Command="{Binding GenerateTagsAsyncCommand}" IsEnabled="{Binding CanGenerateMetadata}" Padding="10,5" Margin="0,10,0,0" HorizontalAlignment="Center"/>
+                </Grid>
+            </GroupBox>
+
+            <!-- Titles Column -->
+            <GroupBox Header="Titles / Headlines" Grid.Column="2" Padding="10" Margin="5,0,0,0">
+                 <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/> <!-- Options -->
+                        <RowDefinition Height="*"/>    <!-- Output -->
+                        <RowDefinition Height="Auto"/> <!-- Button -->
+                    </Grid.RowDefinitions>
+
+                    <!-- Title Options -->
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                        <TextBlock Text="Count:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <!-- TODO: Replace with NumericUpDown -->
+                        <Slider Minimum="1" Maximum="15" Value="{Binding TitleCount}" TickFrequency="1" IsSnapToTickEnabled="True" Width="100" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding TitleCount}" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                    </StackPanel>
+
+                    <!-- Title Output -->
+                    <TextBox Grid.Row="1" Text="{Binding TitlesOutput}" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+
+                    <!-- Title Button -->
+                    <Button Grid.Row="2" Content="Generate Titles" Command="{Binding GenerateTitlesAsyncCommand}" IsEnabled="{Binding CanGenerateMetadata}" Padding="10,5" Margin="0,10,0,0" HorizontalAlignment="Center"/>
+                </Grid>
+            </GroupBox>
+
+        </Grid>
+
+    </Grid>
+</UserControl>

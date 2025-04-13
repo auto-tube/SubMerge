@@ -3271,3 +3271,729 @@ message: "API key not valid. Please pass a valid API key."
 2025-04-05 18:49:28,974 - autotube - INFO - GUI: Exiting application.
 2025-04-05 18:49:29,073 - autotube - INFO - Tkinter main event loop finished.
 2025-04-05 18:49:29,073 - autotube - INFO - --- Autotube Application End ---
+2025-04-05 18:51:18,442 - autotube - INFO - ProcessingManager: All required utility modules loaded.
+2025-04-05 18:51:18,442 - autotube - INFO - GUI: Core modules imported successfully.
+2025-04-05 18:51:18,443 - autotube - INFO - --- Autotube Application Start ---
+2025-04-05 18:51:18,443 - autotube - INFO - Python Version: 3.13.2
+2025-04-05 18:51:18,443 - autotube - INFO - Platform: Windows (10)
+2025-04-05 18:51:18,443 - autotube - INFO - CustomTkinter Version: 5.2.2
+2025-04-05 18:51:18,444 - autotube - INFO - Creating TkinterDnD root window...
+2025-04-05 18:51:18,492 - autotube - INFO - Root TkinterDnD window created successfully.
+2025-04-05 18:51:18,492 - autotube - INFO - Initializing VideoClipperApp...
+2025-04-05 18:51:18,493 - autotube - INFO - GUI Config: Using configuration file path: C:\Users\V0iD\AppData\Roaming\Autotube\autotube_config.json
+2025-04-05 18:51:18,493 - autotube - INFO - --- Initializing Autotube GUI ---
+2025-04-05 18:51:18,493 - autotube - INFO - GUI: Creating UI variables with default values...
+2025-04-05 18:51:18,494 - autotube - INFO - GUI: UI variables created.
+2025-04-05 18:51:18,494 - autotube - INFO - GUI: Loading settings from C:\Users\V0iD\AppData\Roaming\Autotube\autotube_config.json...
+2025-04-05 18:51:18,501 - autotube - INFO - GUI: Settings loaded successfully from config file.
+2025-04-05 18:51:18,501 - autotube - INFO - GUI: Configuring external APIs (Priority: Environment Variables > Saved Settings)...
+2025-04-05 18:51:18,501 - autotube - INFO - Using Google API Key from: Saved Settings
+2025-04-05 18:51:18,502 - autotube - INFO - Configuring AWS Polly using credentials/region from: Default Chain (e.g., ~/.aws/credentials, IAM role)
+2025-04-05 18:51:18,502 - autotube - INFO - AWS Region specified: us-east-1
+2025-04-05 18:51:18,511 - botocore.credentials - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-04-05 18:51:19,273 - autotube - INFO - GUI: Locating and verifying FFmpeg/FFprobe...
+2025-04-05 18:51:19,274 - autotube - INFO - GUI: Auto-detected FFmpeg='C:\Users\V0iD\auto-tube\bin\ffmpeg.exe', FFprobe='C:\Users\V0iD\auto-tube\bin\ffprobe.exe'
+2025-04-05 18:51:19,274 - autotube - INFO - VideoProcessor initialized. Output Dir Target: '.'
+2025-04-05 18:51:19,275 - autotube - INFO - Using potential FFmpeg path: 'C:\Users\V0iD\auto-tube\bin\ffmpeg.exe'
+2025-04-05 18:51:19,275 - autotube - INFO - Using potential FFprobe path: 'C:\Users\V0iD\auto-tube\bin\ffprobe.exe'
+2025-04-05 18:51:19,275 - autotube - INFO - VideoProcessor attempting to verify FFmpeg: 'C:\Users\V0iD\auto-tube\bin\ffmpeg.exe'
+2025-04-05 18:51:19,296 - autotube - INFO - Verification PASSED for FFmpeg.
+2025-04-05 18:51:19,296 - autotube - INFO - VideoProcessor attempting to verify FFprobe: 'C:\Users\V0iD\auto-tube\bin\ffprobe.exe'
+2025-04-05 18:51:19,316 - autotube - INFO - Verification PASSED for FFprobe.
+2025-04-05 18:51:19,316 - autotube - INFO - GUI: FFmpeg/FFprobe paths verified successfully.
+2025-04-05 18:51:19,317 - autotube - INFO - GUI: Creating main UI layout...
+2025-04-05 18:51:19,346 - autotube - INFO - GUI: Tabs added.
+2025-04-05 18:51:19,347 - autotube - INFO - GUI: Creating Clipping Tab content...
+2025-04-05 18:51:19,453 - autotube - INFO - GUI: Creating AI Short Tab content...
+2025-04-05 18:51:19,649 - autotube - INFO - GUI: Creating Metadata Tab content...
+2025-04-05 18:51:19,768 - autotube - INFO - GUI: Creating Settings Tab content...
+2025-04-05 18:51:19,840 - autotube - INFO - GUI: All Tab content created.
+2025-04-05 18:51:19,843 - autotube - INFO - GUI: Status bar created.
+2025-04-05 18:51:19,843 - autotube - INFO - GUI: Main UI creation complete.
+2025-04-05 18:51:19,844 - autotube - INFO - Autotube GUI initialized successfully.
+2025-04-05 18:51:19,844 - autotube - INFO - Initialization complete. Showing main window.
+2025-04-05 18:51:19,851 - autotube - INFO - Starting Tkinter main event loop...
+2025-04-05 18:51:20,011 - autotube - INFO - GUI: Initial configuration check passed.
+2025-04-05 18:51:20,011 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-05 19:00:55,253 - autotube - INFO - GUI: Window close requested.
+2025-04-05 19:00:55,253 - autotube - INFO - GUI: Exiting application.
+2025-04-05 19:00:55,351 - autotube - INFO - Tkinter main event loop finished.
+2025-04-05 19:00:55,351 - autotube - INFO - --- Autotube Application End ---
+2025-04-08 14:34:34,963 - autotube - INFO - ProcessingManager: All required utility modules loaded.
+2025-04-08 14:34:34,964 - autotube - INFO - GUI: Core modules imported successfully.
+2025-04-08 14:34:34,964 - autotube - INFO - --- Autotube Application Start ---
+2025-04-08 14:34:34,965 - autotube - INFO - Python Version: 3.13.2
+2025-04-08 14:34:34,965 - autotube - INFO - Platform: Windows (10)
+2025-04-08 14:34:34,965 - autotube - INFO - CustomTkinter Version: 5.2.2
+2025-04-08 14:34:34,965 - autotube - INFO - Creating TkinterDnD root window...
+2025-04-08 14:34:35,418 - autotube - INFO - Root TkinterDnD window created successfully.
+2025-04-08 14:34:35,419 - autotube - INFO - Initializing VideoClipperApp...
+2025-04-08 14:34:35,419 - autotube - INFO - GUI Config: Using configuration file path: C:\Users\V0iD\AppData\Roaming\Autotube\autotube_config.json
+2025-04-08 14:34:35,419 - autotube - INFO - --- Initializing Autotube GUI ---
+2025-04-08 14:34:35,419 - autotube - INFO - GUI: Creating UI variables with default values...
+2025-04-08 14:34:35,420 - autotube - INFO - GUI: UI variables created.
+2025-04-08 14:34:35,420 - autotube - INFO - GUI: Loading settings from C:\Users\V0iD\AppData\Roaming\Autotube\autotube_config.json...
+2025-04-08 14:34:35,426 - autotube - INFO - GUI: Settings loaded successfully from config file.
+2025-04-08 14:34:35,427 - autotube - INFO - GUI: Configuring external APIs (Priority: Environment Variables > Saved Settings)...
+2025-04-08 14:34:35,427 - autotube - INFO - Using Google API Key from: Saved Settings
+2025-04-08 14:34:35,427 - autotube - INFO - Configuring AWS Polly using credentials/region from: Default Chain (e.g., ~/.aws/credentials, IAM role)
+2025-04-08 14:34:35,427 - autotube - INFO - AWS Region specified: us-east-1
+2025-04-08 14:34:35,437 - botocore.credentials - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-04-08 14:34:36,322 - autotube - INFO - GUI: Locating and verifying FFmpeg/FFprobe...
+2025-04-08 14:34:36,323 - autotube - INFO - GUI: Auto-detected FFmpeg='C:\Users\V0iD\auto-tube\bin\ffmpeg.exe', FFprobe='C:\Users\V0iD\auto-tube\bin\ffprobe.exe'
+2025-04-08 14:34:36,323 - autotube - INFO - VideoProcessor initialized. Output Dir Target: '.'
+2025-04-08 14:34:36,323 - autotube - INFO - Using potential FFmpeg path: 'C:\Users\V0iD\auto-tube\bin\ffmpeg.exe'
+2025-04-08 14:34:36,323 - autotube - INFO - Using potential FFprobe path: 'C:\Users\V0iD\auto-tube\bin\ffprobe.exe'
+2025-04-08 14:34:36,324 - autotube - INFO - VideoProcessor attempting to verify FFmpeg: 'C:\Users\V0iD\auto-tube\bin\ffmpeg.exe'
+2025-04-08 14:34:36,693 - autotube - INFO - Verification PASSED for FFmpeg.
+2025-04-08 14:34:36,693 - autotube - INFO - VideoProcessor attempting to verify FFprobe: 'C:\Users\V0iD\auto-tube\bin\ffprobe.exe'
+2025-04-08 14:34:37,066 - autotube - INFO - Verification PASSED for FFprobe.
+2025-04-08 14:34:37,067 - autotube - INFO - GUI: FFmpeg/FFprobe paths verified successfully.
+2025-04-08 14:34:37,067 - autotube - INFO - GUI: Creating main UI layout...
+2025-04-08 14:34:37,104 - autotube - INFO - GUI: Tabs added.
+2025-04-08 14:34:37,104 - autotube - INFO - GUI: Creating Clipping Tab content...
+2025-04-08 14:34:37,212 - autotube - INFO - GUI: Creating AI Short Tab content...
+2025-04-08 14:34:37,398 - autotube - INFO - GUI: Creating Metadata Tab content...
+2025-04-08 14:34:37,511 - autotube - INFO - GUI: Creating Settings Tab content...
+2025-04-08 14:34:37,584 - autotube - INFO - GUI: All Tab content created.
+2025-04-08 14:34:37,586 - autotube - INFO - GUI: Status bar created.
+2025-04-08 14:34:37,587 - autotube - INFO - GUI: Main UI creation complete.
+2025-04-08 14:34:37,587 - autotube - INFO - Autotube GUI initialized successfully.
+2025-04-08 14:34:37,587 - autotube - INFO - Initialization complete. Showing main window.
+2025-04-08 14:34:37,593 - autotube - INFO - Starting Tkinter main event loop...
+2025-04-08 14:34:37,749 - autotube - INFO - GUI: Initial configuration check passed.
+2025-04-08 14:34:37,749 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-08 14:34:59,397 - autotube - INFO - Adding 1 selected files.
+2025-04-08 14:34:59,398 - autotube - INFO - GUI: Added 1 new video(s) to the queue. Total queue size: 1
+2025-04-08 14:36:03,017 - autotube - INFO - GUI: Window close requested.
+2025-04-08 14:36:03,018 - autotube - INFO - GUI: Exiting application.
+2025-04-08 14:36:03,086 - autotube - INFO - Tkinter main event loop finished.
+2025-04-08 14:36:03,086 - autotube - INFO - --- Autotube Application End ---
+2025-04-11 13:10:10,797 - autotube - CRITICAL - ERROR [ProcessingManager]: Failed to import one or more utility modules: No module named 'boto3'
+Traceback (most recent call last):
+  File "C:\Users\V0iD\auto-tube\core\processing_manager.py", line 32, in <module>
+    from utils.tts_utils import generate_polly_tts_and_marks
+  File "C:\Users\V0iD\auto-tube\utils\tts_utils.py", line 2, in <module>
+    import boto3 # Requires pip install boto3
+    ^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'boto3'
+2025-04-11 13:10:10,801 - autotube - CRITICAL - ERROR [GUI Import]: Failed to import application modules: No module named 'google'
+Traceback (most recent call last):
+  File "C:\Users\V0iD\auto-tube\gui.py", line 67, in <module>
+    from utils.ai_utils import GeminiError, configure_google_api # Import config function
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\V0iD\auto-tube\utils\ai_utils.py", line 2, in <module>
+    import google.generativeai as genai
+ModuleNotFoundError: No module named 'google'
+2025-04-11 13:10:10,802 - autotube - INFO - --- Autotube Application Start ---
+2025-04-11 13:10:10,802 - autotube - INFO - Python Version: 3.13.2
+2025-04-11 13:10:10,803 - autotube - INFO - Platform: Windows (10)
+2025-04-11 13:10:10,803 - autotube - INFO - CustomTkinter Version: 5.2.2
+2025-04-11 13:10:10,803 - autotube - INFO - Creating TkinterDnD root window...
+2025-04-11 13:10:11,244 - autotube - INFO - Root TkinterDnD window created successfully.
+2025-04-11 13:10:11,244 - autotube - ERROR - GUI cannot start fully due to module import errors. Showing error window.
+2025-04-11 13:12:23,258 - autotube - INFO - Error window closed by user.
+2025-04-11 13:14:42,997 - autotube - CRITICAL - ERROR [ProcessingManager]: Failed to import one or more utility modules: No module named 'google'
+Traceback (most recent call last):
+  File "C:\Users\V0iD\auto-tube\core\processing_manager.py", line 38, in <module>
+    from utils.ai_utils import (generate_script_with_gemini,
+    ...<3 lines>...
+                                GeminiError)
+  File "C:\Users\V0iD\auto-tube\utils\ai_utils.py", line 2, in <module>
+    import google.generativeai as genai
+ModuleNotFoundError: No module named 'google'
+2025-04-11 13:14:42,999 - autotube - CRITICAL - ERROR [GUI Import]: Failed to import application modules: No module named 'google'
+Traceback (most recent call last):
+  File "C:\Users\V0iD\auto-tube\gui.py", line 67, in <module>
+    from utils.ai_utils import GeminiError, configure_google_api # Import config function
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\V0iD\auto-tube\utils\ai_utils.py", line 2, in <module>
+    import google.generativeai as genai
+ModuleNotFoundError: No module named 'google'
+2025-04-11 13:14:43,000 - autotube - INFO - --- Autotube Application Start ---
+2025-04-11 13:14:43,001 - autotube - INFO - Python Version: 3.13.2
+2025-04-11 13:14:43,001 - autotube - INFO - Platform: Windows (10)
+2025-04-11 13:14:43,001 - autotube - INFO - CustomTkinter Version: 5.2.2
+2025-04-11 13:14:43,001 - autotube - INFO - Creating TkinterDnD root window...
+2025-04-11 13:14:43,111 - autotube - INFO - Root TkinterDnD window created successfully.
+2025-04-11 13:14:43,111 - autotube - ERROR - GUI cannot start fully due to module import errors. Showing error window.
+2025-04-11 13:16:10,409 - autotube - INFO - Error window closed by user.
+2025-04-11 13:16:42,622 - autotube - INFO - ProcessingManager: All required utility modules loaded.
+2025-04-11 13:16:42,622 - autotube - INFO - GUI: Core modules imported successfully.
+2025-04-11 13:16:42,623 - autotube - INFO - --- Autotube Application Start ---
+2025-04-11 13:16:42,623 - autotube - INFO - Python Version: 3.13.2
+2025-04-11 13:16:42,623 - autotube - INFO - Platform: Windows (10)
+2025-04-11 13:16:42,623 - autotube - INFO - CustomTkinter Version: 5.2.2
+2025-04-11 13:16:42,623 - autotube - INFO - Creating TkinterDnD root window...
+2025-04-11 13:16:42,998 - autotube - INFO - Root TkinterDnD window created successfully.
+2025-04-11 13:16:42,998 - autotube - INFO - Initializing VideoClipperApp...
+2025-04-11 13:16:42,999 - autotube - INFO - GUI Config: Using configuration file path: C:\Users\V0iD\AppData\Roaming\Autotube\autotube_config.json
+2025-04-11 13:16:42,999 - autotube - INFO - --- Initializing Autotube GUI ---
+2025-04-11 13:16:42,999 - autotube - INFO - GUI: Creating UI variables with default values...
+2025-04-11 13:16:43,000 - autotube - INFO - GUI: UI variables created.
+2025-04-11 13:16:43,000 - autotube - INFO - GUI: Loading settings from C:\Users\V0iD\AppData\Roaming\Autotube\autotube_config.json...
+2025-04-11 13:16:43,012 - autotube - INFO - GUI: Settings loaded successfully from config file.
+2025-04-11 13:16:43,012 - autotube - INFO - GUI: Configuring external APIs (Priority: Environment Variables > Saved Settings)...
+2025-04-11 13:16:43,013 - autotube - INFO - Using Google API Key from: Environment Variable
+2025-04-11 13:16:43,013 - autotube - INFO - Configuring AWS Polly using credentials/region from: Default Chain (e.g., ~/.aws/credentials, IAM role)
+2025-04-11 13:16:43,014 - autotube - INFO - AWS Region specified: us-east-1
+2025-04-11 13:16:43,023 - botocore.credentials - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-04-11 13:16:44,026 - autotube - INFO - GUI: Locating and verifying FFmpeg/FFprobe...
+2025-04-11 13:16:44,027 - autotube - INFO - GUI: Auto-detected FFmpeg='C:\Users\V0iD\auto-tube\bin\ffmpeg.exe', FFprobe='C:\Users\V0iD\auto-tube\bin\ffprobe.exe'
+2025-04-11 13:16:44,027 - autotube - INFO - VideoProcessor initialized. Output Dir Target: '.'
+2025-04-11 13:16:44,027 - autotube - INFO - Using potential FFmpeg path: 'C:\Users\V0iD\auto-tube\bin\ffmpeg.exe'
+2025-04-11 13:16:44,027 - autotube - INFO - Using potential FFprobe path: 'C:\Users\V0iD\auto-tube\bin\ffprobe.exe'
+2025-04-11 13:16:44,027 - autotube - INFO - VideoProcessor attempting to verify FFmpeg: 'C:\Users\V0iD\auto-tube\bin\ffmpeg.exe'
+2025-04-11 13:16:44,423 - autotube - INFO - Verification PASSED for FFmpeg.
+2025-04-11 13:16:44,423 - autotube - INFO - VideoProcessor attempting to verify FFprobe: 'C:\Users\V0iD\auto-tube\bin\ffprobe.exe'
+2025-04-11 13:16:44,823 - autotube - INFO - Verification PASSED for FFprobe.
+2025-04-11 13:16:44,823 - autotube - INFO - GUI: FFmpeg/FFprobe paths verified successfully.
+2025-04-11 13:16:44,823 - autotube - INFO - GUI: Creating main UI layout...
+2025-04-11 13:16:44,874 - autotube - INFO - GUI: Tabs added.
+2025-04-11 13:16:44,875 - autotube - INFO - GUI: Creating Clipping Tab content...
+2025-04-11 13:16:44,999 - autotube - INFO - GUI: Creating AI Short Tab content...
+2025-04-11 13:16:45,189 - autotube - INFO - GUI: Creating Metadata Tab content...
+2025-04-11 13:16:45,299 - autotube - INFO - GUI: Creating Settings Tab content...
+2025-04-11 13:16:45,369 - autotube - INFO - GUI: All Tab content created.
+2025-04-11 13:16:45,372 - autotube - INFO - GUI: Status bar created.
+2025-04-11 13:16:45,372 - autotube - INFO - GUI: Main UI creation complete.
+2025-04-11 13:16:45,372 - autotube - INFO - Autotube GUI initialized successfully.
+2025-04-11 13:16:45,373 - autotube - INFO - Initialization complete. Showing main window.
+2025-04-11 13:16:45,379 - autotube - INFO - Starting Tkinter main event loop...
+2025-04-11 13:16:45,528 - autotube - INFO - GUI: Initial configuration check passed.
+2025-04-11 13:16:45,529 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:16:58,731 - autotube - INFO - Attempting to start generation for: hashtags
+2025-04-11 13:16:58,731 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:16:58,740 - autotube - INFO - GUI: Starting Gemini hashtags generation thread...
+2025-04-11 13:16:58,740 - autotube - INFO - --- Starting Gemini Metadata Generation Thread (hashtags) ---
+2025-04-11 13:16:58,741 - autotube - INFO - CORE AI META: Starting 'hashtags' generation for context: 'Enter the main topic, keywords, or a short descrip...' (Count: 10)
+2025-04-11 13:16:59,747 - autotube - INFO - CORE AI META: 'hashtags' generation successful (Count: 10).
+2025-04-11 13:16:59,748 - autotube - INFO - --- Gemini Metadata Generation Thread Finished (hashtags) ---
+2025-04-11 13:16:59,748 - autotube - INFO - GUI Callback: Metadata generation complete for: hashtags
+2025-04-11 13:16:59,748 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:16:59,756 - autotube - INFO - GUI: Populating hashtags output box with 10 items.
+2025-04-11 13:16:59,757 - autotube - INFO - Successfully displayed 10 generated hashtags.
+2025-04-11 13:17:48,238 - autotube - INFO - Attempting to start AI script generation...
+2025-04-11 13:17:48,238 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:17:48,247 - autotube - INFO - GUI: Starting Gemini script generation thread...
+2025-04-11 13:17:48,247 - autotube - INFO - --- Starting Gemini Script Generation Thread ---
+2025-04-11 13:17:48,247 - autotube - INFO - CORE AI SCRIPT: Starting generation for prompt: '45 second ffinance short...'
+2025-04-11 13:17:49,666 - autotube - INFO - CORE AI SCRIPT: Generation successful.
+2025-04-11 13:17:49,666 - autotube - INFO - --- Gemini Script Generation Thread Finished ---
+2025-04-11 13:17:49,667 - autotube - INFO - GUI Callback: Script generation complete.
+2025-04-11 13:17:49,667 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:17:49,675 - autotube - INFO - GUI: Populating script textbox with generated content.
+2025-04-11 13:18:02,449 - autotube - INFO - Attempting to start AI Short video generation...
+2025-04-11 13:18:02,450 - autotube - INFO - Created temporary directory: C:/Users/V0iD/Desktop/post\temp_ai_short_1744402682_105
+2025-04-11 13:18:02,450 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:18:02,459 - autotube - INFO - GUI: Starting AI short generation thread...
+2025-04-11 13:18:02,460 - autotube - INFO - --- Starting AI Short Generation Thread ---
+2025-04-11 13:18:02,460 - autotube - CRITICAL - Unexpected error finding FFmpeg/FFprobe for AI Short Gen: find_ffmpeg_executables() takes 0 positional arguments but 2 were given
+Traceback (most recent call last):
+  File "C:\Users\V0iD\auto-tube\core\processing_manager.py", line 421, in run_ai_short_generation
+    ffmpeg_exec, ffprobe_exec = find_ffmpeg_executables(conf_ffmpeg, conf_ffprobe)
+                                ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: find_ffmpeg_executables() takes 0 positional arguments but 2 were given
+2025-04-11 13:18:02,475 - autotube - INFO - GUI Callback: 'AI Short Generation' process finished or stopped.
+2025-04-11 13:18:02,475 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:18:02,484 - autotube - INFO - AI Short Generation was stopped. Processed before stop: 0, Errors: 1
+2025-04-11 13:23:22,881 - autotube - INFO - GUI: Window close requested.
+2025-04-11 13:23:22,881 - autotube - INFO - GUI: Exiting application.
+2025-04-11 13:23:22,979 - autotube - INFO - Tkinter main event loop finished.
+2025-04-11 13:23:22,979 - autotube - INFO - --- Autotube Application End ---
+2025-04-11 13:23:29,347 - autotube - INFO - ProcessingManager: All required utility modules loaded.
+2025-04-11 13:23:29,348 - autotube - INFO - GUI: Core modules imported successfully.
+2025-04-11 13:23:29,348 - autotube - INFO - --- Autotube Application Start ---
+2025-04-11 13:23:29,348 - autotube - INFO - Python Version: 3.13.2
+2025-04-11 13:23:29,348 - autotube - INFO - Platform: Windows (10)
+2025-04-11 13:23:29,349 - autotube - INFO - CustomTkinter Version: 5.2.2
+2025-04-11 13:23:29,349 - autotube - INFO - Creating TkinterDnD root window...
+2025-04-11 13:23:29,397 - autotube - INFO - Root TkinterDnD window created successfully.
+2025-04-11 13:23:29,398 - autotube - INFO - Initializing VideoClipperApp...
+2025-04-11 13:23:29,398 - autotube - INFO - GUI Config: Using configuration file path: C:\Users\V0iD\AppData\Roaming\Autotube\autotube_config.json
+2025-04-11 13:23:29,398 - autotube - INFO - --- Initializing Autotube GUI ---
+2025-04-11 13:23:29,398 - autotube - INFO - GUI: Creating UI variables with default values...
+2025-04-11 13:23:29,399 - autotube - INFO - GUI: UI variables created.
+2025-04-11 13:23:29,399 - autotube - INFO - GUI: Loading settings from C:\Users\V0iD\AppData\Roaming\Autotube\autotube_config.json...
+2025-04-11 13:23:29,399 - autotube - INFO - GUI: Settings loaded successfully from config file.
+2025-04-11 13:23:29,399 - autotube - INFO - GUI: Configuring external APIs (Priority: Environment Variables > Saved Settings)...
+2025-04-11 13:23:29,400 - autotube - INFO - Using Google API Key from: Environment Variable
+2025-04-11 13:23:29,400 - autotube - INFO - Configuring AWS Polly using credentials/region from: Default Chain (e.g., ~/.aws/credentials, IAM role)
+2025-04-11 13:23:29,400 - autotube - INFO - AWS Region specified: us-east-1
+2025-04-11 13:23:29,410 - botocore.credentials - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-04-11 13:23:30,123 - autotube - INFO - GUI: Locating and verifying FFmpeg/FFprobe...
+2025-04-11 13:23:30,124 - autotube - INFO - GUI: Auto-detected FFmpeg='C:\Users\V0iD\auto-tube\bin\ffmpeg.exe', FFprobe='C:\Users\V0iD\auto-tube\bin\ffprobe.exe'
+2025-04-11 13:23:30,124 - autotube - INFO - VideoProcessor initialized. Output Dir Target: '.'
+2025-04-11 13:23:30,124 - autotube - INFO - Using potential FFmpeg path: 'C:\Users\V0iD\auto-tube\bin\ffmpeg.exe'
+2025-04-11 13:23:30,124 - autotube - INFO - Using potential FFprobe path: 'C:\Users\V0iD\auto-tube\bin\ffprobe.exe'
+2025-04-11 13:23:30,124 - autotube - INFO - VideoProcessor attempting to verify FFmpeg: 'C:\Users\V0iD\auto-tube\bin\ffmpeg.exe'
+2025-04-11 13:23:30,144 - autotube - INFO - Verification PASSED for FFmpeg.
+2025-04-11 13:23:30,144 - autotube - INFO - VideoProcessor attempting to verify FFprobe: 'C:\Users\V0iD\auto-tube\bin\ffprobe.exe'
+2025-04-11 13:23:30,163 - autotube - INFO - Verification PASSED for FFprobe.
+2025-04-11 13:23:30,164 - autotube - INFO - GUI: FFmpeg/FFprobe paths verified successfully.
+2025-04-11 13:23:30,164 - autotube - INFO - GUI: Creating main UI layout...
+2025-04-11 13:23:30,192 - autotube - INFO - GUI: Tabs added.
+2025-04-11 13:23:30,192 - autotube - INFO - GUI: Creating Clipping Tab content...
+2025-04-11 13:23:30,301 - autotube - INFO - GUI: Creating AI Short Tab content...
+2025-04-11 13:23:30,475 - autotube - INFO - GUI: Creating Metadata Tab content...
+2025-04-11 13:23:30,581 - autotube - INFO - GUI: Creating Settings Tab content...
+2025-04-11 13:23:30,652 - autotube - INFO - GUI: All Tab content created.
+2025-04-11 13:23:30,654 - autotube - INFO - GUI: Status bar created.
+2025-04-11 13:23:30,654 - autotube - INFO - GUI: Main UI creation complete.
+2025-04-11 13:23:30,654 - autotube - INFO - Autotube GUI initialized successfully.
+2025-04-11 13:23:30,655 - autotube - INFO - Initialization complete. Showing main window.
+2025-04-11 13:23:30,660 - autotube - INFO - Starting Tkinter main event loop...
+2025-04-11 13:23:30,811 - autotube - INFO - GUI: Initial configuration check passed.
+2025-04-11 13:23:30,811 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:24:06,375 - autotube - INFO - Attempting to start AI script generation...
+2025-04-11 13:24:06,376 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:24:06,386 - autotube - INFO - GUI: Starting Gemini script generation thread...
+2025-04-11 13:24:06,387 - autotube - INFO - --- Starting Gemini Script Generation Thread ---
+2025-04-11 13:24:06,387 - autotube - INFO - CORE AI SCRIPT: Starting generation for prompt: '45 second viral finace short...'
+2025-04-11 13:24:08,292 - autotube - INFO - CORE AI SCRIPT: Generation successful.
+2025-04-11 13:24:08,292 - autotube - INFO - --- Gemini Script Generation Thread Finished ---
+2025-04-11 13:24:08,292 - autotube - INFO - GUI Callback: Script generation complete.
+2025-04-11 13:24:08,293 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:24:08,302 - autotube - INFO - GUI: Populating script textbox with generated content.
+2025-04-11 13:24:16,950 - autotube - INFO - Attempting to start AI Short video generation...
+2025-04-11 13:24:16,956 - autotube - INFO - Created temporary directory: C:/Users/V0iD/Desktop/post\temp_ai_short_1744403056_819
+2025-04-11 13:24:16,956 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:24:16,966 - autotube - INFO - GUI: Starting AI short generation thread...
+2025-04-11 13:24:16,967 - autotube - INFO - --- Starting AI Short Generation Thread ---
+2025-04-11 13:24:16,968 - autotube - INFO - AI Short Gen: Using FFmpeg='C:\Users\V0iD\auto-tube\bin\ffmpeg.exe', FFprobe='C:\Users\V0iD\auto-tube\bin\ffprobe.exe'
+2025-04-11 13:24:16,976 - autotube - INFO - CORE AI: Calling Polly TTS...
+2025-04-11 13:24:18,873 - autotube - INFO - CORE AI: Generated voiceover: C:/Users/V0iD/Desktop/post\temp_ai_short_1744403056_819\polly_voice_1744403056_5142.mp3
+2025-04-11 13:24:18,875 - autotube - INFO - CORE AI: Getting audio duration...
+2025-04-11 13:24:18,959 - autotube - INFO - CORE AI: Voiceover duration: 44.256s
+2025-04-11 13:24:18,961 - autotube - INFO - CORE AI: Creating temporary ASS file: C:/Users/V0iD/Desktop/post\temp_ai_short_1744403056_819\temp_subs_1744403056_9965.ass
+2025-04-11 13:24:18,962 - autotube - INFO - CORE AI: Temp ASS file created.
+2025-04-11 13:24:18,964 - autotube - INFO - CORE AI: Preparing background video -> C:/Users/V0iD/Desktop/post\temp_ai_short_1744403056_819\prep_video_1744403056_9965.mp4
+2025-04-11 13:24:38,234 - autotube - INFO - CORE AI: Background video prepared.
+2025-04-11 13:24:38,235 - autotube - INFO - CORE AI: Combining final elements...
+2025-04-11 13:24:38,273 - autotube - ERROR - ERROR generating AI Short: ValueError - Final FFmpeg composition failed (check logs).
+2025-04-11 13:24:38,274 - autotube - INFO - CORE AI: Cleaning up temporary files...
+2025-04-11 13:24:38,275 - autotube - INFO - CORE AI: Removed temp file: temp_subs_1744403056_9965.ass
+2025-04-11 13:24:38,275 - autotube - INFO - CORE AI: Removed temp file: polly_voice_1744403056_5142.mp3
+2025-04-11 13:24:38,278 - autotube - INFO - CORE AI: Removed temp file: prep_video_1744403056_9965.mp4
+2025-04-11 13:24:38,278 - autotube - INFO - --- AI Short Generation Thread Finished. Success: 0, Errors: 1, Stopped by user: False ---
+2025-04-11 13:24:38,278 - autotube - INFO - GUI Callback: 'AI Short Generation' process finished or stopped.
+2025-04-11 13:24:38,279 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:24:38,289 - autotube - INFO - AI Short Generation was stopped. Processed before stop: 0, Errors: 1
+2025-04-11 13:26:31,212 - autotube - INFO - GUI: Window close requested.
+2025-04-11 13:26:31,212 - autotube - INFO - GUI: Exiting application.
+2025-04-11 13:26:31,310 - autotube - INFO - Tkinter main event loop finished.
+2025-04-11 13:26:31,311 - autotube - INFO - --- Autotube Application End ---
+2025-04-11 13:36:07,874 - autotube - INFO - ProcessingManager: All required utility modules loaded.
+2025-04-11 13:36:07,874 - autotube - INFO - GUI: Core modules imported successfully.
+2025-04-11 13:36:07,874 - autotube - INFO - --- Autotube Application Start ---
+2025-04-11 13:36:07,874 - autotube - INFO - Python Version: 3.13.2
+2025-04-11 13:36:07,874 - autotube - INFO - Platform: Windows (10)
+2025-04-11 13:36:07,875 - autotube - INFO - CustomTkinter Version: 5.2.2
+2025-04-11 13:36:07,875 - autotube - INFO - Creating TkinterDnD root window...
+2025-04-11 13:36:07,924 - autotube - INFO - Root TkinterDnD window created successfully.
+2025-04-11 13:36:07,924 - autotube - INFO - Initializing VideoClipperApp...
+2025-04-11 13:36:07,925 - autotube - INFO - GUI Config: Using configuration file path: C:\Users\V0iD\AppData\Roaming\Autotube\autotube_config.json
+2025-04-11 13:36:07,925 - autotube - INFO - --- Initializing Autotube GUI ---
+2025-04-11 13:36:07,925 - autotube - INFO - GUI: Creating UI variables with default values...
+2025-04-11 13:36:07,925 - autotube - INFO - GUI: UI variables created.
+2025-04-11 13:36:07,926 - autotube - INFO - GUI: Loading settings from C:\Users\V0iD\AppData\Roaming\Autotube\autotube_config.json...
+2025-04-11 13:36:07,926 - autotube - INFO - GUI: Settings loaded successfully from config file.
+2025-04-11 13:36:07,926 - autotube - INFO - GUI: Configuring external APIs (Priority: Environment Variables > Saved Settings)...
+2025-04-11 13:36:07,926 - autotube - INFO - Using Google API Key from: Environment Variable
+2025-04-11 13:36:07,927 - autotube - INFO - Configuring AWS Polly using credentials/region from: Default Chain (e.g., ~/.aws/credentials, IAM role)
+2025-04-11 13:36:07,927 - autotube - INFO - AWS Region specified: us-east-1
+2025-04-11 13:36:07,937 - botocore.credentials - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-04-11 13:36:08,668 - autotube - INFO - GUI: Locating and verifying FFmpeg/FFprobe...
+2025-04-11 13:36:08,668 - autotube - INFO - HELPER: Searching for FFmpeg/FFprobe executables...
+2025-04-11 13:36:08,668 - autotube - INFO - HELPER: Found bundled/local ffmpeg: C:\Users\V0iD\auto-tube\bin\ffmpeg.exe
+2025-04-11 13:36:08,668 - autotube - INFO - HELPER: Found bundled/local ffprobe: C:\Users\V0iD\auto-tube\bin\ffprobe.exe
+2025-04-11 13:36:08,669 - autotube - INFO - GUI: Auto-detected FFmpeg='C:\Users\V0iD\auto-tube\bin\ffmpeg.exe', FFprobe='C:\Users\V0iD\auto-tube\bin\ffprobe.exe'
+2025-04-11 13:36:08,669 - autotube - INFO - VideoProcessor initialized. Output Dir Target: '.'
+2025-04-11 13:36:08,669 - autotube - INFO - Using potential FFmpeg path: 'C:\Users\V0iD\auto-tube\bin\ffmpeg.exe'
+2025-04-11 13:36:08,669 - autotube - INFO - Using potential FFprobe path: 'C:\Users\V0iD\auto-tube\bin\ffprobe.exe'
+2025-04-11 13:36:08,669 - autotube - INFO - VideoProcessor attempting to verify FFmpeg: 'C:\Users\V0iD\auto-tube\bin\ffmpeg.exe'
+2025-04-11 13:36:08,689 - autotube - INFO - Verification PASSED for FFmpeg.
+2025-04-11 13:36:08,689 - autotube - INFO - VideoProcessor attempting to verify FFprobe: 'C:\Users\V0iD\auto-tube\bin\ffprobe.exe'
+2025-04-11 13:36:08,709 - autotube - INFO - Verification PASSED for FFprobe.
+2025-04-11 13:36:08,709 - autotube - INFO - GUI: FFmpeg/FFprobe paths verified successfully.
+2025-04-11 13:36:08,709 - autotube - INFO - GUI: Creating main UI layout...
+2025-04-11 13:36:08,738 - autotube - INFO - GUI: Tabs added.
+2025-04-11 13:36:08,738 - autotube - INFO - GUI: Creating Clipping Tab content...
+2025-04-11 13:36:08,858 - autotube - INFO - GUI: Creating AI Short Tab content...
+2025-04-11 13:36:09,039 - autotube - INFO - GUI: Creating Metadata Tab content...
+2025-04-11 13:36:09,146 - autotube - INFO - GUI: Creating Settings Tab content...
+2025-04-11 13:36:09,214 - autotube - INFO - GUI: All Tab content created.
+2025-04-11 13:36:09,217 - autotube - INFO - GUI: Status bar created.
+2025-04-11 13:36:09,217 - autotube - INFO - GUI: Main UI creation complete.
+2025-04-11 13:36:09,217 - autotube - INFO - Autotube GUI initialized successfully.
+2025-04-11 13:36:09,218 - autotube - INFO - Initialization complete. Showing main window.
+2025-04-11 13:36:09,224 - autotube - INFO - Starting Tkinter main event loop...
+2025-04-11 13:36:09,374 - autotube - INFO - GUI: Initial configuration check passed.
+2025-04-11 13:36:09,374 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:36:29,108 - autotube - INFO - Attempting to start AI script generation...
+2025-04-11 13:36:29,108 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:36:29,117 - autotube - INFO - GUI: Starting Gemini script generation thread...
+2025-04-11 13:36:29,118 - autotube - INFO - --- Starting Gemini Script Generation Thread ---
+2025-04-11 13:36:29,118 - autotube - INFO - CORE AI SCRIPT: Starting generation for prompt: '45 second viral finance video...'
+2025-04-11 13:36:30,892 - autotube - INFO - CORE AI SCRIPT: Generation successful.
+2025-04-11 13:36:30,892 - autotube - INFO - --- Gemini Script Generation Thread Finished ---
+2025-04-11 13:36:30,893 - autotube - INFO - GUI Callback: Script generation complete.
+2025-04-11 13:36:30,893 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:36:30,903 - autotube - INFO - GUI: Populating script textbox with generated content.
+2025-04-11 13:36:45,153 - autotube - INFO - Attempting to start AI Short video generation...
+2025-04-11 13:36:45,159 - autotube - INFO - Created temporary directory: C:/Users/V0iD/Desktop/post\temp_ai_short_1744403805_856
+2025-04-11 13:36:45,159 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:36:45,169 - autotube - INFO - GUI: Starting AI short generation thread...
+2025-04-11 13:36:45,169 - autotube - INFO - --- Starting AI Short Generation Thread ---
+2025-04-11 13:36:45,169 - autotube - INFO - HELPER: Searching for FFmpeg/FFprobe executables...
+2025-04-11 13:36:45,170 - autotube - INFO - HELPER: Found bundled/local ffmpeg: C:\Users\V0iD\auto-tube\bin\ffmpeg.exe
+2025-04-11 13:36:45,170 - autotube - INFO - HELPER: Found bundled/local ffprobe: C:\Users\V0iD\auto-tube\bin\ffprobe.exe
+2025-04-11 13:36:45,170 - autotube - INFO - AI Short Gen: Using FFmpeg='C:\Users\V0iD\auto-tube\bin\ffmpeg.exe', FFprobe='C:\Users\V0iD\auto-tube\bin\ffprobe.exe'
+2025-04-11 13:36:45,182 - autotube - INFO - CORE AI: Calling Polly TTS...
+2025-04-11 13:36:47,013 - autotube - INFO - CORE AI: Generated voiceover: C:/Users/V0iD/Desktop/post\temp_ai_short_1744403805_856\polly_voice_1744403805_9708.mp3
+2025-04-11 13:36:47,014 - autotube - INFO - CORE AI: Getting audio duration...
+2025-04-11 13:36:47,014 - autotube - INFO - HELPER: Probing duration for polly_voice_1744403805_9708.mp3 using C:\Users\V0iD\auto-tube\bin\ffprobe.exe
+2025-04-11 13:36:47,043 - autotube - INFO - HELPER: Detected duration: 43.848s
+2025-04-11 13:36:47,043 - autotube - INFO - CORE AI: Voiceover duration: 43.848s
+2025-04-11 13:36:47,044 - autotube - INFO - CORE AI: Creating temporary ASS file: C:/Users/V0iD/Desktop/post\temp_ai_short_1744403805_856\temp_subs_1744403805_5100.ass
+2025-04-11 13:36:47,046 - autotube - INFO - CORE AI: Temp ASS file created.
+2025-04-11 13:36:47,047 - autotube - INFO - CORE AI: Preparing background video -> C:/Users/V0iD/Desktop/post\temp_ai_short_1744403805_856\prep_video_1744403805_5100.mp4
+2025-04-11 13:36:47,048 - autotube - INFO - HELPER: Probing duration for saveinsta.cc_720p-minecraft-parkour-gameplay-no-copyright_clip_005_9x16.mp4 using C:\Users\V0iD\auto-tube\bin\ffprobe.exe
+2025-04-11 13:36:47,094 - autotube - INFO - HELPER: Detected duration: 45.000s
+2025-04-11 13:36:47,095 - autotube - INFO - HELPER Prep: Trimming video input to 43.85s
+2025-04-11 13:36:47,095 - autotube - INFO - HELPER Prep: Running FFmpeg command (via ffmpeg-python): C:\Users\V0iD\auto-tube\bin\ffmpeg.exe -t 43.8480 -i C:/Users/V0iD/Desktop/clips/2025-04-05/saveinsta.cc_720p-minecraft-parkour-gameplay-no-copyright_clip_005_9x16.mp4 -filter_complex [0:v]crop=h=min(ih\,iw*16/9):w=min(iw\,ih*9/16)[s0];[s0]scale=force_original_aspect_ratio=decrease:h=1920:w=1080[s1];[s1]pad=color=black:h=1920:w=1080:x=(ow-iw)/2:y=(oh-ih)/2[s2];[s2]setsar=sar=1[s3] -map [s3] -an -c:v libx264 -crf 25 -preset fast C:/Users/V0iD/Desktop/post\temp_ai_short_1744403805_856\prep_video_1744403805_5100.mp4 -y
+2025-04-11 13:37:06,094 - autotube - INFO - HELPER Prep: Background video preparation successful -> C:/Users/V0iD/Desktop/post\temp_ai_short_1744403805_856\prep_video_1744403805_5100.mp4
+2025-04-11 13:37:06,094 - autotube - INFO - CORE AI: Background video prepared.
+2025-04-11 13:37:06,095 - autotube - INFO - CORE AI: Combining final elements...
+2025-04-11 13:37:06,096 - autotube - INFO - HELPER Combine: Running FFmpeg command (via ffmpeg-python): C:\Users\V0iD\auto-tube\bin\ffmpeg.exe -i C:/Users/V0iD/Desktop/post\temp_ai_short_1744403805_856\prep_video_1744403805_5100.mp4 -i C:/Users/V0iD/Desktop/post\temp_ai_short_1744403805_856\polly_voice_1744403805_9708.mp3 -filter_complex [0:v]ass=filename=C\\\\\\:/Users/V0iD/Desktop/post\\\\\\\\temp_ai_short_1744403805_856\\\\\\\\temp_subs_1744403805_5100.ass[s0] -map [s0] -map 1:a -b:a 192k -c:a aac -c:v libx264 -crf 23 -preset medium -shortest C:/Users/V0iD/Desktop/post\saveinsta.cc_720p-minecraft-parkour-gameplay-no-copyright_clip_005_9x16_AI_Short_1744403805_856.mp4 -y
+2025-04-11 13:37:06,120 - autotube - ERROR - HELPER Combine ERROR: FFmpeg failed (via ffmpeg-python):
+ffmpeg version 2025-03-31-git-35c091f4b7-full_build-www.gyan.dev Copyright (c) 2000-2025 the FFmpeg developers
+  built with gcc 14.2.0 (Rev1, Built by MSYS2 project)
+  configuration: --enable-gpl --enable-version3 --enable-static --disable-w32threads --disable-autodetect --enable-fontconfig --enable-iconv --enable-gnutls --enable-lcms2 --enable-libxml2 --enable-gmp --enable-bzlib --enable-lzma --enable-libsnappy --enable-zlib --enable-librist --enable-libsrt --enable-libssh --enable-libzmq --enable-avisynth --enable-libbluray --enable-libcaca --enable-libdvdnav --enable-libdvdread --enable-sdl2 --enable-libaribb24 --enable-libaribcaption --enable-libdav1d --enable-libdavs2 --enable-libopenjpeg --enable-libquirc --enable-libuavs3d --enable-libxevd --enable-libzvbi --enable-libqrencode --enable-librav1e --enable-libsvtav1 --enable-libvvenc --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxavs2 --enable-libxeve --enable-libxvid --enable-libaom --enable-libjxl --enable-libvpx --enable-mediafoundation --enable-libass --enable-frei0r --enable-libfreetype --enable-libfribidi --enable-libharfbuzz --enable-liblensfun --enable-libvidstab --enable-libvmaf --enable-libzimg --enable-amf --enable-cuda-llvm --enable-cuvid --enable-dxva2 --enable-d3d11va --enable-d3d12va --enable-ffnvcodec --enable-libvpl --enable-nvdec --enable-nvenc --enable-vaapi --enable-libshaderc --enable-vulkan --enable-libplacebo --enable-opencl --enable-libcdio --enable-libgme --enable-libmodplug --enable-libopenmpt --enable-libopencore-amrwb --enable-libmp3lame --enable-libshine --enable-libtheora --enable-libtwolame --enable-libvo-amrwbenc --enable-libcodec2 --enable-libilbc --enable-libgsm --enable-liblc3 --enable-libopencore-amrnb --enable-libopus --enable-libspeex --enable-libvorbis --enable-ladspa --enable-libbs2b --enable-libflite --enable-libmysofa --enable-librubberband --enable-libsoxr --enable-chromaprint
+  libavutil      60.  0.100 / 60.  0.100
+  libavcodec     62.  0.100 / 62.  0.100
+  libavformat    62.  0.100 / 62.  0.100
+  libavdevice    62.  0.100 / 62.  0.100
+  libavfilter    11.  0.100 / 11.  0.100
+  libswscale      9.  0.100 /  9.  0.100
+  libswresample   6.  0.100 /  6.  0.100
+  libpostproc    59.  0.100 / 59.  0.100
+[Parsed_ass_0 @ 0000025b9f2bcc80] libass API version: 0x1703020
+[Parsed_ass_0 @ 0000025b9f2bcc80] libass source: commit: 0.17.3-80-g958f4b6ad3e36a0dfda786e19d44411189686da2
+[Parsed_ass_0 @ 0000025b9f2bcc80] Shaper: FriBidi 1.0.16 (SIMPLE) HarfBuzz-ng 11.0.0 (COMPLEX)
+[Parsed_ass_0 @ 0000025b9f2bcc80] Using font provider directwrite (with GDI)
+[Parsed_ass_0 @ 0000025b9f2bcc80] ass_read_file(C\:/Users/V0iD/Desktop/post\\temp_ai_short_1744403805_856\\temp_subs_1744403805_5100.ass): fopen failed
+[Parsed_ass_0 @ 0000025b9f2bcc80] Could not create a libass track when reading file 'C\:/Users/V0iD/Desktop/post\\temp_ai_short_1744403805_856\\temp_subs_1744403805_5100.ass'
+[AVFilterGraph @ 0000025b9f2bc140] Error initializing filters
+Error : Invalid argument
+
+2025-04-11 13:37:06,122 - autotube - ERROR - ERROR generating AI Short: ValueError - Final FFmpeg composition failed (check logs).
+2025-04-11 13:37:06,123 - autotube - INFO - CORE AI: Cleaning up temporary files...
+2025-04-11 13:37:06,123 - autotube - INFO - CORE AI: Removed temp file: temp_subs_1744403805_5100.ass
+2025-04-11 13:37:06,124 - autotube - INFO - CORE AI: Removed temp file: polly_voice_1744403805_9708.mp3
+2025-04-11 13:37:06,128 - autotube - INFO - CORE AI: Removed temp file: prep_video_1744403805_5100.mp4
+2025-04-11 13:37:06,128 - autotube - INFO - --- AI Short Generation Thread Finished. Success: 0, Errors: 1, Stopped by user: False ---
+2025-04-11 13:37:06,129 - autotube - INFO - GUI Callback: 'AI Short Generation' process finished or stopped.
+2025-04-11 13:37:06,129 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:37:06,139 - autotube - INFO - AI Short Generation was stopped. Processed before stop: 0, Errors: 1
+2025-04-11 13:40:32,900 - autotube - INFO - GUI: Window close requested.
+2025-04-11 13:40:32,901 - autotube - INFO - GUI: Exiting application.
+2025-04-11 13:40:32,998 - autotube - INFO - Tkinter main event loop finished.
+2025-04-11 13:40:32,999 - autotube - INFO - --- Autotube Application End ---
+2025-04-11 13:40:41,415 - autotube - INFO - ProcessingManager: All required utility modules loaded.
+2025-04-11 13:40:41,415 - autotube - INFO - GUI: Core modules imported successfully.
+2025-04-11 13:40:41,415 - autotube - INFO - --- Autotube Application Start ---
+2025-04-11 13:40:41,415 - autotube - INFO - Python Version: 3.13.2
+2025-04-11 13:40:41,416 - autotube - INFO - Platform: Windows (10)
+2025-04-11 13:40:41,416 - autotube - INFO - CustomTkinter Version: 5.2.2
+2025-04-11 13:40:41,416 - autotube - INFO - Creating TkinterDnD root window...
+2025-04-11 13:40:41,465 - autotube - INFO - Root TkinterDnD window created successfully.
+2025-04-11 13:40:41,466 - autotube - INFO - Initializing VideoClipperApp...
+2025-04-11 13:40:41,466 - autotube - INFO - GUI Config: Using configuration file path: C:\Users\V0iD\AppData\Roaming\Autotube\autotube_config.json
+2025-04-11 13:40:41,466 - autotube - INFO - --- Initializing Autotube GUI ---
+2025-04-11 13:40:41,467 - autotube - INFO - GUI: Creating UI variables with default values...
+2025-04-11 13:40:41,467 - autotube - INFO - GUI: UI variables created.
+2025-04-11 13:40:41,467 - autotube - INFO - GUI: Loading settings from C:\Users\V0iD\AppData\Roaming\Autotube\autotube_config.json...
+2025-04-11 13:40:41,467 - autotube - INFO - GUI: Settings loaded successfully from config file.
+2025-04-11 13:40:41,468 - autotube - INFO - GUI: Configuring external APIs (Priority: Environment Variables > Saved Settings)...
+2025-04-11 13:40:41,468 - autotube - INFO - Using Google API Key from: Environment Variable
+2025-04-11 13:40:41,468 - autotube - INFO - Configuring AWS Polly using credentials/region from: Default Chain (e.g., ~/.aws/credentials, IAM role)
+2025-04-11 13:40:41,468 - autotube - INFO - AWS Region specified: us-east-1
+2025-04-11 13:40:41,478 - botocore.credentials - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-04-11 13:40:42,183 - autotube - INFO - GUI: Locating and verifying FFmpeg/FFprobe...
+2025-04-11 13:40:42,183 - autotube - INFO - HELPER: Searching for FFmpeg/FFprobe executables...
+2025-04-11 13:40:42,184 - autotube - INFO - HELPER: Found bundled/local ffmpeg: C:\Users\V0iD\auto-tube\bin\ffmpeg.exe
+2025-04-11 13:40:42,184 - autotube - INFO - HELPER: Found bundled/local ffprobe: C:\Users\V0iD\auto-tube\bin\ffprobe.exe
+2025-04-11 13:40:42,189 - autotube - ERROR - GUI Error: Unexpected error occurred while finding/verifying FFmpeg
+Traceback (most recent call last):
+  File "C:\Users\V0iD\auto-tube\gui.py", line 463, in _find_and_verify_ffmpeg
+    self.ffmpeg_exec, self.ffprobe_exec = find_ffmpeg_executables()
+                                          ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\V0iD\auto-tube\utils\helpers.py", line 64, in find_ffmpeg_executables
+    if ffmpeg_env and os.path.isfile(ffmpeg_env): logger.info(f"HELPER: Found ffmpeg via FFMPEG_PATH env var: {ffmpeg_env}"); ffmpeg_path = ffmpeg_env
+       ^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'ffmpeg_env' where it is not associated with a value
+2025-04-11 13:40:42,192 - autotube - INFO - GUI: Creating main UI layout...
+2025-04-11 13:40:42,221 - autotube - INFO - GUI: Tabs added.
+2025-04-11 13:40:42,221 - autotube - INFO - GUI: Creating Clipping Tab content...
+2025-04-11 13:40:42,326 - autotube - INFO - GUI: Creating AI Short Tab content...
+2025-04-11 13:40:42,500 - autotube - INFO - GUI: Creating Metadata Tab content...
+2025-04-11 13:40:42,605 - autotube - INFO - GUI: Creating Settings Tab content...
+2025-04-11 13:40:42,673 - autotube - INFO - GUI: All Tab content created.
+2025-04-11 13:40:42,676 - autotube - INFO - GUI: Status bar created.
+2025-04-11 13:40:42,676 - autotube - INFO - GUI: Main UI creation complete.
+2025-04-11 13:40:42,676 - autotube - INFO - Autotube GUI initialized successfully.
+2025-04-11 13:40:42,677 - autotube - INFO - Initialization complete. Showing main window.
+2025-04-11 13:40:42,682 - autotube - INFO - Starting Tkinter main event loop...
+2025-04-11 13:40:42,830 - autotube - WARNING - --- GUI CONFIGURATION ISSUES ---
+2025-04-11 13:40:42,830 - autotube - WARNING - 1. FFmpeg/FFprobe not found or verified (Check bundled 'bin' folder, Environment Variables, or system PATH). Video processing disabled.
+2025-04-11 13:40:42,830 - autotube - WARNING - --- END CONFIGURATION ISSUES ---
+2025-04-11 13:40:42,831 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:41:02,879 - autotube - INFO - Attempting to start AI script generation...
+2025-04-11 13:41:02,879 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:41:02,888 - autotube - INFO - GUI: Starting Gemini script generation thread...
+2025-04-11 13:41:02,889 - autotube - INFO - --- Starting Gemini Script Generation Thread ---
+2025-04-11 13:41:02,889 - autotube - INFO - CORE AI SCRIPT: Starting generation for prompt: '45 second viral finace short...'
+2025-04-11 13:41:04,521 - autotube - INFO - CORE AI SCRIPT: Generation successful.
+2025-04-11 13:41:04,521 - autotube - INFO - --- Gemini Script Generation Thread Finished ---
+2025-04-11 13:41:04,522 - autotube - INFO - GUI Callback: Script generation complete.
+2025-04-11 13:41:04,522 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:41:04,530 - autotube - INFO - GUI: Populating script textbox with generated content.
+2025-04-11 13:50:10,888 - autotube - INFO - GUI: Window close requested.
+2025-04-11 13:50:10,888 - autotube - INFO - GUI: Exiting application.
+2025-04-11 13:50:10,986 - autotube - INFO - Tkinter main event loop finished.
+2025-04-11 13:50:10,987 - autotube - INFO - --- Autotube Application End ---
+2025-04-11 13:50:35,323 - autotube - INFO - ProcessingManager: All required utility modules loaded.
+2025-04-11 13:50:35,324 - autotube - INFO - GUI: Core modules imported successfully.
+2025-04-11 13:50:35,324 - autotube - INFO - --- Autotube Application Start ---
+2025-04-11 13:50:35,324 - autotube - INFO - Python Version: 3.13.2
+2025-04-11 13:50:35,324 - autotube - INFO - Platform: Windows (10)
+2025-04-11 13:50:35,324 - autotube - INFO - CustomTkinter Version: 5.2.2
+2025-04-11 13:50:35,325 - autotube - INFO - Creating TkinterDnD root window...
+2025-04-11 13:50:35,371 - autotube - INFO - Root TkinterDnD window created successfully.
+2025-04-11 13:50:35,372 - autotube - INFO - Initializing VideoClipperApp...
+2025-04-11 13:50:35,372 - autotube - INFO - GUI Config: Using configuration file path: C:\Users\V0iD\AppData\Roaming\Autotube\autotube_config.json
+2025-04-11 13:50:35,372 - autotube - INFO - --- Initializing Autotube GUI ---
+2025-04-11 13:50:35,372 - autotube - INFO - GUI: Creating UI variables with default values...
+2025-04-11 13:50:35,373 - autotube - INFO - GUI: UI variables created.
+2025-04-11 13:50:35,373 - autotube - INFO - GUI: Loading settings from C:\Users\V0iD\AppData\Roaming\Autotube\autotube_config.json...
+2025-04-11 13:50:35,373 - autotube - INFO - GUI: Settings loaded successfully from config file.
+2025-04-11 13:50:35,373 - autotube - INFO - GUI: Configuring external APIs (Priority: Environment Variables > Saved Settings)...
+2025-04-11 13:50:35,374 - autotube - INFO - Using Google API Key from: Environment Variable
+2025-04-11 13:50:35,374 - autotube - INFO - Configuring AWS Polly using credentials/region from: Default Chain (e.g., ~/.aws/credentials, IAM role)
+2025-04-11 13:50:35,374 - autotube - INFO - AWS Region specified: us-east-1
+2025-04-11 13:50:35,384 - botocore.credentials - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-04-11 13:50:36,066 - autotube - INFO - GUI: Locating and verifying FFmpeg/FFprobe...
+2025-04-11 13:50:36,066 - autotube - INFO - HELPER: Searching for FFmpeg/FFprobe executables...
+2025-04-11 13:50:36,067 - autotube - INFO - HELPER: Found bundled/local ffmpeg: C:\Users\V0iD\auto-tube\bin\ffmpeg.exe
+2025-04-11 13:50:36,067 - autotube - INFO - HELPER: Found bundled/local ffprobe: C:\Users\V0iD\auto-tube\bin\ffprobe.exe
+2025-04-11 13:50:36,067 - autotube - INFO - GUI: Auto-detected FFmpeg='C:\Users\V0iD\auto-tube\bin\ffmpeg.exe', FFprobe='C:\Users\V0iD\auto-tube\bin\ffprobe.exe'
+2025-04-11 13:50:36,067 - autotube - INFO - VideoProcessor initialized. Output Dir Target: '.'
+2025-04-11 13:50:36,068 - autotube - INFO - Using potential FFmpeg path: 'C:\Users\V0iD\auto-tube\bin\ffmpeg.exe'
+2025-04-11 13:50:36,068 - autotube - INFO - Using potential FFprobe path: 'C:\Users\V0iD\auto-tube\bin\ffprobe.exe'
+2025-04-11 13:50:36,068 - autotube - INFO - VideoProcessor attempting to verify FFmpeg: 'C:\Users\V0iD\auto-tube\bin\ffmpeg.exe'
+2025-04-11 13:50:36,087 - autotube - INFO - Verification PASSED for FFmpeg.
+2025-04-11 13:50:36,087 - autotube - INFO - VideoProcessor attempting to verify FFprobe: 'C:\Users\V0iD\auto-tube\bin\ffprobe.exe'
+2025-04-11 13:50:36,107 - autotube - INFO - Verification PASSED for FFprobe.
+2025-04-11 13:50:36,107 - autotube - INFO - GUI: FFmpeg/FFprobe paths verified successfully.
+2025-04-11 13:50:36,108 - autotube - INFO - GUI: Creating main UI layout...
+2025-04-11 13:50:36,136 - autotube - INFO - GUI: Tabs added.
+2025-04-11 13:50:36,136 - autotube - INFO - GUI: Creating Clipping Tab content...
+2025-04-11 13:50:36,241 - autotube - INFO - GUI: Creating AI Short Tab content...
+2025-04-11 13:50:36,420 - autotube - INFO - GUI: Creating Metadata Tab content...
+2025-04-11 13:50:36,526 - autotube - INFO - GUI: Creating Settings Tab content...
+2025-04-11 13:50:36,593 - autotube - INFO - GUI: All Tab content created.
+2025-04-11 13:50:36,595 - autotube - INFO - GUI: Status bar created.
+2025-04-11 13:50:36,596 - autotube - INFO - GUI: Main UI creation complete.
+2025-04-11 13:50:36,596 - autotube - INFO - Autotube GUI initialized successfully.
+2025-04-11 13:50:36,596 - autotube - INFO - Initialization complete. Showing main window.
+2025-04-11 13:50:36,603 - autotube - INFO - Starting Tkinter main event loop...
+2025-04-11 13:50:36,755 - autotube - INFO - GUI: Initial configuration check passed.
+2025-04-11 13:50:36,755 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:50:57,084 - autotube - INFO - Attempting to start AI script generation...
+2025-04-11 13:50:57,084 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:50:57,094 - autotube - INFO - GUI: Starting Gemini script generation thread...
+2025-04-11 13:50:57,095 - autotube - INFO - --- Starting Gemini Script Generation Thread ---
+2025-04-11 13:50:57,095 - autotube - INFO - CORE AI SCRIPT: Starting generation for prompt: '45 second finace short...'
+2025-04-11 13:50:59,297 - autotube - INFO - CORE AI SCRIPT: Generation successful.
+2025-04-11 13:50:59,298 - autotube - INFO - --- Gemini Script Generation Thread Finished ---
+2025-04-11 13:50:59,298 - autotube - INFO - GUI Callback: Script generation complete.
+2025-04-11 13:50:59,298 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:50:59,306 - autotube - INFO - GUI: Populating script textbox with generated content.
+2025-04-11 13:51:15,025 - autotube - INFO - Attempting to start AI Short video generation...
+2025-04-11 13:51:15,026 - autotube - INFO - Created temporary directory: C:/Users/V0iD/Desktop/post\temp_ai_short_1744404675_459
+2025-04-11 13:51:15,026 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:51:15,035 - autotube - INFO - GUI: Starting AI short generation thread...
+2025-04-11 13:51:15,035 - autotube - INFO - --- Starting AI Short Generation Thread ---
+2025-04-11 13:51:15,036 - autotube - INFO - HELPER: Searching for FFmpeg/FFprobe executables...
+2025-04-11 13:51:15,036 - autotube - INFO - HELPER: Found bundled/local ffmpeg: C:\Users\V0iD\auto-tube\bin\ffmpeg.exe
+2025-04-11 13:51:15,036 - autotube - INFO - HELPER: Found bundled/local ffprobe: C:\Users\V0iD\auto-tube\bin\ffprobe.exe
+2025-04-11 13:51:15,036 - autotube - INFO - AI Short Gen: Using FFmpeg='C:\Users\V0iD\auto-tube\bin\ffmpeg.exe', FFprobe='C:\Users\V0iD\auto-tube\bin\ffprobe.exe'
+2025-04-11 13:51:15,044 - autotube - INFO - CORE AI: Calling Polly TTS...
+2025-04-11 13:51:17,519 - autotube - INFO - CORE AI: Generated voiceover: C:/Users/V0iD/Desktop/post\temp_ai_short_1744404675_459\polly_voice_1744404675_5233.mp3
+2025-04-11 13:51:17,521 - autotube - INFO - CORE AI: Getting audio duration...
+2025-04-11 13:51:17,522 - autotube - INFO - HELPER: Probing duration for polly_voice_1744404675_5233.mp3 using C:\Users\V0iD\auto-tube\bin\ffprobe.exe
+2025-04-11 13:51:17,550 - autotube - INFO - HELPER: Detected duration: 52.080s
+2025-04-11 13:51:17,551 - autotube - INFO - CORE AI: Voiceover duration: 52.080s
+2025-04-11 13:51:17,553 - autotube - INFO - CORE AI: Creating temporary ASS file: C:/Users/V0iD/Desktop/post\temp_ai_short_1744404675_459\temp_subs_1744404675_7268.ass
+2025-04-11 13:51:17,554 - autotube - INFO - CORE AI: Temp ASS file created.
+2025-04-11 13:51:17,555 - autotube - INFO - CORE AI: Preparing background video -> C:/Users/V0iD/Desktop/post\temp_ai_short_1744404675_459\prep_video_1744404675_7268.mp4
+2025-04-11 13:51:17,556 - autotube - INFO - HELPER: Probing duration for saveinsta.cc_720p-minecraft-parkour-gameplay-no-copyright_clip_009_9x16.mp4 using C:\Users\V0iD\auto-tube\bin\ffprobe.exe
+2025-04-11 13:51:17,603 - autotube - INFO - HELPER: Detected duration: 45.000s
+2025-04-11 13:51:17,604 - autotube - INFO - HELPER Prep: Looping input 2 times (target duration 52.08s)
+2025-04-11 13:51:17,604 - autotube - INFO - HELPER Prep: Running FFmpeg command (via ffmpeg-python): C:\Users\V0iD\auto-tube\bin\ffmpeg.exe -stream_loop 1 -i C:/Users/V0iD/Desktop/clips/2025-04-05/saveinsta.cc_720p-minecraft-parkour-gameplay-no-copyright_clip_009_9x16.mp4 -filter_complex [0:v]crop=h=min(ih\,iw*16/9):w=min(iw\,ih*9/16)[s0];[s0]scale=force_original_aspect_ratio=decrease:h=1920:w=1080[s1];[s1]pad=color=black:h=1920:w=1080:x=(ow-iw)/2:y=(oh-ih)/2[s2];[s2]setsar=sar=1[s3] -map [s3] -an -c:v libx264 -crf 25 -preset fast -t 52.0800 C:/Users/V0iD/Desktop/post\temp_ai_short_1744404675_459\prep_video_1744404675_7268.mp4 -y
+2025-04-11 13:51:39,571 - autotube - INFO - HELPER Prep: Background video preparation successful -> C:/Users/V0iD/Desktop/post\temp_ai_short_1744404675_459\prep_video_1744404675_7268.mp4
+2025-04-11 13:51:39,571 - autotube - INFO - CORE AI: Background video prepared.
+2025-04-11 13:51:39,573 - autotube - INFO - CORE AI: Combining final elements...
+2025-04-11 13:51:39,574 - autotube - INFO - HELPER Combine: Running FFmpeg command (via ffmpeg-python): C:\Users\V0iD\auto-tube\bin\ffmpeg.exe -i C:/Users/V0iD/Desktop/post\temp_ai_short_1744404675_459\prep_video_1744404675_7268.mp4 -i C:/Users/V0iD/Desktop/post\temp_ai_short_1744404675_459\polly_voice_1744404675_5233.mp3 -filter_complex [0:v]ass=filename=C\\\\\\\\\\:/Users/V0iD/Desktop/post\\\\\\\\\\\\\\\\temp_ai_short_1744404675_459\\\\\\\\\\\\\\\\temp_subs_1744404675_7268.ass[s0] -map [s0] -map 1:a -b:a 192k -c:a aac -c:v libx264 -crf 23 -preset medium -shortest C:/Users/V0iD/Desktop/post\saveinsta.cc_720p-minecraft-parkour-gameplay-no-copyright_clip_009_9x16_AI_Short_1744404675_459.mp4 -y
+2025-04-11 13:51:39,598 - autotube - ERROR - HELPER Combine ERROR: FFmpeg failed (via ffmpeg-python):
+ffmpeg version 2025-03-31-git-35c091f4b7-full_build-www.gyan.dev Copyright (c) 2000-2025 the FFmpeg developers
+  built with gcc 14.2.0 (Rev1, Built by MSYS2 project)
+  configuration: --enable-gpl --enable-version3 --enable-static --disable-w32threads --disable-autodetect --enable-fontconfig --enable-iconv --enable-gnutls --enable-lcms2 --enable-libxml2 --enable-gmp --enable-bzlib --enable-lzma --enable-libsnappy --enable-zlib --enable-librist --enable-libsrt --enable-libssh --enable-libzmq --enable-avisynth --enable-libbluray --enable-libcaca --enable-libdvdnav --enable-libdvdread --enable-sdl2 --enable-libaribb24 --enable-libaribcaption --enable-libdav1d --enable-libdavs2 --enable-libopenjpeg --enable-libquirc --enable-libuavs3d --enable-libxevd --enable-libzvbi --enable-libqrencode --enable-librav1e --enable-libsvtav1 --enable-libvvenc --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxavs2 --enable-libxeve --enable-libxvid --enable-libaom --enable-libjxl --enable-libvpx --enable-mediafoundation --enable-libass --enable-frei0r --enable-libfreetype --enable-libfribidi --enable-libharfbuzz --enable-liblensfun --enable-libvidstab --enable-libvmaf --enable-libzimg --enable-amf --enable-cuda-llvm --enable-cuvid --enable-dxva2 --enable-d3d11va --enable-d3d12va --enable-ffnvcodec --enable-libvpl --enable-nvdec --enable-nvenc --enable-vaapi --enable-libshaderc --enable-vulkan --enable-libplacebo --enable-opencl --enable-libcdio --enable-libgme --enable-libmodplug --enable-libopenmpt --enable-libopencore-amrwb --enable-libmp3lame --enable-libshine --enable-libtheora --enable-libtwolame --enable-libvo-amrwbenc --enable-libcodec2 --enable-libilbc --enable-libgsm --enable-liblc3 --enable-libopencore-amrnb --enable-libopus --enable-libspeex --enable-libvorbis --enable-ladspa --enable-libbs2b --enable-libflite --enable-libmysofa --enable-librubberband --enable-libsoxr --enable-chromaprint
+  libavutil      60.  0.100 / 60.  0.100
+  libavcodec     62.  0.100 / 62.  0.100
+  libavformat    62.  0.100 / 62.  0.100
+  libavdevice    62.  0.100 / 62.  0.100
+  libavfilter    11.  0.100 / 11.  0.100
+  libswscale      9.  0.100 /  9.  0.100
+  libswresample   6.  0.100 /  6.  0.100
+  libpostproc    59.  0.100 / 59.  0.100
+[Parsed_ass_0 @ 0000025acdcbcc00] libass API version: 0x1703020
+[Parsed_ass_0 @ 0000025acdcbcc00] libass source: commit: 0.17.3-80-g958f4b6ad3e36a0dfda786e19d44411189686da2
+[Parsed_ass_0 @ 0000025acdcbcc00] Shaper: FriBidi 1.0.16 (SIMPLE) HarfBuzz-ng 11.0.0 (COMPLEX)
+[Parsed_ass_0 @ 0000025acdcbcc00] Using font provider directwrite (with GDI)
+[Parsed_ass_0 @ 0000025acdcbcc00] ass_read_file(C\\:/Users/V0iD/Desktop/post\\\\temp_ai_short_1744404675_459\\\\temp_subs_1744404675_7268.ass): fopen failed
+[Parsed_ass_0 @ 0000025acdcbcc00] Could not create a libass track when reading file 'C\\:/Users/V0iD/Desktop/post\\\\temp_ai_short_1744404675_459\\\\temp_subs_1744404675_7268.ass'
+[AVFilterGraph @ 0000025acdcbc080] Error initializing filters
+Error : Invalid argument
+
+2025-04-11 13:51:39,600 - autotube - ERROR - ERROR generating AI Short: ValueError - Final FFmpeg composition failed (check logs).
+2025-04-11 13:51:39,601 - autotube - INFO - CORE AI: Cleaning up temporary files...
+2025-04-11 13:51:39,601 - autotube - INFO - CORE AI: Removed temp file: temp_subs_1744404675_7268.ass
+2025-04-11 13:51:39,602 - autotube - INFO - CORE AI: Removed temp file: polly_voice_1744404675_5233.mp3
+2025-04-11 13:51:39,605 - autotube - INFO - CORE AI: Removed temp file: prep_video_1744404675_7268.mp4
+2025-04-11 13:51:39,605 - autotube - INFO - --- AI Short Generation Thread Finished. Success: 0, Errors: 1, Stopped by user: False ---
+2025-04-11 13:51:39,606 - autotube - INFO - GUI Callback: 'AI Short Generation' process finished or stopped.
+2025-04-11 13:51:39,606 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:51:39,614 - autotube - INFO - AI Short Generation was stopped. Processed before stop: 0, Errors: 1
+2025-04-11 13:54:57,055 - autotube - INFO - GUI: Window close requested.
+2025-04-11 13:54:57,055 - autotube - INFO - GUI: Exiting application.
+2025-04-11 13:54:57,155 - autotube - INFO - Tkinter main event loop finished.
+2025-04-11 13:54:57,155 - autotube - INFO - --- Autotube Application End ---
+2025-04-11 13:55:07,194 - autotube - INFO - ProcessingManager: All required utility modules loaded.
+2025-04-11 13:55:07,195 - autotube - INFO - GUI: Core modules imported successfully.
+2025-04-11 13:55:07,195 - autotube - INFO - --- Autotube Application Start ---
+2025-04-11 13:55:07,195 - autotube - INFO - Python Version: 3.13.2
+2025-04-11 13:55:07,195 - autotube - INFO - Platform: Windows (10)
+2025-04-11 13:55:07,195 - autotube - INFO - CustomTkinter Version: 5.2.2
+2025-04-11 13:55:07,196 - autotube - INFO - Creating TkinterDnD root window...
+2025-04-11 13:55:07,242 - autotube - INFO - Root TkinterDnD window created successfully.
+2025-04-11 13:55:07,243 - autotube - INFO - Initializing VideoClipperApp...
+2025-04-11 13:55:07,243 - autotube - INFO - GUI Config: Using configuration file path: C:\Users\V0iD\AppData\Roaming\Autotube\autotube_config.json
+2025-04-11 13:55:07,243 - autotube - INFO - --- Initializing Autotube GUI ---
+2025-04-11 13:55:07,243 - autotube - INFO - GUI: Creating UI variables with default values...
+2025-04-11 13:55:07,244 - autotube - INFO - GUI: UI variables created.
+2025-04-11 13:55:07,244 - autotube - INFO - GUI: Loading settings from C:\Users\V0iD\AppData\Roaming\Autotube\autotube_config.json...
+2025-04-11 13:55:07,244 - autotube - INFO - GUI: Settings loaded successfully from config file.
+2025-04-11 13:55:07,244 - autotube - INFO - GUI: Configuring external APIs (Priority: Environment Variables > Saved Settings)...
+2025-04-11 13:55:07,245 - autotube - INFO - Using Google API Key from: Environment Variable
+2025-04-11 13:55:07,245 - autotube - INFO - Configuring AWS Polly using credentials/region from: Default Chain (e.g., ~/.aws/credentials, IAM role)
+2025-04-11 13:55:07,245 - autotube - INFO - AWS Region specified: us-east-1
+2025-04-11 13:55:07,255 - botocore.credentials - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-04-11 13:55:07,926 - autotube - INFO - GUI: Locating and verifying FFmpeg/FFprobe...
+2025-04-11 13:55:07,926 - autotube - INFO - HELPER: Searching for FFmpeg/FFprobe executables...
+2025-04-11 13:55:07,926 - autotube - INFO - HELPER: Found bundled/local ffmpeg: C:\Users\V0iD\auto-tube\bin\ffmpeg.exe
+2025-04-11 13:55:07,927 - autotube - INFO - HELPER: Found bundled/local ffprobe: C:\Users\V0iD\auto-tube\bin\ffprobe.exe
+2025-04-11 13:55:07,927 - autotube - INFO - GUI: Auto-detected FFmpeg='C:\Users\V0iD\auto-tube\bin\ffmpeg.exe', FFprobe='C:\Users\V0iD\auto-tube\bin\ffprobe.exe'
+2025-04-11 13:55:07,927 - autotube - INFO - VideoProcessor initialized. Output Dir Target: '.'
+2025-04-11 13:55:07,927 - autotube - INFO - Using potential FFmpeg path: 'C:\Users\V0iD\auto-tube\bin\ffmpeg.exe'
+2025-04-11 13:55:07,927 - autotube - INFO - Using potential FFprobe path: 'C:\Users\V0iD\auto-tube\bin\ffprobe.exe'
+2025-04-11 13:55:07,927 - autotube - INFO - VideoProcessor attempting to verify FFmpeg: 'C:\Users\V0iD\auto-tube\bin\ffmpeg.exe'
+2025-04-11 13:55:07,946 - autotube - INFO - Verification PASSED for FFmpeg.
+2025-04-11 13:55:07,946 - autotube - INFO - VideoProcessor attempting to verify FFprobe: 'C:\Users\V0iD\auto-tube\bin\ffprobe.exe'
+2025-04-11 13:55:07,965 - autotube - INFO - Verification PASSED for FFprobe.
+2025-04-11 13:55:07,966 - autotube - INFO - GUI: FFmpeg/FFprobe paths verified successfully.
+2025-04-11 13:55:07,966 - autotube - INFO - GUI: Creating main UI layout...
+2025-04-11 13:55:07,995 - autotube - INFO - GUI: Tabs added.
+2025-04-11 13:55:07,995 - autotube - INFO - GUI: Creating Clipping Tab content...
+2025-04-11 13:55:08,101 - autotube - INFO - GUI: Creating AI Short Tab content...
+2025-04-11 13:55:08,275 - autotube - INFO - GUI: Creating Metadata Tab content...
+2025-04-11 13:55:08,381 - autotube - INFO - GUI: Creating Settings Tab content...
+2025-04-11 13:55:08,451 - autotube - INFO - GUI: All Tab content created.
+2025-04-11 13:55:08,453 - autotube - INFO - GUI: Status bar created.
+2025-04-11 13:55:08,453 - autotube - INFO - GUI: Main UI creation complete.
+2025-04-11 13:55:08,454 - autotube - INFO - Autotube GUI initialized successfully.
+2025-04-11 13:55:08,454 - autotube - INFO - Initialization complete. Showing main window.
+2025-04-11 13:55:08,461 - autotube - INFO - Starting Tkinter main event loop...
+2025-04-11 13:55:08,615 - autotube - INFO - GUI: Initial configuration check passed.
+2025-04-11 13:55:08,616 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:58:13,427 - autotube - INFO - Attempting to start AI script generation...
+2025-04-11 13:58:13,427 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:58:13,436 - autotube - INFO - GUI: Starting Gemini script generation thread...
+2025-04-11 13:58:13,437 - autotube - INFO - --- Starting Gemini Script Generation Thread ---
+2025-04-11 13:58:13,437 - autotube - INFO - CORE AI SCRIPT: Starting generation for prompt: '45 second finance short...'
+2025-04-11 13:58:14,979 - autotube - INFO - CORE AI SCRIPT: Generation successful.
+2025-04-11 13:58:14,979 - autotube - INFO - --- Gemini Script Generation Thread Finished ---
+2025-04-11 13:58:14,980 - autotube - INFO - GUI Callback: Script generation complete.
+2025-04-11 13:58:14,980 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:58:14,988 - autotube - INFO - GUI: Populating script textbox with generated content.
+2025-04-11 13:58:29,922 - autotube - INFO - Attempting to start AI Short video generation...
+2025-04-11 13:58:29,923 - autotube - INFO - Created temporary directory: C:/Users/V0iD/Desktop/post\temp_ai_short_1744405109_137
+2025-04-11 13:58:29,923 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:58:29,932 - autotube - INFO - GUI: Starting AI short generation thread...
+2025-04-11 13:58:29,932 - autotube - INFO - --- Starting AI Short Generation Thread ---
+2025-04-11 13:58:29,932 - autotube - INFO - HELPER: Searching for FFmpeg/FFprobe executables...
+2025-04-11 13:58:29,933 - autotube - INFO - HELPER: Found bundled/local ffmpeg: C:\Users\V0iD\auto-tube\bin\ffmpeg.exe
+2025-04-11 13:58:29,933 - autotube - INFO - HELPER: Found bundled/local ffprobe: C:\Users\V0iD\auto-tube\bin\ffprobe.exe
+2025-04-11 13:58:29,933 - autotube - INFO - AI Short Gen: Using FFmpeg='C:\Users\V0iD\auto-tube\bin\ffmpeg.exe', FFprobe='C:\Users\V0iD\auto-tube\bin\ffprobe.exe'
+2025-04-11 13:58:29,942 - autotube - INFO - CORE AI: Calling Polly TTS...
+2025-04-11 13:58:31,672 - autotube - INFO - CORE AI: Generated voiceover: C:/Users/V0iD/Desktop/post\temp_ai_short_1744405109_137\polly_voice_1744405109_8624.mp3
+2025-04-11 13:58:31,673 - autotube - INFO - CORE AI: Getting audio duration...
+2025-04-11 13:58:31,673 - autotube - INFO - HELPER: Probing duration for polly_voice_1744405109_8624.mp3 using C:\Users\V0iD\auto-tube\bin\ffprobe.exe
+2025-04-11 13:58:31,703 - autotube - INFO - HELPER: Detected duration: 41.592s
+2025-04-11 13:58:31,703 - autotube - INFO - CORE AI: Voiceover duration: 41.592s
+2025-04-11 13:58:31,705 - autotube - INFO - CORE AI: Creating temporary ASS file: C:/Users/V0iD/Desktop/post\temp_ai_short_1744405109_137\temp_subs_1744405109_7383.ass
+2025-04-11 13:58:31,706 - autotube - INFO - CORE AI: Temp ASS file created.
+2025-04-11 13:58:31,707 - autotube - INFO - CORE AI: Preparing background video -> C:/Users/V0iD/Desktop/post\temp_ai_short_1744405109_137\prep_video_1744405109_7383.mp4
+2025-04-11 13:58:31,707 - autotube - INFO - HELPER: Probing duration for saveinsta.cc_720p-minecraft-parkour-gameplay-no-copyright_clip_007_9x16.mp4 using C:\Users\V0iD\auto-tube\bin\ffprobe.exe
+2025-04-11 13:58:31,748 - autotube - INFO - HELPER: Detected duration: 45.000s
+2025-04-11 13:58:31,748 - autotube - INFO - HELPER Prep: Trimming input to 41.59s
+2025-04-11 13:58:31,749 - autotube - INFO - HELPER Prep: Running FFmpeg command (via ffmpeg-python): C:\Users\V0iD\auto-tube\bin\ffmpeg.exe -t 41.5920 -i C:/Users/V0iD/Desktop/clips/2025-04-05/saveinsta.cc_720p-minecraft-parkour-gameplay-no-copyright_clip_007_9x16.mp4 -filter_complex [0:v]crop=h=min(ih\,iw*16/9):w=min(iw\,ih*9/16)[s0];[s0]scale=force_original_aspect_ratio=decrease:h=1920:w=1080[s1];[s1]pad=color=black:h=1920:w=1080:x=(ow-iw)/2:y=(oh-ih)/2[s2];[s2]setsar=sar=1[s3] -map [s3] -an -c:v libx264 -crf 25 -preset fast C:/Users/V0iD/Desktop/post\temp_ai_short_1744405109_137\prep_video_1744405109_7383.mp4 -y
+2025-04-11 13:58:49,475 - autotube - INFO - HELPER Prep: Background video preparation successful -> C:/Users/V0iD/Desktop/post\temp_ai_short_1744405109_137\prep_video_1744405109_7383.mp4
+2025-04-11 13:58:49,475 - autotube - INFO - CORE AI: Background video prepared.
+2025-04-11 13:58:49,477 - autotube - INFO - CORE AI: Combining final elements...
+2025-04-11 13:58:49,477 - autotube - INFO - HELPER Combine: Running FFmpeg command (via ffmpeg-python): C:\Users\V0iD\auto-tube\bin\ffmpeg.exe -i C:/Users/V0iD/Desktop/post\temp_ai_short_1744405109_137\prep_video_1744405109_7383.mp4 -i C:/Users/V0iD/Desktop/post\temp_ai_short_1744405109_137\polly_voice_1744405109_8624.mp3 -filter_complex [0:v]ass=filename=\\\'C\\:/Users/V0iD/Desktop/post/temp_ai_short_1744405109_137/temp_subs_1744405109_7383.ass\\\'[s0] -map [s0] -map 1:a -b:a 192k -c:a aac -c:v libx264 -crf 23 -preset medium -shortest C:/Users/V0iD/Desktop/post\saveinsta.cc_720p-minecraft-parkour-gameplay-no-copyright_clip_007_9x16_AI_Short_1744405109_137.mp4 -y
+2025-04-11 13:58:49,502 - autotube - ERROR - HELPER Combine ERROR: FFmpeg failed (via ffmpeg-python):
+ffmpeg version 2025-03-31-git-35c091f4b7-full_build-www.gyan.dev Copyright (c) 2000-2025 the FFmpeg developers
+  built with gcc 14.2.0 (Rev1, Built by MSYS2 project)
+  configuration: --enable-gpl --enable-version3 --enable-static --disable-w32threads --disable-autodetect --enable-fontconfig --enable-iconv --enable-gnutls --enable-lcms2 --enable-libxml2 --enable-gmp --enable-bzlib --enable-lzma --enable-libsnappy --enable-zlib --enable-librist --enable-libsrt --enable-libssh --enable-libzmq --enable-avisynth --enable-libbluray --enable-libcaca --enable-libdvdnav --enable-libdvdread --enable-sdl2 --enable-libaribb24 --enable-libaribcaption --enable-libdav1d --enable-libdavs2 --enable-libopenjpeg --enable-libquirc --enable-libuavs3d --enable-libxevd --enable-libzvbi --enable-libqrencode --enable-librav1e --enable-libsvtav1 --enable-libvvenc --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxavs2 --enable-libxeve --enable-libxvid --enable-libaom --enable-libjxl --enable-libvpx --enable-mediafoundation --enable-libass --enable-frei0r --enable-libfreetype --enable-libfribidi --enable-libharfbuzz --enable-liblensfun --enable-libvidstab --enable-libvmaf --enable-libzimg --enable-amf --enable-cuda-llvm --enable-cuvid --enable-dxva2 --enable-d3d11va --enable-d3d12va --enable-ffnvcodec --enable-libvpl --enable-nvdec --enable-nvenc --enable-vaapi --enable-libshaderc --enable-vulkan --enable-libplacebo --enable-opencl --enable-libcdio --enable-libgme --enable-libmodplug --enable-libopenmpt --enable-libopencore-amrwb --enable-libmp3lame --enable-libshine --enable-libtheora --enable-libtwolame --enable-libvo-amrwbenc --enable-libcodec2 --enable-libilbc --enable-libgsm --enable-liblc3 --enable-libopencore-amrnb --enable-libopus --enable-libspeex --enable-libvorbis --enable-ladspa --enable-libbs2b --enable-libflite --enable-libmysofa --enable-librubberband --enable-libsoxr --enable-chromaprint
+  libavutil      60.  0.100 / 60.  0.100
+  libavcodec     62.  0.100 / 62.  0.100
+  libavformat    62.  0.100 / 62.  0.100
+  libavdevice    62.  0.100 / 62.  0.100
+  libavfilter    11.  0.100 / 11.  0.100
+  libswscale      9.  0.100 /  9.  0.100
+  libswresample   6.  0.100 /  6.  0.100
+  libpostproc    59.  0.100 / 59.  0.100
+[Parsed_ass_0 @ 0000027d3421cc80] libass API version: 0x1703020
+[Parsed_ass_0 @ 0000027d3421cc80] libass source: commit: 0.17.3-80-g958f4b6ad3e36a0dfda786e19d44411189686da2
+[Parsed_ass_0 @ 0000027d3421cc80] Shaper: FriBidi 1.0.16 (SIMPLE) HarfBuzz-ng 11.0.0 (COMPLEX)
+[Parsed_ass_0 @ 0000027d3421cc80] Using font provider directwrite (with GDI)
+[Parsed_ass_0 @ 0000027d3421cc80] ass_read_file('C:/Users/V0iD/Desktop/post/temp_ai_short_1744405109_137/temp_subs_1744405109_7383.ass'): fopen failed
+[Parsed_ass_0 @ 0000027d3421cc80] Could not create a libass track when reading file ''C:/Users/V0iD/Desktop/post/temp_ai_short_1744405109_137/temp_subs_1744405109_7383.ass''
+[AVFilterGraph @ 0000027d3421c180] Error initializing filters
+Error : Invalid argument
+
+2025-04-11 13:58:49,504 - autotube - ERROR - ERROR generating AI Short: ValueError - Final FFmpeg composition failed (check logs).
+2025-04-11 13:58:49,504 - autotube - INFO - CORE AI: Cleaning up temporary files...
+2025-04-11 13:58:49,505 - autotube - INFO - CORE AI: Removed temp file: temp_subs_1744405109_7383.ass
+2025-04-11 13:58:49,506 - autotube - INFO - CORE AI: Removed temp file: polly_voice_1744405109_8624.mp3
+2025-04-11 13:58:49,508 - autotube - INFO - CORE AI: Removed temp file: prep_video_1744405109_7383.mp4
+2025-04-11 13:58:49,509 - autotube - INFO - --- AI Short Generation Thread Finished. Success: 0, Errors: 1, Stopped by user: False ---
+2025-04-11 13:58:49,510 - autotube - INFO - GUI Callback: 'AI Short Generation' process finished or stopped.
+2025-04-11 13:58:49,510 - autotube - WARNING - Could not get default button colors from ThemeManager: 'disabled_fg_color'. Using fallback.
+2025-04-11 13:58:49,521 - autotube - INFO - AI Short Generation was stopped. Processed before stop: 0, Errors: 1
+2025-04-11 15:34:36,812 - autotube - INFO - GUI: Window close requested.
+2025-04-11 15:34:36,812 - autotube - INFO - GUI: Exiting application.
+2025-04-11 15:34:36,895 - autotube - INFO - Tkinter main event loop finished.
+2025-04-11 15:34:36,895 - autotube - INFO - --- Autotube Application End ---

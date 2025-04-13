@@ -1,0 +1,120 @@
+<UserControl x:Class="AutoTubeWpf.Views.ClippingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:AutoTubeWpf.Views"
+             xmlns:viewmodels="clr-namespace:AutoTubeWpf.ViewModels"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance Type=viewmodels:ClippingViewModel}"
+             AllowDrop="True" Drop="ClippingView_Drop"> <!-- Enable Drop event -->
+
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/> <!-- Input Selection -->
+            <RowDefinition Height="*"/>    <!-- Queue Display -->
+            <RowDefinition Height="Auto"/> <!-- Options -->
+            <RowDefinition Height="Auto"/> <!-- Actions -->
+        </Grid.RowDefinitions>
+
+        <!-- Input Selection Area -->
+        <GroupBox Header="Input Video(s)" Grid.Row="0" Padding="10" Margin="0,0,0,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Grid.Column="0" Text="{Binding InputDisplayPath}" IsReadOnly="True" VerticalContentAlignment="Center" Margin="0,0,10,0" ToolTip="Drag and drop video files or folders here, or use Browse"/>
+                <CheckBox Grid.Column="1" Content="Batch (Folder)" IsChecked="{Binding IsBatchMode}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <Button Grid.Column="2" Content="Browse..." Command="{Binding SelectInputCommand}" Padding="10,5"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- Queue Display Area -->
+        <GroupBox Header="Video Queue" Grid.Row="1" Padding="10" Margin="0,0,0,10">
+             <DataGrid ItemsSource="{Binding VideoQueue}" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" SelectionMode="Single">
+                 <DataGrid.Columns>
+                     <DataGridTextColumn Header="File Name" Binding="{Binding FileName}" Width="*"/>
+                     <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="Auto"/>
+                     <DataGridTextColumn Header="Duration" Binding="{Binding Duration, StringFormat={}{0:hh\\:mm\\:ss}}" Width="Auto"/>
+                     <!-- Optional: Add column for full path if needed -->
+                     <!-- <DataGridTextColumn Header="Path" Binding="{Binding FilePath}" Width="*"/> -->
+                 </DataGrid.Columns>
+             </DataGrid>
+        </GroupBox>
+
+        <!-- Options Area -->
+        <GroupBox Header="Clipping Options" Grid.Row="2" Padding="10" Margin="0,0,0,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Clip Length -->
+                <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,10,10">
+                    <TextBlock Text="Clip Duration (seconds):"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                        <!-- TODO: Replace with NumericUpDown or better range slider -->
+                        <Slider Grid.Column="0" Minimum="5" Maximum="120" Value="{Binding MinClipLength}" TickFrequency="5" IsSnapToTickEnabled="True"/>
+                        <TextBlock Grid.Column="1" Text=" to " VerticalAlignment="Center" Margin="5,0"/>
+                        <Slider Grid.Column="2" Minimum="5" Maximum="120" Value="{Binding MaxClipLength}" TickFrequency="5" IsSnapToTickEnabled="True"/>
+                    </Grid>
+                     <TextBlock Text="{Binding MinClipLength, StringFormat='Min: {0}s'}"/>
+                     <TextBlock Text="{Binding MaxClipLength, StringFormat='Max: {0}s'}"/>
+                </StackPanel>
+
+                <!-- Number of Clips -->
+                 <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,10,10">
+                     <TextBlock Text="Max Clips per Video:"/>
+                     <!-- TODO: Replace with NumericUpDown -->
+                     <Slider Minimum="1" Maximum="20" Value="{Binding ClipCount}" TickFrequency="1" IsSnapToTickEnabled="True"/>
+                     <TextBlock Text="{Binding ClipCount}"/>
+                 </StackPanel>
+
+                <!-- Scene Detection -->
+                <StackPanel Grid.Row="0" Grid.Column="1" Margin="10,0,0,10">
+                    <CheckBox Content="Use Scene Detection" IsChecked="{Binding UseSceneDetection}" Margin="0,0,0,5"/>
+                    <TextBlock Text="Scene Threshold:" IsEnabled="{Binding UseSceneDetection}"/>
+                    <!-- TODO: Replace with NumericUpDown -->
+                    <Slider Minimum="10" Maximum="50" Value="{Binding SceneThreshold}" TickFrequency="1" IsSnapToTickEnabled="True" IsEnabled="{Binding UseSceneDetection}"/>
+                    <TextBlock Text="{Binding SceneThreshold, StringFormat={}{0:F1}}" IsEnabled="{Binding UseSceneDetection}"/>
+                </StackPanel>
+
+                <!-- Add other options like Enhance, Mirror later if needed -->
+
+            </Grid>
+        </GroupBox>
+
+        <!-- Action Buttons Area -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Left">
+            <Button Content="Clear Queue" Command="{Binding ClearQueueCommand}" Padding="10,5" Margin="0,0,10,0"/>
+            <!-- Start/Stop Button - Text and Color might change based on IsProcessing -->
+            <Button Content="{Binding IsProcessing, Converter={StaticResource ProcessingButtonTextConverter}, FallbackValue='Start Clipping Queue'}"
+                    Command="{Binding StartStopClippingCommand}"
+                    Padding="15,8" FontWeight="SemiBold"
+                    Background="{Binding IsProcessing, Converter={StaticResource ProcessingButtonColorConverter}, FallbackValue='Green'}"/>
+        </StackPanel>
+
+    </Grid>
+
+    <!-- Define Converters (Ideally in App.xaml Resources or separate file) -->
+    <UserControl.Resources>
+        <local:BoolToProcessingButtonTextConverter x:Key="ProcessingButtonTextConverter"/>
+        <local:BoolToProcessingButtonColorConverter x:Key="ProcessingButtonColorConverter"/>
+    </UserControl.Resources>
+
+</UserControl>
+
+<!-- Converters (Place in separate file later) -->
+<local:BoolToProcessingButtonTextConverter xmlns:local="clr-namespace:AutoTubeWpf.Views"/>
+<local:BoolToProcessingButtonColorConverter xmlns:local="clr-namespace:AutoTubeWpf.Views"/>

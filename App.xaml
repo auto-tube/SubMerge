@@ -1,0 +1,9 @@
+<Application x:Class="AutoTubeWpf.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:AutoTubeWpf"
+             StartupUri="MainWindow.xaml"> <!-- Specifies the main window to launch -->
+    <Application.Resources>
+         <!-- Application-level resources can be defined here -->
+    </Application.Resources>
+</Application>

@@ -415,12 +415,16 @@ def run_ai_short_generation(script_text: str, background_video_path: str, final_
 
     # Dependencies loaded, try finding executables
     try:
-        # Get specific paths from AI options if provided
-        conf_ffmpeg = ai_options.get("config_ffmpeg_path", None)
-        conf_ffprobe = ai_options.get("config_ffprobe_path", None)
-        ffmpeg_exec, ffprobe_exec = find_ffmpeg_executables(conf_ffmpeg, conf_ffprobe)
+        # REMOVE these lines:
+        # conf_ffmpeg = ai_options.get("config_ffmpeg_path", None)
+        # conf_ffprobe = ai_options.get("config_ffprobe_path", None)
+
+        # CORRECTED CALL: Call find_ffmpeg_executables without arguments
+        ffmpeg_exec, ffprobe_exec = find_ffmpeg_executables()
+
         if not ffmpeg_exec or not ffprobe_exec:
-            raise FFmpegNotFoundError("FFmpeg or FFprobe executable not found for AI Short Gen. Check Settings or environment variables.")
+            # Error message updated to reflect auto-detection methods
+            raise FFmpegNotFoundError("FFmpeg or FFprobe executable not found. Check bundled 'bin', Env Vars, or system PATH.")
     except FFmpegNotFoundError as e:
          logger.critical(f"FFmpeg/FFprobe Check Failed for AI Short Gen: {e}")
          status_callback(f"Error: {e}")
@@ -453,7 +457,6 @@ def run_ai_short_generation(script_text: str, background_video_path: str, final_
                 os.makedirs(temp_dir, exist_ok=True)
             except OSError as e:
                 raise ValueError(f"Could not create temporary directory: {temp_dir} - {e}")
-
         # --- Step 1: TTS (Polly) ---
         check_stop()
         status_callback("Status: 1/5 Generating voiceover...")
