@@ -9,7 +9,7 @@ using System.Linq; // For FirstOrDefault
 using System.Text; // For StringBuilder in SRT
 using System.Threading; // For CancellationTokenSource
 using System.Threading.Tasks;
-using System.Windows; // For MessageBox - replace with DialogService later
+// using System.Windows; // No longer needed for MessageBox
 
 namespace AutoTubeWpf.ViewModels
 {
@@ -18,8 +18,11 @@ namespace AutoTubeWpf.ViewModels
         private readonly ILoggerService _logger;
         private readonly IAiService _aiService;
         private readonly ITtsService _ttsService;
-        private readonly IVideoProcessorService _videoProcessorService; // Added Video Processor service
-        private readonly IConfigurationService _configurationService; // Added Config service
+        private readonly IVideoProcessorService _videoProcessorService;
+        private readonly IConfigurationService _configurationService;
+        private readonly IFileOrganizerService _fileOrganizerService;
+        private readonly IDialogService _dialogService; // Added Dialog service
+        private readonly IProgress<VideoProcessingProgress>? _progressReporter;
         private CancellationTokenSource? _scriptGenerationCts;
         private CancellationTokenSource? _shortGenerationCts;
 
@@ -42,7 +45,7 @@ namespace AutoTubeWpf.ViewModels
         private string? _selectedPollyVoice; // e.g., "Joanna"
 
         [ObservableProperty]
-        private int _fontSize = 48; // Note: Font size not directly used by FFmpeg subtitles filter, styling is via ASS/SRT tags or filter options
+        private int _fontSize = 48;
 
         [ObservableProperty]
         private List<string> _availablePollyVoices = new List<string> { "Joanna", "Matthew", "Salli", "Ivy", "Kendra", "Justin" };
@@ -67,23 +70,27 @@ namespace AutoTubeWpf.ViewModels
             ILoggerService loggerService,
             IAiService aiService,
             ITtsService ttsService,
-            IVideoProcessorService videoProcessorService, // Added VP service
-            IConfigurationService configurationService) // Added Config service
+            IVideoProcessorService videoProcessorService,
+            IConfigurationService configurationService,
+            IFileOrganizerService fileOrganizerService,
+            IDialogService dialogService, // Added Dialog service
+            IProgress<VideoProcessingProgress>? progressReporter = null)
         {
             _logger = loggerService;
             _aiService = aiService;
             _ttsService = ttsService;
-            _videoProcessorService = videoProcessorService; // Store VP service
-            _configurationService = configurationService; // Store Config service
+            _videoProcessorService = videoProcessorService;
+            _configurationService = configurationService;
+            _fileOrganizerService = fileOrganizerService;
+            _dialogService = dialogService; // Store Dialog service
+            _progressReporter = progressReporter;
 
             _logger.LogInfo("AiShortViewModel initialized.");
-            // Set default output path from config if not already set by user interaction
             if (string.IsNullOrWhiteSpace(OutputFolderPath))
             {
                  OutputFolderPath = _configurationService.CurrentSettings.DefaultOutputPath;
                  _logger.LogDebug($"Default AI Short output folder set from config: {OutputFolderPath}");
             }
-            // Fetch Polly voices asynchronously
             _ = LoadVoicesAsync();
             SelectedPollyVoice = AvailablePollyVoices.FirstOrDefault();
         }
@@ -148,10 +155,10 @@ namespace AutoTubeWpf.ViewModels
             {
                 dialog.SelectedPath = OutputFolderPath;
             }
-             else // Fallback to default output or user profile
+             else
             {
                  string defaultOutput = _configurationService?.CurrentSettings?.DefaultOutputPath ?? "";
-                 dialog.SelectedPath = !string.IsNullOrWhiteSpace(defaultOutput) && Directory.Exists(defaultOutput)
+                 dialog.SelectedPath = !string.IsNullOrWhiteSpace(defaultOutput) &amp;&amp; Directory.Exists(defaultOutput)
                                        ? defaultOutput
                                        : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             }
@@ -169,7 +176,7 @@ namespace AutoTubeWpf.ViewModels
         {
             if (string.IsNullOrWhiteSpace(ScriptPrompt))
             {
-                 MessageBox.Show("Please enter a prompt for script generation.", "Input Required", MessageBoxButton.OK, MessageBoxImage.Warning);
+                 _dialogService.ShowWarningDialog("Please enter a prompt for script generation.", "Input Required");
                  return;
             }
 
@@ -187,32 +194,32 @@ namespace AutoTubeWpf.ViewModels
                 {
                     ScriptText = generatedScript;
                     _logger.LogInfo("Script generated successfully.");
-                    MessageBox.Show("Script generated successfully and placed in the text box.", "Script Generated", MessageBoxButton.OK, MessageBoxImage.Information);
+                    _dialogService.ShowInfoDialog("Script generated successfully and placed in the text box.", "Script Generated");
                 }
                 else
                 {
                     ScriptText = "Script generation failed or returned empty.";
                     _logger.LogWarning("Script generation failed or returned empty.");
-                     MessageBox.Show("Script generation failed or returned an empty result. Check logs for details.", "Generation Failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                     _dialogService.ShowWarningDialog("Script generation failed or returned an empty result. Check logs for details.", "Generation Failed");
                 }
             }
             catch (OperationCanceledException)
             {
                 ScriptText = "Script generation cancelled.";
                 _logger.LogInfo("Script generation was cancelled by the user.");
-                 MessageBox.Show("Script generation was cancelled.", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
+                 _dialogService.ShowInfoDialog("Script generation was cancelled.", "Cancelled");
             }
             catch (InvalidOperationException ioex)
             {
                  ScriptText = $"Script generation failed: {ioex.Message}";
                  _logger.LogError($"Script generation failed: {ioex.Message}", ioex);
-                 MessageBox.Show($"Script generation failed:\n{ioex.Message}\n\nPlease ensure the AI Service is configured correctly in Settings.", "Service Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                 _dialogService.ShowErrorDialog($"Script generation failed:\n{ioex.Message}\n\nPlease ensure the AI Service is configured correctly in Settings.", "Service Error");
             }
             catch (Exception ex)
             {
                 ScriptText = $"Script generation failed: {ex.Message}";
                 _logger.LogError("An unexpected error occurred during script generation.", ex);
-                MessageBox.Show($"An unexpected error occurred during script generation:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _dialogService.ShowErrorDialog($"An unexpected error occurred during script generation:\n{ex.Message}", "Error");
             }
             finally
             {
@@ -233,10 +240,9 @@ namespace AutoTubeWpf.ViewModels
         {
             _logger.LogInfo("GenerateAiShort command executed.");
 
-            // --- Input Validation ---
-            if (!CanGenerateAiShort()) // Re-check CanExecute logic here for robustness
+            if (!CanGenerateAiShort())
             {
-                 MessageBox.Show("Cannot generate AI Short. Please ensure all inputs are valid and required services (AI, TTS, Video Processor) are available and configured.", "Prerequisites Not Met", MessageBoxButton.OK, MessageBoxImage.Warning);
+                 _dialogService.ShowWarningDialog("Cannot generate AI Short. Please ensure all inputs are valid and required services are available.", "Prerequisites Not Met");
                  return;
             }
 
@@ -246,55 +252,87 @@ namespace AutoTubeWpf.ViewModels
 
             string tempAudioFilePath = Path.Combine(Path.GetTempPath(), $"autotube_tts_{Guid.NewGuid()}.mp3");
             string tempSrtFilePath = Path.Combine(Path.GetTempPath(), $"autotube_sub_{Guid.NewGuid()}.srt");
-            string finalOutputPath = Path.Combine(OutputFolderPath!, $"AI_Short_{Path.GetFileNameWithoutExtension(BackgroundVideoPath)}_{DateTime.Now:yyyyMMddHHmmss}.mp4");
+            string initialOutputPath = Path.Combine(OutputFolderPath!, $"AI_Short_{Path.GetFileNameWithoutExtension(BackgroundVideoPath)}_{DateTime.Now:yyyyMMddHHmmss}.mp4");
+            string finalOrganizedPath = initialOutputPath;
 
             try
             {
                 // 1. Synthesize Speech
                 _logger.LogDebug($"Synthesizing speech to temp file: {tempAudioFilePath}");
+                _progressReporter?.Report(new VideoProcessingProgress { Percentage = 0, Message = "Synthesizing speech..." });
                 bool ttsSuccess = await _ttsService.SynthesizeSpeechAsync(ScriptText!, SelectedPollyVoice!, tempAudioFilePath, _shortGenerationCts.Token);
-                if (!ttsSuccess) throw new Exception("TTS synthesis failed."); // Throw exception to handle in catch block
+                if (!ttsSuccess) throw new Exception("TTS synthesis failed.");
                 _logger.LogInfo("TTS synthesis successful.");
 
-                // 2. Get Audio Duration (needed for SRT timing)
+                // 2. Get Audio Duration
+                _progressReporter?.Report(new VideoProcessingProgress { Percentage = 0, Message = "Getting audio duration..." });
                 TimeSpan? audioDuration = await _videoProcessorService.GetVideoDurationAsync(tempAudioFilePath, _shortGenerationCts.Token);
                 if (audioDuration == null) throw new Exception("Failed to get duration of generated audio file.");
                 _logger.LogInfo($"Generated audio duration: {audioDuration.Value}");
 
-                // 3. Generate Subtitle File (Simple SRT for now)
+                // 3. Generate Subtitle File
+                _progressReporter?.Report(new VideoProcessingProgress { Percentage = 0, Message = "Generating subtitles..." });
                 _logger.LogDebug($"Generating temporary SRT file: {tempSrtFilePath}");
                 await GenerateSrtFileAsync(ScriptText!, audioDuration.Value, tempSrtFilePath, _shortGenerationCts.Token);
                 _logger.LogInfo("Temporary SRT file generated.");
 
                 // 4. Combine Video, Audio, Subtitles
-                _logger.LogDebug($"Combining inputs for output: {finalOutputPath}");
-                // TODO: Implement progress reporting from Combine method
+                _logger.LogDebug($"Combining inputs for output: {initialOutputPath}");
+                _progressReporter?.Report(new VideoProcessingProgress { Percentage = 0, Message = "Combining video/audio/subs..." });
                 await _videoProcessorService.CombineVideoAudioSubtitlesAsync(
                      BackgroundVideoPath!,
                      tempAudioFilePath,
                      tempSrtFilePath,
-                     finalOutputPath,
-                     null, // No progress reporter for now
+                     initialOutputPath,
+                     _progressReporter,
                      _shortGenerationCts.Token);
+                _logger.LogInfo("Video combination successful.");
+                finalOrganizedPath = initialOutputPath;
+
+                // 5. Organize Output (if enabled)
+                bool organizeOutput = _configurationService.CurrentSettings.OrganizeOutput;
+                if (organizeOutput)
+                {
+                    _logger.LogDebug($"Organizing output file: {initialOutputPath}");
+                    _progressReporter?.Report(new VideoProcessingProgress { Percentage = 1.0, Message = "Organizing output..." });
+                    try
+                    {
+                        finalOrganizedPath = await _fileOrganizerService.OrganizeOutputFileAsync(initialOutputPath, BackgroundVideoPath!, OutputFolderPath!, "ai_short");
+                        _logger.LogInfo($"AI Short organized to: {finalOrganizedPath}");
+                    }
+                    catch (Exception orgEx)
+                    {
+                         _logger.LogError($"Failed to organize AI Short. File remains at '{initialOutputPath}'. Error: {orgEx.Message}", orgEx);
+                         finalOrganizedPath = initialOutputPath;
+                         _dialogService.ShowWarningDialog($"AI Short generated successfully but failed to organize the output file.\nFile saved at: {finalOrganizedPath}\nError: {orgEx.Message}", "Organization Warning");
+                         goto SkipSuccessMessage;
+                    }
+                }
 
                 _logger.LogInfo("AI Short generation finished successfully.");
-                MessageBox.Show($"AI Short Generation Complete!\nOutput: {finalOutputPath}", "Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                 _progressReporter?.Report(new VideoProcessingProgress { Percentage = 1.0, Message = "AI Short generation complete." });
+                _dialogService.ShowInfoDialog($"AI Short Generation Complete!\nOutput: {finalOrganizedPath}", "Complete");
+
+                SkipSuccessMessage:;
 
             }
             catch (OperationCanceledException)
             {
                  _logger.LogInfo("AI Short generation was cancelled.");
-                 MessageBox.Show("AI Short generation was cancelled.", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
+                 _progressReporter?.Report(new VideoProcessingProgress { Percentage = 0, Message = "Cancelled." });
+                 _dialogService.ShowInfoDialog("AI Short generation was cancelled.", "Cancelled");
             }
             catch (InvalidOperationException ioex)
             {
                  _logger.LogError($"AI Short generation failed due to service issue: {ioex.Message}", ioex);
-                 MessageBox.Show($"AI Short generation failed:\n{ioex.Message}\n\nPlease ensure required services (TTS, Video Processor, AI) are configured correctly.", "Service Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                 _progressReporter?.Report(new VideoProcessingProgress { Percentage = 0, Message = $"Error: {ioex.Message}" });
+                 _dialogService.ShowErrorDialog($"AI Short generation failed:\n{ioex.Message}\n\nPlease ensure required services are configured correctly.", "Service Error");
             }
             catch (Exception ex)
             {
                 _logger.LogError("An unexpected error occurred during AI Short generation.", ex);
-                MessageBox.Show($"An unexpected error occurred during AI Short generation:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                 _progressReporter?.Report(new VideoProcessingProgress { Percentage = 0, Message = $"Error: {ex.Message}" });
+                _dialogService.ShowErrorDialog($"An unexpected error occurred during AI Short generation:\n{ex.Message}", "Error");
             }
             finally
             {
@@ -311,13 +349,13 @@ namespace AutoTubeWpf.ViewModels
         private bool CanGenerateAiShort()
         {
             return !IsGeneratingScript &amp;&amp; !IsGeneratingShort
-                &amp;&amp; !string.IsNullOrWhiteSpace(BackgroundVideoPath) &amp;&amp; File.Exists(BackgroundVideoPath) // Check file exists
-                &amp;&amp; !string.IsNullOrWhiteSpace(OutputFolderPath) &amp;&amp; Directory.Exists(OutputFolderPath) // Check dir exists
+                &amp;&amp; !string.IsNullOrWhiteSpace(BackgroundVideoPath) &amp;&amp; File.Exists(BackgroundVideoPath)
+                &amp;&amp; !string.IsNullOrWhiteSpace(OutputFolderPath) &amp;&amp; Directory.Exists(OutputFolderPath)
                 &amp;&amp; !string.IsNullOrWhiteSpace(ScriptText)
                 &amp;&amp; !string.IsNullOrWhiteSpace(SelectedPollyVoice)
-                &amp;&amp; _aiService.IsAvailable // Needed for script gen step
-                &amp;&amp; _ttsService.IsAvailable // Check TTS service
-                &amp;&amp; _videoProcessorService.IsAvailable; // Check Video Processor service
+                &amp;&amp; _aiService.IsAvailable
+                &amp;&amp; _ttsService.IsAvailable
+                &amp;&amp; _videoProcessorService.IsAvailable;
         }
 
         // Helper to generate a simple SRT file with one entry spanning the audio duration
@@ -325,13 +363,12 @@ namespace AutoTubeWpf.ViewModels
         {
             var srtContent = new StringBuilder();
             string startTime = "00:00:00,000";
-            // Format duration as HH:mm:ss,fff
             string endTime = duration.ToString(@"hh\:mm\:ss\,fff", CultureInfo.InvariantCulture);
 
-            srtContent.AppendLine("1"); // Sequence number
-            srtContent.AppendLine($"{startTime} --> {endTime}"); // Timestamp
-            srtContent.AppendLine(text.Trim()); // Subtitle text (basic, no complex formatting)
-            srtContent.AppendLine(); // Blank line separator
+            srtContent.AppendLine("1");
+            srtContent.AppendLine($"{startTime} --> {endTime}");
+            srtContent.AppendLine(text.Trim());
+            srtContent.AppendLine();
 
             await File.WriteAllTextAsync(outputPath, srtContent.ToString(), Encoding.UTF8, cancellationToken);
         }

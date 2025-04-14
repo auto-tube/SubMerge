@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:AutoTubeWpf.Views"
              xmlns:viewmodels="clr-namespace:AutoTubeWpf.ViewModels"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" <!-- Added Toolkit namespace -->
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance Type=viewmodels:AiShortViewModel}">
@@ -82,9 +83,8 @@
 
                 <!-- Font Size -->
                 <TextBlock Text="Subtitle Font Size:" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                <!-- TODO: Replace with NumericUpDown -->
-                <Slider Minimum="24" Maximum="96" Value="{Binding FontSize}" TickFrequency="4" IsSnapToTickEnabled="True" Width="150" VerticalAlignment="Center"/>
-                <TextBlock Text="{Binding FontSize}" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                 <!-- Replaced Slider with IntegerUpDown -->
+                <xctk:IntegerUpDown Value="{Binding FontSize}" Minimum="12" Maximum="120" Increment="2" Width="60"/>
             </StackPanel>
         </GroupBox>
 

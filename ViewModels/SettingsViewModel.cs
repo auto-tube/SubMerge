@@ -2,8 +2,10 @@ using AutoTubeWpf.Models;
 using AutoTubeWpf.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System; // Added for Environment
+using System.IO; // Added for Directory
 using System.Threading.Tasks;
-using System.Windows; // For MessageBox - replace with DialogService later
+// using System.Windows; // No longer needed for MessageBox
 
 namespace AutoTubeWpf.ViewModels
 {
@@ -11,6 +13,7 @@ namespace AutoTubeWpf.ViewModels
     {
         private readonly IConfigurationService _configurationService;
         private readonly ILoggerService _loggerService;
+        private readonly IDialogService _dialogService; // Added Dialog service
 
         // Observable properties bound to the UI
         [ObservableProperty]
@@ -20,7 +23,7 @@ namespace AutoTubeWpf.ViewModels
         private string? _awsAccessKeyId;
 
         [ObservableProperty]
-        private string? _awsSecretAccessKey; // Consider using SecureString or PasswordBox binding in View
+        private string? _awsSecretAccessKey;
 
         [ObservableProperty]
         private string? _awsRegionName;
@@ -32,15 +35,18 @@ namespace AutoTubeWpf.ViewModels
         private bool _organizeOutput;
 
         [ObservableProperty]
-        private string? _selectedTheme; // e.g., "dark", "light", "system"
+        private string? _selectedTheme;
 
-        // Available themes for ComboBox
         public string[] AvailableThemes { get; } = { "dark", "light", "system" };
 
-        public SettingsViewModel(IConfigurationService configurationService, ILoggerService loggerService)
+        public SettingsViewModel(
+            IConfigurationService configurationService,
+            ILoggerService loggerService,
+            IDialogService dialogService) // Added Dialog service
         {
             _configurationService = configurationService;
             _loggerService = loggerService;
+            _dialogService = dialogService; // Store Dialog service
 
             _loggerService.LogInfo("SettingsViewModel initializing...");
             LoadSettings();
@@ -53,7 +59,7 @@ namespace AutoTubeWpf.ViewModels
             var settings = _configurationService.CurrentSettings;
             GoogleApiKey = settings.GoogleApiKey;
             AwsAccessKeyId = settings.AwsAccessKeyId;
-            AwsSecretAccessKey = settings.AwsSecretAccessKey; // Be mindful of exposing secrets directly
+            AwsSecretAccessKey = settings.AwsSecretAccessKey;
             AwsRegionName = settings.AwsRegionName;
             DefaultOutputPath = settings.DefaultOutputPath;
             OrganizeOutput = settings.OrganizeOutput;
@@ -75,23 +81,19 @@ namespace AutoTubeWpf.ViewModels
                 settings.AwsRegionName = AwsRegionName;
                 settings.DefaultOutputPath = DefaultOutputPath;
                 settings.OrganizeOutput = OrganizeOutput;
-                settings.Theme = SelectedTheme ?? "dark"; // Ensure theme is not null
+                settings.Theme = SelectedTheme ?? "dark";
 
                 await _configurationService.SaveSettingsAsync();
                 _loggerService.LogInfo("Settings saved successfully via ConfigurationService.");
 
                 // TODO: Trigger re-configuration of dependent services (API clients, ThemeManager)
-                // Example: _apiClientService.Reconfigure();
-                // Example: _themeManager.ApplyTheme(settings.Theme);
 
-                // Replace MessageBox with a proper dialog service later
-                MessageBox.Show("Settings saved successfully.", "Save Settings", MessageBoxButton.OK, MessageBoxImage.Information);
+                _dialogService.ShowInfoDialog("Settings saved successfully.", "Save Settings"); // Use DialogService
             }
             catch (Exception ex)
             {
                 _loggerService.LogError("Failed to save settings.", ex);
-                 // Replace MessageBox with a proper dialog service later
-               MessageBox.Show($"Failed to save settings:\n\n{ex.Message}", "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _dialogService.ShowErrorDialog($"Failed to save settings:\n\n{ex.Message}", "Save Error"); // Use DialogService
             }
         }
 
@@ -99,15 +101,13 @@ namespace AutoTubeWpf.ViewModels
         private void BrowseOutputFolder()
         {
              _loggerService.LogDebug("BrowseOutputFolder command executed.");
-            // Using Ookii.Dialogs.Wpf for a better folder browser dialog
-            // Requires adding the Ookii.Dialogs.Wpf NuGet package
             var dialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog
             {
                 Description = "Select Default Output Folder",
                 UseDescriptionForTitle = true
             };
 
-            if (!string.IsNullOrWhiteSpace(DefaultOutputPath) && System.IO.Directory.Exists(DefaultOutputPath))
+            if (!string.IsNullOrWhiteSpace(DefaultOutputPath) &amp;&amp; Directory.Exists(DefaultOutputPath))
             {
                 dialog.SelectedPath = DefaultOutputPath;
             }
@@ -115,7 +115,6 @@ namespace AutoTubeWpf.ViewModels
             {
                  dialog.SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             }
-
 
             if (dialog.ShowDialog() == true)
             {

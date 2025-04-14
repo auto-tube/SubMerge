@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:AutoTubeWpf.Views"
              xmlns:viewmodels="clr-namespace:AutoTubeWpf.ViewModels"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" <!-- Added Toolkit namespace -->
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance Type=viewmodels:MetadataViewModel}">
@@ -46,9 +47,8 @@
                     <!-- Hashtag Options -->
                     <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
                         <TextBlock Text="Count:" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                        <!-- TODO: Replace with NumericUpDown -->
-                        <Slider Minimum="1" Maximum="30" Value="{Binding HashtagCount}" TickFrequency="1" IsSnapToTickEnabled="True" Width="100" VerticalAlignment="Center"/>
-                        <TextBlock Text="{Binding HashtagCount}" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                        <!-- Replaced Slider with IntegerUpDown -->
+                        <xctk:IntegerUpDown Value="{Binding HashtagCount}" Minimum="1" Maximum="50" Increment="1" Width="60"/>
                     </StackPanel>
 
                     <!-- Hashtag Output -->
@@ -71,9 +71,8 @@
                     <!-- Tag Options -->
                     <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
                         <TextBlock Text="Count:" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                        <!-- TODO: Replace with NumericUpDown -->
-                        <Slider Minimum="1" Maximum="50" Value="{Binding TagCount}" TickFrequency="1" IsSnapToTickEnabled="True" Width="100" VerticalAlignment="Center"/>
-                        <TextBlock Text="{Binding TagCount}" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                         <!-- Replaced Slider with IntegerUpDown -->
+                        <xctk:IntegerUpDown Value="{Binding TagCount}" Minimum="1" Maximum="100" Increment="1" Width="60"/>
                     </StackPanel>
 
                     <!-- Tag Output -->
@@ -96,9 +95,8 @@
                     <!-- Title Options -->
                     <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
                         <TextBlock Text="Count:" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                        <!-- TODO: Replace with NumericUpDown -->
-                        <Slider Minimum="1" Maximum="15" Value="{Binding TitleCount}" TickFrequency="1" IsSnapToTickEnabled="True" Width="100" VerticalAlignment="Center"/>
-                        <TextBlock Text="{Binding TitleCount}" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                         <!-- Replaced Slider with IntegerUpDown -->
+                        <xctk:IntegerUpDown Value="{Binding TitleCount}" Minimum="1" Maximum="20" Increment="1" Width="60"/>
                     </StackPanel>
 
                     <!-- Title Output -->

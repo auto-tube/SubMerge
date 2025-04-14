@@ -1,6 +1,6 @@
 # utils/tts_utils.py
-import boto3 # Requires pip install boto3
-import botocore # For specific exceptions
+import boto3 # type: ignore # Requires pip install boto3
+import botocore # type: ignore # For specific exceptions
 import os
 import time
 import traceback

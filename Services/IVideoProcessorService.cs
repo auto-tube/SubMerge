@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic; // For List
 using System.IO; // Required for FileNotFoundException
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,10 +11,57 @@ namespace AutoTubeWpf.Services
     /// </summary>
     public class VideoProcessingProgress
     {
-        public double Percentage { get; set; } // 0.0 to 1.0
+        /// <summary>
+        /// Overall percentage completion (0.0 to 1.0) for the current operation or batch.
+        /// </summary>
+        public double Percentage { get; set; }
+
+        /// <summary>
+        /// Current processing time within the current FFmpeg operation. Null if not applicable.
+        /// </summary>
+        public TimeSpan? CurrentTime { get; set; }
+
+        /// <summary>
+        /// Total duration of the clip/video being processed by the current FFmpeg operation. Null if not applicable.
+        /// </summary>
+        public TimeSpan? TotalDuration { get; set; }
+
+        /// <summary>
+        /// A message describing the current status or step.
+        /// </summary>
         public string Message { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Estimated time remaining for the current operation or batch. Null if cannot be estimated.
+        /// </summary>
         public TimeSpan? EstimatedRemaining { get; set; }
+
+        /// <summary>
+        /// Index of the current item being processed in a batch (0-based). Null if not a batch operation.
+        /// </summary>
+        public int? CurrentItemIndex { get; set; }
+
+        /// <summary>
+        /// Total number of items in the batch. Null if not a batch operation.
+        /// </summary>
+        public int? TotalItems { get; set; }
     }
+
+    /// <summary>
+    /// Represents a detected scene change.
+    /// </summary>
+    public class SceneChangeInfo
+    {
+        /// <summary>
+        /// The timestamp (in seconds) where the scene change occurs.
+        /// </summary>
+        public double TimestampSeconds { get; set; }
+        /// <summary>
+        /// A score indicating the likelihood or intensity of the scene change (if available).
+        /// </summary>
+        public double? Score { get; set; } // Optional score
+    }
+
 
     /// <summary>
     /// Defines the contract for interacting with video processing tools like FFmpeg/FFprobe.
@@ -32,14 +80,11 @@ namespace AutoTubeWpf.Services
 
         /// <summary>
         /// Gets a value indicating whether FFmpeg and FFprobe have been successfully located and verified.
-        /// This should be checked before attempting operations that require them.
         /// </summary>
         bool IsAvailable { get; }
 
         /// <summary>
         /// Asynchronously attempts to locate and verify FFmpeg and FFprobe executables.
-        /// This method should be called during application initialization.
-        /// It updates the IsAvailable, FfmpegPath, and FfprobePath properties.
         /// </summary>
         /// <returns>True if both were found and verified successfully, false otherwise.</returns>
         Task<bool> InitializeAsync();
@@ -52,6 +97,9 @@ namespace AutoTubeWpf.Services
         /// <param name="start">Start time of the clip.</param>
         /// <param name="duration">Duration of the clip.</param>
         /// <param name="formatAsVertical">If true, formats the output as a vertical video (e.g., 9:16).</param>
+        /// <param name="removeAudio">If true, removes the audio track from the clip.</param>
+        /// <param name="mirrorVideo">If true, applies a horizontal flip to the video.</param>
+        /// <param name="enhanceVideo">If true, applies basic video enhancement filters.</param>
         /// <param name="progress">Optional progress reporter.</param>
         /// <param name="cancellationToken">Optional cancellation token.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
@@ -64,6 +112,9 @@ namespace AutoTubeWpf.Services
             TimeSpan start,
             TimeSpan duration,
             bool formatAsVertical,
+            bool removeAudio,      // Added
+            bool mirrorVideo,      // Added
+            bool enhanceVideo,     // Added
             IProgress<VideoProcessingProgress>? progress = null,
             CancellationToken cancellationToken = default);
 
@@ -79,8 +130,6 @@ namespace AutoTubeWpf.Services
 
         /// <summary>
         /// Asynchronously combines a background video, an audio track, and overlays subtitles.
-        /// The output video will have the duration of the audio track.
-        /// The background video will be looped and cropped/scaled to fit a vertical 9:16 format.
         /// </summary>
         /// <param name="backgroundVideoPath">Path to the background video file.</param>
         /// <param name="audioPath">Path to the audio file (e.g., MP3 from TTS).</param>
@@ -95,11 +144,21 @@ namespace AutoTubeWpf.Services
         Task CombineVideoAudioSubtitlesAsync(
             string backgroundVideoPath,
             string audioPath,
-            string subtitlePath, // Assuming subtitles are pre-generated in a file
+            string subtitlePath,
             string outputPath,
             IProgress<VideoProcessingProgress>? progress = null,
             CancellationToken cancellationToken = default);
 
-        // Add other methods as needed (e.g., scene detection)
+        /// <summary>
+        /// Asynchronously detects scene changes in a video file.
+        /// </summary>
+        /// <param name="inputFile">Path to the input video file.</param>
+        /// <param name="threshold">Scene detection threshold (e.g., 0.3 to 0.5). Lower values detect more changes.</param>
+        /// <param name="cancellationToken">Optional cancellation token.</param>
+        /// <returns>A list of detected scene change timestamps (in seconds), or null if detection fails.</returns>
+        /// <exception cref="InvalidOperationException">Thrown if FFmpeg is not available.</exception>
+        /// <exception cref="FileNotFoundException">Thrown if the input file does not exist.</exception>
+        Task<List<SceneChangeInfo>?> DetectScenesAsync(string inputFile, double threshold = 0.4, CancellationToken cancellationToken = default);
+
     }
 }

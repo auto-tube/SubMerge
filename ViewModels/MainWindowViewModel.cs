@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System; // For IProgress
 using System.Collections.ObjectModel; // For potential tab viewmodels later
 using System.Threading.Tasks;
 using AutoTubeWpf.Services; // Added for service interfaces
@@ -8,13 +9,13 @@ namespace AutoTubeWpf.ViewModels
 {
     public partial class MainWindowViewModel : ObservableObject
     {
-        private readonly ILoggerService _logger; // Store logger
+        private readonly ILoggerService _logger;
+        private readonly Progress<VideoProcessingProgress> _progressReporter;
 
-        // Example property for status bar
+        // --- UI Bound Properties ---
         [ObservableProperty]
         private string? _statusText = "Status: Initializing...";
 
-        // Example property for progress bar
         [ObservableProperty]
         private double _progressValue = 0.0;
 
@@ -33,22 +34,57 @@ namespace AutoTubeWpf.ViewModels
             IConfigurationService configurationService,
             IVideoProcessorService videoProcessorService,
             IAiService aiService,
-            ITtsService ttsService) // Added ITtsService
+            ITtsService ttsService,
+            IFileOrganizerService fileOrganizerService,
+            IDialogService dialogService) // Added IDialogService
         {
             _logger = loggerService;
             _logger.LogInfo("MainWindowViewModel initializing...");
 
+            // Initialize Progress Reporter
+            _progressReporter = new Progress<VideoProcessingProgress>(HandleProgressUpdate);
+
             // Initialize tab ViewModels here
-            // Pass all required services to each ViewModel
-            ClippingVM = new ClippingViewModel(loggerService, videoProcessorService, configurationService);
-            // TODO: Pass other required services (VideoProcessor, Config) to AiShortViewModel later
-            AiShortVM = new AiShortViewModel(loggerService, aiService, ttsService /*, other services */); // Pass ITtsService
-            MetadataVM = new MetadataViewModel(loggerService, aiService);
-            SettingsVM = new SettingsViewModel(configurationService, loggerService);
+            // Pass all required services including DialogService and ProgressReporter
+            ClippingVM = new ClippingViewModel(loggerService, videoProcessorService, configurationService, fileOrganizerService, dialogService, _progressReporter); // Pass DialogService & Progress
+            AiShortVM = new AiShortViewModel(loggerService, aiService, ttsService, videoProcessorService, configurationService, fileOrganizerService, dialogService, _progressReporter); // Pass DialogService & Progress
+            MetadataVM = new MetadataViewModel(loggerService, aiService, dialogService); // Pass DialogService
+            SettingsVM = new SettingsViewModel(configurationService, loggerService, dialogService); // Pass DialogService
 
             StatusText = "Status: Ready."; // Update status after init
             _logger.LogInfo("MainWindowViewModel initialized.");
         }
+
+        // --- Progress Handling ---
+        private void HandleProgressUpdate(VideoProcessingProgress progress)
+        {
+            ProgressValue = progress.Percentage;
+
+            if (progress.EstimatedRemaining.HasValue)
+            {
+                EstimatedTime = $"Est. Time: {progress.EstimatedRemaining.Value:mm\\:ss}";
+            }
+            else if (progress.Percentage >= 1.0)
+            {
+                 EstimatedTime = "Est. Time: Done";
+            }
+            else if (ProgressValue > 0)
+            {
+                 EstimatedTime = "Est. Time: Calculating...";
+            }
+            else
+            {
+                 EstimatedTime = "Est. Time: N/A";
+            }
+
+            // Update status text only if the message seems relevant for overall status
+            if (!string.IsNullOrWhiteSpace(progress.Message) &amp;&amp;
+                (progress.Message.Contains("Processing video") || progress.Message.Contains("Combining") || progress.Message.Contains("complete") || progress.Message.Contains("Finished") || progress.Message.Contains("Cancelled") || progress.Message.Contains("Error")))
+            {
+                 StatusText = progress.Message;
+            }
+        }
+
 
         // Example command (not used yet)
         [RelayCommand]

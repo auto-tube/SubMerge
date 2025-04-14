@@ -1,9 +1,20 @@
 <Application x:Class="AutoTubeWpf.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:AutoTubeWpf"
-             StartupUri="MainWindow.xaml"> <!-- Specifies the main window to launch -->
+             xmlns:local="clr-namespace:AutoTubeWpf">
+             <!-- StartupUri="MainWindow.xaml" - We will handle startup in App.xaml.cs now -->
     <Application.Resources>
-         <!-- Application-level resources can be defined here -->
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- MahApps.Metro resource dictionaries. Make sure the order is correct. -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <!-- Theme setting -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />
+                <!-- Or Dark.Blue.xaml, etc. Theme can be changed dynamically later -->
+
+                <!-- Add other application-level resources here if needed -->
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

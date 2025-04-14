@@ -6,23 +6,24 @@ using System.Collections.Generic;
 using System.Linq; // For string.Join
 using System.Threading; // For CancellationTokenSource
 using System.Threading.Tasks;
-using System.Windows; // For MessageBox - replace with DialogService later
+// using System.Windows; // No longer needed for MessageBox
 
 namespace AutoTubeWpf.ViewModels
 {
     public partial class MetadataViewModel : ObservableObject
     {
         private readonly ILoggerService _logger;
-        private readonly IAiService _aiService; // Added AI service
-        private CancellationTokenSource? _metadataCts; // Single CTS for all metadata generation types
+        private readonly IAiService _aiService;
+        private readonly IDialogService _dialogService; // Added Dialog service
+        private CancellationTokenSource? _metadataCts;
 
         // --- UI Bound Properties ---
 
         [ObservableProperty]
-        [NotifyCanExecuteChangedFor(nameof(GenerateHashtagsCommand))] // Update CanExecute when context changes
+        [NotifyCanExecuteChangedFor(nameof(GenerateHashtagsCommand))]
         [NotifyCanExecuteChangedFor(nameof(GenerateTagsCommand))]
         [NotifyCanExecuteChangedFor(nameof(GenerateTitlesCommand))]
-        private string? _contextText; // Input text for generation
+        private string? _contextText;
 
         [ObservableProperty]
         private int _hashtagCount = 10;
@@ -58,10 +59,14 @@ namespace AutoTubeWpf.ViewModels
 
 
         // --- Constructor ---
-        public MetadataViewModel(ILoggerService loggerService, IAiService aiService) // Added IAiService
+        public MetadataViewModel(
+            ILoggerService loggerService,
+            IAiService aiService,
+            IDialogService dialogService) // Added Dialog service
         {
             _logger = loggerService;
-            _aiService = aiService; // Store AI service
+            _aiService = aiService;
+            _dialogService = dialogService; // Store Dialog service
             _logger.LogInfo("MetadataViewModel initialized.");
         }
 
@@ -77,65 +82,65 @@ namespace AutoTubeWpf.ViewModels
         {
             if (string.IsNullOrWhiteSpace(ContextText))
             {
-                 MessageBox.Show("Please enter context text before generating.", "Input Required", MessageBoxButton.OK, MessageBoxImage.Warning);
+                 _dialogService.ShowWarningDialog("Please enter context text before generating.", "Input Required");
                  return;
             }
             if (count <= 0)
             {
-                 MessageBox.Show($"Please set a positive count for {type}.", "Input Required", MessageBoxButton.OK, MessageBoxImage.Warning);
+                 _dialogService.ShowWarningDialog($"Please set a positive count for {type}.", "Input Required");
                  return;
             }
 
             _logger.LogInfo($"Generate{type.CapitalizeFirst()} command executed.");
             _metadataCts = new CancellationTokenSource();
             setIsGenerating(true);
-            NotifyCommandExecutionChanged(); // Update CanExecute for all buttons
+            NotifyCommandExecutionChanged();
 
             try
             {
-                setOutput($"Generating {type}..."); // Indicate activity
+                setOutput($"Generating {type}...");
                 List<string>? results = await _aiService.GenerateMetadataAsync(type.ToLowerInvariant(), ContextText, count, _metadataCts.Token);
 
                 if (results != null)
                 {
-                    setOutput(string.Join(Environment.NewLine, results)); // Join list items with newlines
+                    setOutput(string.Join(Environment.NewLine, results));
                     _logger.LogInfo($"{type.CapitalizeFirst()} generated successfully.");
                     if (!results.Any())
                     {
-                         MessageBox.Show($"The AI returned no {type} based on the provided context.", "Empty Result", MessageBoxButton.OK, MessageBoxImage.Information);
+                         _dialogService.ShowInfoDialog($"The AI returned no {type} based on the provided context.", "Empty Result");
                     }
                 }
                 else
                 {
                     setOutput($"{type.CapitalizeFirst()} generation failed or returned empty.");
                     _logger.LogWarning($"{type.CapitalizeFirst()} generation failed or returned empty.");
-                    MessageBox.Show($"{type.CapitalizeFirst()} generation failed or returned an empty result. Check logs for details.", "Generation Failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    _dialogService.ShowWarningDialog($"{type.CapitalizeFirst()} generation failed or returned an empty result. Check logs for details.", "Generation Failed");
                 }
             }
             catch (OperationCanceledException)
             {
                 setOutput($"{type.CapitalizeFirst()} generation cancelled.");
                 _logger.LogInfo($"{type.CapitalizeFirst()} generation was cancelled by the user.");
-                MessageBox.Show($"{type.CapitalizeFirst()} generation was cancelled.", "Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
+                _dialogService.ShowInfoDialog($"{type.CapitalizeFirst()} generation was cancelled.", "Cancelled");
             }
-            catch (InvalidOperationException ioex) // Catch if service not available
+            catch (InvalidOperationException ioex)
             {
                  setOutput($"{type.CapitalizeFirst()} generation failed: {ioex.Message}");
                  _logger.LogError($"{type.CapitalizeFirst()} generation failed: {ioex.Message}", ioex);
-                 MessageBox.Show($"{type.CapitalizeFirst()} generation failed:\n{ioex.Message}\n\nPlease ensure the AI Service is configured correctly in Settings.", "Service Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                 _dialogService.ShowErrorDialog($"{type.CapitalizeFirst()} generation failed:\n{ioex.Message}\n\nPlease ensure the AI Service is configured correctly in Settings.", "Service Error");
             }
             catch (Exception ex)
             {
                 setOutput($"{type.CapitalizeFirst()} generation failed: {ex.Message}");
                 _logger.LogError($"An unexpected error occurred during {type} generation.", ex);
-                MessageBox.Show($"An unexpected error occurred during {type} generation:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _dialogService.ShowErrorDialog($"An unexpected error occurred during {type} generation:\n{ex.Message}", "Error");
             }
             finally
             {
                 setIsGenerating(false);
                 _metadataCts?.Dispose();
                 _metadataCts = null;
-                NotifyCommandExecutionChanged(); // Update CanExecute for all buttons
+                NotifyCommandExecutionChanged();
             }
         }
 
@@ -150,9 +155,9 @@ namespace AutoTubeWpf.ViewModels
 
         private bool CanGenerateMetadata()
         {
-            return !IsGeneratingHashtags &amp;&amp; !IsGeneratingTags &amp;&amp; !IsGeneratingTitles // Not currently generating any
-                &amp;&amp; !string.IsNullOrWhiteSpace(ContextText) // Context is provided
-                &amp;&amp; _aiService.IsAvailable; // AI service is ready
+            return !IsGeneratingHashtags &amp;&amp; !IsGeneratingTags &amp;&amp; !IsGeneratingTitles
+                &amp;&amp; !string.IsNullOrWhiteSpace(ContextText)
+                &amp;&amp; _aiService.IsAvailable;
         }
 
         // Helper to notify CanExecuteChanged for all commands
