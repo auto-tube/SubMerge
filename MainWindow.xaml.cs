@@ -1,19 +1,19 @@
-using MahApps.Metro.Controls; // Required for MetroWindow
+using System.Windows; // Standard Window class
 
 namespace AutoTubeWpf
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : MetroWindow // Inherit from MetroWindow
+    public partial class MainWindow : Window // Inherit from standard Window
     {
-        // Constructor can optionally accept the ViewModel via DI
-        // public MainWindow(ViewModels.MainWindowViewModel viewModel)
-        public MainWindow()
+        // Constructor accepts the ViewModel via DI
+        public MainWindow(ViewModels.MainWindowViewModel viewModel)
+        // public MainWindow() // Comment out parameterless constructor
         {
             InitializeComponent();
-            // DataContext is set via DI in App.xaml.cs or could be set here if needed:
-            // DataContext = viewModel;
+            // Set DataContext explicitly
+            DataContext = viewModel;
         }
     }
 }

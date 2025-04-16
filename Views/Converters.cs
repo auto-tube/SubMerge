@@ -1,6 +1,7 @@
-using MaterialDesignThemes.Wpf; // Required for PackIconKind
+// using MaterialDesignThemes.Wpf; // Removed
 using System;
 using System.Globalization;
+using System.Windows; // Added for Visibility
 using System.Windows.Data;
 using System.Windows.Media;
 
@@ -48,17 +49,34 @@ namespace AutoTubeWpf.Views // Keep namespace consistent with Views
     }
 
     /// <summary>
-    /// Converts a boolean (IsPlayerPlaying) to the appropriate Material Design Icon Kind for Play/Pause.
+    /// Converts a boolean (IsPlayerPlaying) to the appropriate text for the Play/Pause button.
     /// </summary>
-    public class BoolToPlayPauseIconConverter : IValueConverter
+    public class BoolToPlayPauseTextConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is bool isPlaying)
             {
-                return isPlaying ? PackIconKind.Pause : PackIconKind.Play;
+                return isPlaying ? "Pause" : "Play";
             }
-            return PackIconKind.Play; // Default to Play icon
+            return "Play"; // Default fallback
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException(); // One-way conversion
+        }
+    }
+
+    /// <summary>
+    /// Converts a null value to Visibility.Collapsed and non-null to Visibility.Visible.
+    /// Useful for hiding controls when a related item (like SelectedVideoItem) is null.
+    /// </summary>
+    public class NullToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value == null ? Visibility.Collapsed : Visibility.Visible;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

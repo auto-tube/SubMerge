@@ -51,10 +51,10 @@ namespace AutoTubeWpf.Services
             string bundledFfmpeg = Path.Combine(bundledBinPath, ffmpegExe);
             string bundledFfprobe = Path.Combine(bundledBinPath, ffprobeExe);
 
-            if (File.Exists(bundledFfmpeg) &amp;&amp; File.Exists(bundledFfprobe))
+            if (File.Exists(bundledFfmpeg) && File.Exists(bundledFfprobe))
             {
                 _logger.LogInfo($"Found potential candidates in bundled directory: {bundledBinPath}");
-                if (await VerifyExecutableAsync(bundledFfmpeg) &amp;&amp; await VerifyExecutableAsync(bundledFfprobe))
+                if (await VerifyExecutableAsync(bundledFfmpeg) && await VerifyExecutableAsync(bundledFfprobe))
                 {
                     _ffmpegPath = bundledFfmpeg;
                     _ffprobePath = bundledFfprobe;
@@ -75,10 +75,10 @@ namespace AutoTubeWpf.Services
             string? pathFfmpeg = FindExecutableInPath(ffmpegExe);
             string? pathFfprobe = FindExecutableInPath(ffprobeExe);
 
-            if (!string.IsNullOrEmpty(pathFfmpeg) &amp;&amp; !string.IsNullOrEmpty(pathFfprobe))
+            if (!string.IsNullOrEmpty(pathFfmpeg) && !string.IsNullOrEmpty(pathFfprobe))
             {
                  _logger.LogInfo($"Found potential candidates in PATH: FFmpeg='{pathFfmpeg}', FFprobe='{pathFfprobe}'");
-                 if (await VerifyExecutableAsync(pathFfmpeg) &amp;&amp; await VerifyExecutableAsync(pathFfprobe))
+                 if (await VerifyExecutableAsync(pathFfmpeg) && await VerifyExecutableAsync(pathFfprobe))
                  {
                      _ffmpegPath = pathFfmpeg;
                      _ffprobePath = pathFfprobe;
@@ -108,7 +108,7 @@ namespace AutoTubeWpf.Services
                 char pathSeparator = OperatingSystem.IsWindows() ? ';' : ':';
                 string[] paths = pathVar.Split(pathSeparator, StringSplitOptions.RemoveEmptyEntries);
 
-                string[] extensions = OperatingSystem.IsWindows() &amp;&amp; !Path.HasExtension(executableName)
+                string[] extensions = OperatingSystem.IsWindows() && !Path.HasExtension(executableName)
                                         ? new[] { ".exe", ".cmd", ".bat", "" }
                                         : new[] { "" };
 
@@ -179,7 +179,7 @@ namespace AutoTubeWpf.Services
                 string error = errorBuilder.ToString();
                 string name = Path.GetFileNameWithoutExtension(executablePath).ToLowerInvariant();
 
-                if (process.ExitCode == 0 &amp;&amp; (output.Contains(name) || error.Contains(name)) &amp;&amp; (output.Contains("version") || error.Contains("version")))
+                if (process.ExitCode == 0 && (output.Contains(name) || error.Contains(name)) && (output.Contains("version") || error.Contains("version")))
                 {
                     _logger.LogDebug($"Verification successful for: {executablePath}");
                     return true;
@@ -237,7 +237,7 @@ namespace AutoTubeWpf.Services
             // --- Determine Codecs ---
             bool reEncodeVideo = applyVideoFilters; // Must re-encode if any video filters are applied
             bool reEncodeAudio = reEncodeVideo || removeAudio; // Must re-encode audio if video is re-encoded (unless removing audio)
-            bool attemptCodecCopy = !reEncodeVideo &amp;&amp; !removeAudio; // Only attempt copy if no filters and audio not removed
+            bool attemptCodecCopy = !reEncodeVideo && !removeAudio; // Only attempt copy if no filters and audio not removed
 
             if (reEncodeVideo) argsBuilder.Append("-c:v libx264 -preset medium -crf 23 ");
             else argsBuilder.Append("-c:v copy ");
@@ -282,14 +282,14 @@ namespace AutoTubeWpf.Services
                         if (progress != null)
                         {
                             var match = FfmpegProgressRegex.Match(args.Data);
-                            if (match.Success &amp;&amp; TimeSpan.TryParseExact(match.Groups["time"].Value, @"hh\:mm\:ss\.ff", CultureInfo.InvariantCulture, out TimeSpan currentTime))
+                            if (match.Success && TimeSpan.TryParseExact(match.Groups["time"].Value, @"hh\:mm\:ss\.ff", CultureInfo.InvariantCulture, out TimeSpan currentTime))
                             {
                                 double totalDurationSeconds = duration.TotalSeconds;
                                 double currentSeconds = currentTime.TotalSeconds;
                                 double percentage = totalDurationSeconds > 0 ? Math.Clamp(currentSeconds / totalDurationSeconds, 0.0, 1.0) : 0.0;
                                 TimeSpan? eta = null;
                                 double elapsedSeconds = (DateTime.UtcNow - startTime).TotalSeconds;
-                                if (percentage > 0.01 &amp;&amp; elapsedSeconds > 1)
+                                if (percentage > 0.01 && elapsedSeconds > 1)
                                 {
                                     double totalEstimatedSeconds = elapsedSeconds / percentage;
                                     eta = TimeSpan.FromSeconds(Math.Max(0, totalEstimatedSeconds - elapsedSeconds));
@@ -310,9 +310,9 @@ namespace AutoTubeWpf.Services
 
                 if (process.ExitCode != 0)
                 {
-                    bool codecCopyFailedError = errorOutput.Contains("codec copy") &amp;&amp; errorOutput.Contains("unsupported");
+                    bool codecCopyFailedError = errorOutput.Contains("codec copy") && errorOutput.Contains("unsupported");
 
-                    if (attemptCodecCopy &amp;&amp; codecCopyFailedError) // Retry only if initial attempt was copy and failed specifically due to that
+                    if (attemptCodecCopy && codecCopyFailedError) // Retry only if initial attempt was copy and failed specifically due to that
                     {
                          _logger.LogWarning($"Codec copy failed for '{outputFile}'. Retrying with re-encoding...");
                          argsBuilder.Clear();
@@ -510,14 +510,14 @@ namespace AutoTubeWpf.Services
                          if (progress != null)
                          {
                              var match = FfmpegProgressRegex.Match(args.Data);
-                             if (match.Success &amp;&amp; TimeSpan.TryParseExact(match.Groups["time"].Value, @"hh\:mm\:ss\.ff", CultureInfo.InvariantCulture, out TimeSpan currentTime))
+                             if (match.Success && TimeSpan.TryParseExact(match.Groups["time"].Value, @"hh\:mm\:ss\.ff", CultureInfo.InvariantCulture, out TimeSpan currentTime))
                              {
                                  double totalDurationSeconds = audioDuration.Value.TotalSeconds;
                                  double currentSeconds = currentTime.TotalSeconds;
                                  double percentage = totalDurationSeconds > 0 ? Math.Clamp(currentSeconds / totalDurationSeconds, 0.0, 1.0) : 0.0;
                                  TimeSpan? eta = null;
                                  double elapsedSeconds = (DateTime.UtcNow - startTime).TotalSeconds;
-                                 if (percentage > 0.01 &amp;&amp; elapsedSeconds > 1)
+                                 if (percentage > 0.01 && elapsedSeconds > 1)
                                  {
                                      double totalEstimatedSeconds = elapsedSeconds / percentage;
                                      eta = TimeSpan.FromSeconds(Math.Max(0, totalEstimatedSeconds - elapsedSeconds));
@@ -596,7 +596,7 @@ namespace AutoTubeWpf.Services
                         var match = SceneDetectRegex.Match(args.Data);
                         if (match.Success)
                         {
-                            if (double.TryParse(match.Groups["time"].Value, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out double time) &amp;&amp;
+                            if (double.TryParse(match.Groups["time"].Value, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out double time) &&
                                 double.TryParse(match.Groups["score"].Value, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out double score))
                             {
                                 sceneChanges.Add(new SceneChangeInfo { TimestampSeconds = time, Score = score });

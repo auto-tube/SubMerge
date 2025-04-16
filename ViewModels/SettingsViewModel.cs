@@ -107,7 +107,7 @@ namespace AutoTubeWpf.ViewModels
                 UseDescriptionForTitle = true
             };
 
-            if (!string.IsNullOrWhiteSpace(DefaultOutputPath) &amp;&amp; Directory.Exists(DefaultOutputPath))
+            if (!string.IsNullOrWhiteSpace(DefaultOutputPath) && Directory.Exists(DefaultOutputPath))
             {
                 dialog.SelectedPath = DefaultOutputPath;
             }

@@ -5,11 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:AutoTubeWpf.Views"
              xmlns:viewmodels="clr-namespace:AutoTubeWpf.ViewModels"
-             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" <!-- Added Material Design namespace -->
-             mc:Ignorable="d"
-             d:DesignHeight="600" d:DesignWidth="800"
-             d:DataContext="{d:DesignInstance Type=viewmodels:AiShortViewModel}">
+            mc:Ignorable="d"
+            d:DesignHeight="600" d:DesignWidth="800"
+            d:DataContext="{d:DesignInstance Type=viewmodels:AiShortViewModel}">
 
     <Grid Margin="15">
         <Grid.RowDefinitions>
@@ -20,7 +18,7 @@
         </Grid.RowDefinitions>
 
         <!-- Input Selection Area -->
-        <GroupBox Header="Inputs" Grid.Row="0" Padding="10" Margin="0,0,0,10" Style="{StaticResource MaterialDesignCardGroupBox}">
+        <GroupBox Header="Inputs" Grid.Row="0" Padding="10" Margin="0,0,0,10"> <!-- Removed Style -->
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -34,20 +32,20 @@
 
                 <!-- Background Video -->
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Background Video:" VerticalAlignment="Center" Margin="0,0,10,5"/>
-                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding BackgroundVideoPath}" IsReadOnly="True" VerticalContentAlignment="Center" Margin="0,0,5,5"
-                         Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Hint="Path to background video"/>
-                <Button Grid.Row="0" Grid.Column="2" Content="Browse..." Command="{Binding BrowseBackgroundVideoCommand}" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0,0,0,5"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding BackgroundVideoPath}" IsReadOnly="True" VerticalContentAlignment="Center" Margin="0,0,5,5"/>
+                         <!-- Removed Style and HintAssist -->
+                <Button Grid.Row="0" Grid.Column="2" Content="Browse..." Command="{Binding BrowseBackgroundVideoCommand}" Margin="0,0,0,5"/> <!-- Removed Style -->
 
                 <!-- Output Folder -->
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Output Folder:" VerticalAlignment="Center" Margin="0,5,10,0"/>
-                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding OutputFolderPath}" IsReadOnly="True" VerticalContentAlignment="Center" Margin="0,5,5,0"
-                         Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Hint="Path to save AI Shorts"/>
-                <Button Grid.Row="1" Grid.Column="2" Content="Browse..." Command="{Binding BrowseOutputFolderCommand}" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0,5,0,0"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding OutputFolderPath}" IsReadOnly="True" VerticalContentAlignment="Center" Margin="0,5,5,0"/>
+                         <!-- Removed Style and HintAssist -->
+                <Button Grid.Row="1" Grid.Column="2" Content="Browse..." Command="{Binding BrowseOutputFolderCommand}" Margin="0,5,0,0"/> <!-- Removed Style -->
             </Grid>
         </GroupBox>
 
         <!-- Script Area -->
-        <GroupBox Header="Script" Grid.Row="1" Padding="10" Margin="0,0,0,10" Style="{StaticResource MaterialDesignCardGroupBox}">
+        <GroupBox Header="Script" Grid.Row="1" Padding="10" Margin="0,0,0,10"> <!-- Removed Style -->
              <Grid>
                  <Grid.RowDefinitions>
                      <RowDefinition Height="Auto"/> <!-- Prompt Area -->
@@ -60,36 +58,34 @@
                          <ColumnDefinition Width="*"/>
                          <ColumnDefinition Width="Auto"/>
                      </Grid.ColumnDefinitions>
-                     <TextBox Grid.Column="0" Text="{Binding ScriptPrompt, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,5,0" VerticalContentAlignment="Center"
-                              Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Hint="Enter topic/idea for script generation"/>
-                     <Button Grid.Column="1" Content="Generate Script" Command="{Binding GenerateScriptAsyncCommand}" IsEnabled="{Binding CanGenerateScript}"
-                             Style="{StaticResource MaterialDesignOutlinedButton}" materialDesign:ButtonAssist.CornerRadius="5"/>
+                     <TextBox Grid.Column="0" Text="{Binding ScriptPrompt, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,5,0" VerticalContentAlignment="Center"/>
+                              <!-- Removed Style and HintAssist -->
+                     <Button Grid.Column="1" Content="Generate Script" Command="{Binding GenerateScriptAsyncCommand}" IsEnabled="{Binding CanGenerateScript}"/>
+                             <!-- Removed Style and ButtonAssist -->
                  </Grid>
 
                  <!-- Script Textbox -->
                  <TextBox Grid.Row="1"
                           Text="{Binding ScriptText, UpdateSourceTrigger=PropertyChanged}"
                           AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
-                          SpellCheck.IsEnabled="True" Language="en-US" MinHeight="150"
-                          Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                          materialDesign:HintAssist.Hint="Generated or manually entered script"
-                          materialDesign:TextFieldAssist.HasClearButton="True"/>
+                          SpellCheck.IsEnabled="True" Language="en-US" MinHeight="150">
+                          <!-- Removed Style, HintAssist, TextFieldAssist -->
+                 </TextBox>
              </Grid>
         </GroupBox>
 
         <!-- Options Area -->
-        <GroupBox Header="Generation Options" Grid.Row="2" Padding="10" Margin="0,0,0,10" Style="{StaticResource MaterialDesignCardGroupBox}">
+        <GroupBox Header="Generation Options" Grid.Row="2" Padding="10" Margin="0,0,0,10"> <!-- Removed Style -->
             <StackPanel Orientation="Horizontal">
                 <!-- Polly Voice -->
                 <ComboBox ItemsSource="{Binding AvailablePollyVoices}"
                           SelectedItem="{Binding SelectedPollyVoice}"
-                          materialDesign:HintAssist.Hint="AI Voice (Polly)"
-                          Style="{StaticResource MaterialDesignOutlinedComboBox}"
                           MinWidth="150" Margin="0,0,20,0"/>
+                          <!-- Removed Style and HintAssist -->
 
                 <!-- Font Size -->
                 <TextBlock Text="Subtitle Font Size:" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                <xctk:IntegerUpDown Value="{Binding FontSize}" Minimum="12" Maximum="120" Increment="2" Width="80"/>
+                <TextBox Text="{Binding FontSize, UpdateSourceTrigger=PropertyChanged}" Width="80"/> <!-- Replaced IntegerUpDown -->
             </StackPanel>
         </GroupBox>
 
@@ -97,9 +93,9 @@
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Left">
             <Button Content="Generate AI Short"
                     Command="{Binding GenerateAiShortAsyncCommand}"
-                    IsEnabled="{Binding CanGenerateAiShort}"
-                    Style="{StaticResource MaterialDesignRaisedButton}"
-                    materialDesign:ButtonAssist.CornerRadius="5"/>
+                    IsEnabled="{Binding CanGenerateAiShort}">
+                    <!-- Removed Style and ButtonAssist -->
+            </Button>
         </StackPanel>
 
     </Grid>

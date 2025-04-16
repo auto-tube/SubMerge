@@ -5,38 +5,37 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:AutoTubeWpf.Views"
              xmlns:viewmodels="clr-namespace:AutoTubeWpf.ViewModels"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" <!-- Added Material Design namespace -->
-             mc:Ignorable="d"
-             d:DesignHeight="600" d:DesignWidth="800"
-             d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}">
+            mc:Ignorable="d"
+            d:DesignHeight="600" d:DesignWidth="800"
+            d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}">
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="15">
         <StackPanel>
 
-            <TextBlock Text="API Keys" Style="{StaticResource MaterialDesignHeadline6TextBlock}" Margin="0,0,0,10"/>
+            <TextBlock Text="API Keys" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/> <!-- Removed Style, added basic formatting -->
 
             <!-- Google API Key -->
-            <TextBox Text="{Binding GoogleApiKey, UpdateSourceTrigger=PropertyChanged}"
-                     materialDesign:HintAssist.Hint="Google API Key"
-                     Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,5,0,10"/>
+            <TextBlock Text="Google API Key:" Margin="0,5,0,2"/>
+            <TextBox Text="{Binding GoogleApiKey, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10"/>
+                     <!-- Removed Style and HintAssist -->
 
             <!-- AWS Credentials -->
-            <TextBox Text="{Binding AwsAccessKeyId, UpdateSourceTrigger=PropertyChanged}"
-                     materialDesign:HintAssist.Hint="AWS Access Key ID"
-                     Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,5,0,10"/>
+            <TextBlock Text="AWS Access Key ID:" Margin="0,5,0,2"/>
+            <TextBox Text="{Binding AwsAccessKeyId, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10"/>
+                     <!-- Removed Style and HintAssist -->
 
             <!-- Use PasswordBox for secret key -->
-            <PasswordBox x:Name="AwsSecretKeyPasswordBox"
-                         materialDesign:HintAssist.Hint="AWS Secret Access Key"
-                         materialDesign:PasswordBoxAssist.Password="{Binding AwsSecretAccessKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                         Style="{StaticResource MaterialDesignOutlinedPasswordBox}" Margin="0,5,0,10"/>
+            <TextBlock Text="AWS Secret Access Key:" Margin="0,5,0,2"/>
+            <PasswordBox x:Name="AwsSecretKeyPasswordBox" PasswordChanged="AwsSecretKeyPasswordBox_PasswordChanged" Margin="0,0,0,10"/>
+                         <!-- Removed Style, HintAssist, PasswordBoxAssist binding. Added PasswordChanged event -->
+                         <!-- Binding AwsSecretAccessKey will require code-behind or a helper -->
 
-            <TextBox Text="{Binding AwsRegionName, UpdateSourceTrigger=PropertyChanged}"
-                     materialDesign:HintAssist.Hint="AWS Region Name (e.g., us-east-1)"
-                     Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,5,0,15"/>
+            <TextBlock Text="AWS Region Name (e.g., us-east-1):" Margin="0,5,0,2"/>
+            <TextBox Text="{Binding AwsRegionName, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,15"/>
+                     <!-- Removed Style and HintAssist -->
 
 
-            <TextBlock Text="Output Settings" Style="{StaticResource MaterialDesignHeadline6TextBlock}" Margin="0,15,0,10"/>
+            <TextBlock Text="Output Settings" FontWeight="Bold" FontSize="16" Margin="0,15,0,10"/> <!-- Removed Style, added basic formatting -->
 
             <!-- Default Output Path -->
              <TextBlock Text="Default Output Folder:" Margin="0,5,0,2"/>
@@ -46,33 +45,32 @@
                      <ColumnDefinition Width="Auto"/>
                  </Grid.ColumnDefinitions>
                  <TextBox Grid.Column="0" Text="{Binding DefaultOutputPath, UpdateSourceTrigger=PropertyChanged}"
-                          Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                          materialDesign:HintAssist.Hint="Path to save output files"
                           Margin="0,0,5,0" VerticalContentAlignment="Center" IsReadOnly="True"/>
-                 <Button Grid.Column="1" Content="Browse..." Command="{Binding BrowseOutputFolderCommand}" Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                          <!-- Removed Style and HintAssist -->
+                 <Button Grid.Column="1" Content="Browse..." Command="{Binding BrowseOutputFolderCommand}"/> <!-- Removed Style -->
              </Grid>
 
             <!-- Organize Output -->
-            <CheckBox IsChecked="{Binding OrganizeOutput}" Content="Organize output files into subfolders" Margin="0,15,0,15" Style="{StaticResource MaterialDesignCheckBox}"/>
+            <CheckBox IsChecked="{Binding OrganizeOutput}" Content="Organize output files into subfolders" Margin="0,15,0,15"/> <!-- Removed Style -->
 
 
-            <TextBlock Text="Appearance" Style="{StaticResource MaterialDesignHeadline6TextBlock}" Margin="0,15,0,10"/>
+            <TextBlock Text="Appearance" FontWeight="Bold" FontSize="16" Margin="0,15,0,10"/> <!-- Removed Style, added basic formatting -->
 
             <!-- Theme Selection -->
+             <TextBlock Text="Application Theme:" Margin="0,5,0,2"/>
              <ComboBox ItemsSource="{Binding AvailableThemes}"
                        SelectedItem="{Binding SelectedTheme}"
-                       materialDesign:HintAssist.Hint="Application Theme"
-                       Style="{StaticResource MaterialDesignOutlinedComboBox}"
-                       Margin="0,5,0,20"/>
+                       Margin="0,0,0,20"/>
+                       <!-- Removed Style and HintAssist -->
 
 
             <!-- Save Button -->
             <Button Content="Save Settings"
                     Command="{Binding SaveSettingsAsyncCommand}"
-                    Style="{StaticResource MaterialDesignRaisedButton}"
                     HorizontalAlignment="Left"
-                    Margin="0,20,0,0"
-                    materialDesign:ButtonAssist.CornerRadius="5"/>
+                    Margin="0,20,0,0">
+                    <!-- Removed Style and ButtonAssist -->
+            </Button>
 
         </StackPanel>
     </ScrollViewer>

@@ -5,14 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:AutoTubeWpf.Views"
              xmlns:viewmodels="clr-namespace:AutoTubeWpf.ViewModels"
-             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" <!-- Added Material Design namespace -->
-             mc:Ignorable="d"
-             d:DesignHeight="700" d:DesignWidth="800"
-             d:DataContext="{d:DesignInstance Type=viewmodels:ClippingViewModel}"
-             AllowDrop="True" Drop="ClippingView_Drop">
+            mc:Ignorable="d"
+            d:DesignHeight="700" d:DesignWidth="800"
+            d:DataContext="{d:DesignInstance Type=viewmodels:ClippingViewModel}"
+            AllowDrop="True" Drop="ClippingView_Drop">
 
-    <Grid Margin="15">
+   <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/> <!-- Input Selection -->
             <RowDefinition Height="*"/>    <!-- Queue Display -->
@@ -22,41 +20,46 @@
         </Grid.RowDefinitions>
 
         <!-- Input Selection Area -->
-        <GroupBox Header="Input Video(s)" Grid.Row="0" Padding="10" Margin="0,0,0,10" Style="{StaticResource MaterialDesignCardGroupBox}">
+        <GroupBox Header="Input Video(s)" Grid.Row="0" Padding="10" Margin="0,0,0,10"> <!-- Removed Style -->
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBox Grid.Column="0" Text="{Binding InputDisplayPath}" IsReadOnly="True" VerticalContentAlignment="Center" Margin="0,0,10,0"
-                         materialDesign:HintAssist.Hint="Drag &amp; Drop or Browse" Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
-                <CheckBox Grid.Column="1" Content="Batch (Folder)" IsChecked="{Binding IsBatchMode}" VerticalAlignment="Center" Margin="0,0,10,0" Style="{StaticResource MaterialDesignCheckBox}"/>
-                <Button Grid.Column="2" Content="Browse..." Command="{Binding SelectInputCommand}" Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                <TextBox Grid.Column="0" Text="{Binding InputDisplayPath}" IsReadOnly="True" VerticalContentAlignment="Center" Margin="0,0,10,0"/>
+                         <!-- Removed materialDesign:HintAssist.Hint and Style -->
+                <CheckBox Grid.Column="1" Content="Batch (Folder)" IsChecked="{Binding IsBatchMode}" VerticalAlignment="Center" Margin="0,0,10,0"/> <!-- Removed Style -->
+                <Button Grid.Column="2" Content="Browse..." Command="{Binding SelectInputCommand}"/> <!-- Removed Style -->
             </Grid>
         </GroupBox>
 
         <!-- Queue Display Area -->
-        <GroupBox Header="Video Queue" Grid.Row="1" Padding="10" Margin="0,0,0,10" Style="{StaticResource MaterialDesignCardGroupBox}">
+        <GroupBox Header="Video Queue" Grid.Row="1" Padding="10" Margin="0,0,0,10"> <!-- Removed Style -->
              <DataGrid ItemsSource="{Binding VideoQueue}"
                        SelectedItem="{Binding SelectedVideoItem, Mode=TwoWay}"
                        AutoGenerateColumns="False" CanUserAddRows="False"
                        IsReadOnly="True" SelectionMode="Single"
-                       SelectionChanged="VideoQueue_SelectionChanged"
-                       Style="{StaticResource MaterialDesignDataGrid}"
-                       materialDesign:DataGridAssist.CellPadding="13 8 8 8"
-                       materialDesign:DataGridAssist.ColumnHeaderPadding="8">
+                       SelectionChanged="VideoQueue_SelectionChanged">
+                       <!-- Removed Style and materialDesign attached properties -->
                  <DataGrid.Columns>
-                     <DataGridTextColumn Header="File Name" Binding="{Binding FileName}" Width="*" ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
-                     <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="Auto" ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
-                     <DataGridTextColumn Header="Duration" Binding="{Binding Duration, StringFormat={}{0:hh\\:mm\\:ss}}" Width="Auto" ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"/>
+                     <DataGridTextColumn Header="File Name" Binding="{Binding FileName}" Width="*"/> <!-- Removed ElementStyle -->
+                     <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="Auto"/> <!-- Removed ElementStyle -->
+                     <DataGridTextColumn Header="Duration" Binding="{Binding Duration, StringFormat={}{0:hh\\:mm\\:ss}}" Width="Auto"/> <!-- Removed ElementStyle -->
                  </DataGrid.Columns>
              </DataGrid>
         </GroupBox>
 
         <!-- Video Player Area -->
-        <GroupBox Header="Preview" Grid.Row="2" Padding="10" Margin="0,0,0,10" Style="{StaticResource MaterialDesignCardGroupBox}"
-                  Visibility="{Binding SelectedVideoItem, Converter={StaticResource NullToVisibilityConverter}}">
+        <GroupBox Header="Preview" Grid.Row="2" Padding="10" Margin="0,0,0,10"> <!-- Removed Style -->
+                  <!-- Visibility binding might need adjustment if NullToVisibilityConverter was Material Design specific -->
+                  <GroupBox.Visibility>
+                      <Binding Path="SelectedVideoItem">
+                          <Binding.Converter>
+                              <local:NullToVisibilityConverter /> <!-- Assuming this is a custom converter -->
+                          </Binding.Converter>
+                      </Binding>
+                  </GroupBox.Visibility>
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/> <!-- MediaElement -->
@@ -67,31 +70,44 @@
                     <MediaElement x:Name="PreviewPlayer" MinHeight="200" MaxHeight="300"
                                   Source="{Binding PlayerSource}"
                                   LoadedBehavior="Manual" UnloadedBehavior="Stop" Stretch="Uniform"
+                                  ScrubbingEnabled="True"
                                   MediaOpened="PreviewPlayer_MediaOpened"
                                   MediaEnded="PreviewPlayer_MediaEnded"
-                                  MediaFailed="PreviewPlayer_MediaFailed"
-                                  ScrubbingEnabled="True"/>
+                                  MediaFailed="PreviewPlayer_MediaFailed">
+                        <!-- Removed i:Interaction.Triggers -->
+                        <!-- Removed MediaElement.Style with DataTriggers, Play/Pause needs code-behind -->
+                    </MediaElement>
                 </Border>
 
                 <!-- Playback Controls -->
                 <StackPanel Grid.Row="1" Orientation="Vertical" Margin="0,5,0,0">
                      <Slider x:Name="SeekSlider" Minimum="0" Maximum="{Binding PlayerDurationSeconds, FallbackValue=1}"
                              Value="{Binding PlayerPositionSeconds, Mode=TwoWay}"
-                             Thumb.DragStarted="SeekSlider_DragStarted"
-                             Thumb.DragCompleted="SeekSlider_DragCompleted"
-                             Style="{StaticResource MaterialDesignSlider}" Margin="0,0,0,5"/>
-                     <TextBlock Text="{Binding PlayerPositionFormatted}" HorizontalAlignment="Right" Margin="0,-5,0,5" Style="{StaticResource MaterialDesignCaptionTextBlock}"/>
+                             Margin="0,0,0,5"
+                             PreviewMouseLeftButtonDown="SeekSlider_PreviewMouseLeftButtonDown"
+                             PreviewMouseLeftButtonUp="SeekSlider_PreviewMouseLeftButtonUp"
+                             ValueChanged="SeekSlider_ValueChanged">
+                             <!-- Removed Style and i:Interaction.Triggers -->
+                             <!-- Added standard event handlers for seeking -->
+                    </Slider>
+                    <TextBlock Text="{Binding PlayerPositionFormatted}" HorizontalAlignment="Right" Margin="0,-5,0,5"/> <!-- Removed Style -->
 
-                    <StackPanel Orientation="Horizontal">
-                        <Button Command="{Binding PlayPauseCommand}" Padding="0" Margin="0,0,10,0" Style="{StaticResource MaterialDesignIconButton}" ToolTip="Play/Pause">
-                             <materialDesign:PackIcon Kind="{Binding IsPlayerPlaying, Converter={StaticResource BoolToPlayPauseIconConverter}}" Height="24" Width="24"/>
+                   <StackPanel Orientation="Horizontal">
+                        <Button Command="{Binding PlayPauseCommand}" Padding="5" Margin="0,0,10,0" ToolTip="Play/Pause">
+                            <Button.Content>
+                                <Binding Path="IsPlayerPlaying">
+                                    <Binding.Converter>
+                                        <local:BoolToPlayPauseTextConverter />
+                                    </Binding.Converter>
+                                </Binding>
+                            </Button.Content>
                         </Button>
-                        <Button Command="{Binding StopCommand}" Padding="0" Margin="0,0,20,0" Style="{StaticResource MaterialDesignIconButton}" ToolTip="Stop">
-                             <materialDesign:PackIcon Kind="Stop" Height="24" Width="24"/>
-                        </Button>
+                             <!-- Removed Style, PackIcon. Using Text Content + Inline Converter -->
+                        <Button Command="{Binding StopCommand}" Padding="5" Margin="0,0,20,0" ToolTip="Stop" Content="Stop"/>
+                             <!-- Removed Style, PackIcon. Using Text Content -->
 
                         <TextBlock Text="Speed:" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                        <Slider Minimum="0.1" Maximum="2.0" Value="{Binding PlayerSpeedRatio, Mode=TwoWay}" Width="100" TickFrequency="0.1" IsSnapToTickEnabled="True" VerticalAlignment="Center" Style="{StaticResource MaterialDesignSlider}"/>
+                        <Slider Minimum="0.1" Maximum="2.0" Value="{Binding PlayerSpeedRatio, Mode=TwoWay}" Width="100" TickFrequency="0.1" IsSnapToTickEnabled="True" VerticalAlignment="Center"/> <!-- Removed Style -->
                         <TextBlock Text="{Binding PlayerSpeedRatio, StringFormat={}{0:F1}x}" VerticalAlignment="Center" Margin="5,0,0,0"/>
                     </StackPanel>
                 </StackPanel>
@@ -99,7 +115,7 @@
         </GroupBox>
 
         <!-- Options Area -->
-        <GroupBox Header="Clipping Options" Grid.Row="3" Padding="10" Margin="0,0,0,10" Style="{StaticResource MaterialDesignCardGroupBox}">
+        <GroupBox Header="Clipping Options" Grid.Row="3" Padding="10" Margin="0,0,0,10"> <!-- Removed Style -->
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -114,32 +130,32 @@
 
                 <!-- Column 0: Length & Count -->
                 <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,10,10">
-                    <TextBlock Text="Clip Duration Range (seconds):" Style="{StaticResource MaterialDesignSubtitle2TextBlock}" Margin="0,0,0,5"/>
+                    <TextBlock Text="Clip Duration Range (seconds):" Margin="0,0,0,5"/> <!-- Removed Style -->
                     <StackPanel Orientation="Horizontal">
                          <TextBlock Text="Min:" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                         <xctk:IntegerUpDown Value="{Binding MinClipLength}" Minimum="1" Maximum="600" Increment="1" Width="60"/>
+                         <TextBox Text="{Binding MinClipLength, UpdateSourceTrigger=PropertyChanged}" Width="60"/> <!-- Replaced IntegerUpDown -->
                          <TextBlock Text="Max:" VerticalAlignment="Center" Margin="10,0,5,0"/>
-                         <xctk:IntegerUpDown Value="{Binding MaxClipLength}" Minimum="1" Maximum="600" Increment="1" Width="60"/>
+                         <TextBox Text="{Binding MaxClipLength, UpdateSourceTrigger=PropertyChanged}" Width="60"/> <!-- Replaced IntegerUpDown -->
                     </StackPanel>
                 </StackPanel>
                  <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,10,10">
-                     <TextBlock Text="Max Clips per Video:" Style="{StaticResource MaterialDesignSubtitle2TextBlock}" Margin="0,0,0,5"/>
-                     <xctk:IntegerUpDown Value="{Binding ClipCount}" Minimum="1" Maximum="100" Increment="1" Width="80" HorizontalAlignment="Left"/>
+                     <TextBlock Text="Max Clips per Video:" Margin="0,0,0,5"/> <!-- Removed Style -->
+                     <TextBox Text="{Binding ClipCount, UpdateSourceTrigger=PropertyChanged}" Width="80" HorizontalAlignment="Left"/> <!-- Replaced IntegerUpDown -->
                  </StackPanel>
 
                 <!-- Column 1: Detection & Filters -->
                 <StackPanel Grid.Row="0" Grid.Column="1" Margin="10,0,0,10">
-                    <CheckBox Content="Use Scene Detection" IsChecked="{Binding UseSceneDetection}" Margin="0,0,0,5" Style="{StaticResource MaterialDesignCheckBox}"/>
-                    <TextBlock Text="Scene Threshold (0-100):" IsEnabled="{Binding UseSceneDetection}" Style="{StaticResource MaterialDesignSubtitle2TextBlock}" Margin="0,0,0,5"/>
-                    <xctk:DoubleUpDown Value="{Binding SceneThreshold}" Minimum="0.1" Maximum="100.0" Increment="0.1" FormatString="F1" Width="80" HorizontalAlignment="Left" IsEnabled="{Binding UseSceneDetection}"/>
+                    <CheckBox Content="Use Scene Detection" IsChecked="{Binding UseSceneDetection}" Margin="0,0,0,5"/> <!-- Removed Style -->
+                    <TextBlock Text="Scene Threshold (0-100):" IsEnabled="{Binding UseSceneDetection}" Margin="0,0,0,5"/> <!-- Removed Style -->
+                    <TextBox Text="{Binding SceneThreshold, UpdateSourceTrigger=PropertyChanged}" Width="80" HorizontalAlignment="Left" IsEnabled="{Binding UseSceneDetection}"/> <!-- Replaced DoubleUpDown -->
                 </StackPanel>
                  <StackPanel Grid.Row="1" Grid.Column="1" Margin="10,0,0,10">
-                     <CheckBox Content="Format Clips as Vertical (9:16)" IsChecked="{Binding FormatAsVertical}" Style="{StaticResource MaterialDesignCheckBox}"/>
+                     <CheckBox Content="Format Clips as Vertical (9:16)" IsChecked="{Binding FormatAsVertical}"/> <!-- Removed Style -->
                  </StackPanel>
                  <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Vertical" Margin="10,5,0,0">
-                     <CheckBox Content="Remove Audio" IsChecked="{Binding RemoveAudio}" Margin="0,0,0,5" Style="{StaticResource MaterialDesignCheckBox}"/>
-                     <CheckBox Content="Mirror Video (Horizontal Flip)" IsChecked="{Binding MirrorVideo}" Margin="0,0,0,5" Style="{StaticResource MaterialDesignCheckBox}"/>
-                     <CheckBox Content="Enhance Video (Basic Contrast/Saturation)" IsChecked="{Binding EnhanceVideo}" Style="{StaticResource MaterialDesignCheckBox}"/>
+                     <CheckBox Content="Remove Audio" IsChecked="{Binding RemoveAudio}" Margin="0,0,0,5"/> <!-- Removed Style -->
+                     <CheckBox Content="Mirror Video (Horizontal Flip)" IsChecked="{Binding MirrorVideo}" Margin="0,0,0,5"/> <!-- Removed Style -->
+                     <CheckBox Content="Enhance Video (Basic Contrast/Saturation)" IsChecked="{Binding EnhanceVideo}"/> <!-- Removed Style -->
                  </StackPanel>
 
             </Grid>
@@ -147,22 +163,37 @@
 
         <!-- Action Buttons Area -->
         <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Left">
-            <Button Content="Clear Queue" Command="{Binding ClearQueueCommand}" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0,0,10,0"/>
-            <Button Content="{Binding IsProcessing, Converter={StaticResource ProcessingButtonTextConverter}, FallbackValue='Start Clipping Queue'}"
-                    Command="{Binding StartStopClippingCommand}"
-                    Style="{StaticResource MaterialDesignRaisedButton}"
-                    materialDesign:ButtonAssist.CornerRadius="5"
-                    Background="{Binding IsProcessing, Converter={StaticResource ProcessingButtonColorConverter}, FallbackValue='Green'}"/>
+            <Button Content="Clear Queue" Command="{Binding ClearQueueCommand}" Margin="0,0,10,0"/> <!-- Removed Style -->
+            <Button Command="{Binding StartStopClippingCommand}">
+                    <Button.Content>
+                        <Binding Path="IsProcessing" FallbackValue="Start Clipping Queue">
+                            <Binding.Converter>
+                                <local:BoolToProcessingButtonTextConverter />
+                            </Binding.Converter>
+                        </Binding>
+                    </Button.Content>
+                    <Button.Background>
+                        <Binding Path="IsProcessing" FallbackValue="LightGreen">
+                            <Binding.Converter>
+                                <local:BoolToProcessingButtonColorConverter />
+                            </Binding.Converter>
+                        </Binding>
+                    </Button.Background>
+                    <!-- Removed Style, CornerRadius. Using Inline Converters -->
+            </Button>
         </StackPanel>
 
     </Grid>
 
     <!-- Define Converters -->
+    <!-- Temporarily commenting out resources to isolate StaticResource error -->
+    <!--
     <UserControl.Resources>
         <local:BoolToProcessingButtonTextConverter x:Key="ProcessingButtonTextConverter"/>
         <local:BoolToProcessingButtonColorConverter x:Key="ProcessingButtonColorConverter"/>
-        <local:BoolToPlayPauseIconConverter x:Key="BoolToPlayPauseIconConverter"/> <!-- Added Player Icon Converter -->
-        <BooleanToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <local:BoolToPlayPauseTextConverter x:Key="BoolToPlayPauseTextConverter"/>
+        <local:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <BooleanToVisibilityConverter x:Key="StandardBooleanToVisibilityConverter"/>
     </UserControl.Resources>
-
+    -->
 </UserControl>

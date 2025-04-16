@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <!-- <ApplicationIcon>icon.ico</ApplicationIcon> --> <!-- Commented out: Icon file not found -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Core Libraries -->
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.7.25104.5739" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" /> <!-- Added for LoggerFactory -->
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" /> <!-- Added for AddDebug -->
+
+    <!-- UI Libraries -->
+    <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
+    <!-- <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" /> --> <!-- Removing Behaviors for now, might be needed later -->
+    <!-- <PackageReference Include="MahApps.Metro" Version="2.4.10" /> --> <!-- Removed MahApps.Metro -->
+    <!-- <PackageReference Include="MaterialDesignThemes" Version="5.2.1" /> --> <!-- Removed Material Design -->
+    <!-- <PackageReference Include="MaterialDesignThemes.MahApps" Version="5.2.1" /> --> <!-- Removed Material Design MahApps Integration -->
+
+    <!-- AWS SDK (Assuming Polly is used) -->
+    <PackageReference Include="AWSSDK.Polly" Version="3.7.403.13" />
+    <!-- Add other AWS SDK packages if needed (e.g., AWSSDK.Core, AWSSDK.SecurityToken) -->
+    <!-- Note: SDK versions might need adjustment -->
+
+    <!-- Google Cloud Vertex AI SDK for Gemini -->
+    <PackageReference Include="Google.Cloud.AIPlatform.V1" Version="3.10.0" /> <!-- Check for latest stable version -->
+    <!-- Note: This package brings in Grpc dependencies -->
+
+  </ItemGroup>
+
+  <!-- Exclude temporary/scratch files -->
+  <ItemGroup>
+    <Compile Remove="Untitled-1.cs" />
+  </ItemGroup>
+
+  <!-- Include FFmpeg binaries if they should be copied to output -->
+  <ItemGroup>
+    <Content Include="bin\ffmpeg.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="bin\ffplay.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="bin\ffprobe.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <!-- Add icon.ico here if you create one -->
+    <!-- <Content Include="icon.ico" /> -->
+  </ItemGroup>
+
+</Project>

@@ -14,36 +14,24 @@ namespace AutoTubeWpf.Services
 
         public void ShowInfoDialog(string message, string title = "Information")
         {
-            // Ensure dialogs are shown on the UI thread if called from background threads
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.OK, MessageBoxImage.Information);
-            });
+            // Try showing directly, assuming it's called after UI thread is available or during startup error handling
+            try { MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information); } catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"[DialogService] Direct MessageBox failed: {ex.Message}"); }
         }
 
         public void ShowWarningDialog(string message, string title = "Warning")
         {
-             Application.Current.Dispatcher.Invoke(() =>
-            {
-                MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.OK, MessageBoxImage.Warning);
-            });
+             try { MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Warning); } catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"[DialogService] Direct MessageBox failed: {ex.Message}"); }
         }
 
         public void ShowErrorDialog(string message, string title = "Error")
         {
-             Application.Current.Dispatcher.Invoke(() =>
-            {
-                MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.OK, MessageBoxImage.Error);
-            });
+             try { MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Error); } catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"[DialogService] Direct MessageBox failed: {ex.Message}"); }
         }
 
         public DialogResult ShowConfirmationDialog(string message, string title = "Confirm")
         {
             MessageBoxResult result = MessageBoxResult.No; // Default to No
-             Application.Current.Dispatcher.Invoke(() =>
-            {
-                 result = MessageBox.Show(Application.Current.MainWindow, message, title, MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            });
+             try { result = MessageBox.Show(message, title, MessageBoxButton.YesNo, MessageBoxImage.Warning); } catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"[DialogService] Direct MessageBox failed: {ex.Message}"); }
 
             return result switch
             {

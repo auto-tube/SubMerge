@@ -21,7 +21,8 @@ namespace AutoTubeWpf.ViewModels
         private readonly IVideoProcessorService _videoProcessorService;
         private readonly IConfigurationService _configurationService;
         private readonly IFileOrganizerService _fileOrganizerService;
-        private readonly IDialogService _dialogService; // Added Dialog service
+        private readonly IDialogService _dialogService;
+        private readonly ISubtitleService _subtitleService; // Added Subtitle service
         private readonly IProgress<VideoProcessingProgress>? _progressReporter;
         private CancellationTokenSource? _scriptGenerationCts;
         private CancellationTokenSource? _shortGenerationCts;
@@ -73,17 +74,19 @@ namespace AutoTubeWpf.ViewModels
             IVideoProcessorService videoProcessorService,
             IConfigurationService configurationService,
             IFileOrganizerService fileOrganizerService,
-            IDialogService dialogService, // Added Dialog service
+            IDialogService dialogService,
+            ISubtitleService subtitleService, // Added Subtitle service
             IProgress<VideoProcessingProgress>? progressReporter = null)
-        {
-            _logger = loggerService;
-            _aiService = aiService;
-            _ttsService = ttsService;
-            _videoProcessorService = videoProcessorService;
-            _configurationService = configurationService;
-            _fileOrganizerService = fileOrganizerService;
-            _dialogService = dialogService; // Store Dialog service
-            _progressReporter = progressReporter;
+       {
+           _logger = loggerService;
+           _aiService = aiService;
+           _ttsService = ttsService;
+           _videoProcessorService = videoProcessorService;
+           _configurationService = configurationService;
+           _fileOrganizerService = fileOrganizerService;
+           _dialogService = dialogService;
+           _subtitleService = subtitleService; // Store Subtitle service
+           _progressReporter = progressReporter;
 
             _logger.LogInfo("AiShortViewModel initialized.");
             if (string.IsNullOrWhiteSpace(OutputFolderPath))
@@ -91,7 +94,17 @@ namespace AutoTubeWpf.ViewModels
                  OutputFolderPath = _configurationService.CurrentSettings.DefaultOutputPath;
                  _logger.LogDebug($"Default AI Short output folder set from config: {OutputFolderPath}");
             }
-            _ = LoadVoicesAsync();
+            // Call LoadVoicesAsync safely, catching potential synchronous exceptions
+            try
+            {
+                // Don't await here in constructor, but catch immediate errors
+                _ = LoadVoicesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error initiating LoadVoicesAsync in AiShortViewModel constructor: {ex.Message}", ex);
+                // Handle error appropriately, maybe set a flag or default state
+            }
             SelectedPollyVoice = AvailablePollyVoices.FirstOrDefault();
         }
 
@@ -105,7 +118,7 @@ namespace AutoTubeWpf.ViewModels
             try
             {
                 var voices = await _ttsService.GetAvailableVoicesAsync();
-                if (voices != null &amp;&amp; voices.Any())
+                if (voices != null && voices.Any())
                 {
                     AvailablePollyVoices = voices;
                     SelectedPollyVoice = AvailablePollyVoices.FirstOrDefault();
@@ -151,14 +164,14 @@ namespace AutoTubeWpf.ViewModels
                 Description = "Select Output Folder for AI Shorts",
                 UseDescriptionForTitle = true
             };
-             if (!string.IsNullOrWhiteSpace(OutputFolderPath) &amp;&amp; Directory.Exists(OutputFolderPath))
+             if (!string.IsNullOrWhiteSpace(OutputFolderPath) && Directory.Exists(OutputFolderPath))
             {
                 dialog.SelectedPath = OutputFolderPath;
             }
              else
             {
                  string defaultOutput = _configurationService?.CurrentSettings?.DefaultOutputPath ?? "";
-                 dialog.SelectedPath = !string.IsNullOrWhiteSpace(defaultOutput) &amp;&amp; Directory.Exists(defaultOutput)
+                 dialog.SelectedPath = !string.IsNullOrWhiteSpace(defaultOutput) && Directory.Exists(defaultOutput)
                                        ? defaultOutput
                                        : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             }
@@ -231,7 +244,7 @@ namespace AutoTubeWpf.ViewModels
         }
         private bool CanGenerateScript()
         {
-            return !IsGeneratingScript &amp;&amp; !IsGeneratingShort &amp;&amp; !string.IsNullOrWhiteSpace(ScriptPrompt) &amp;&amp; _aiService.IsAvailable;
+            return !IsGeneratingScript && !IsGeneratingShort && !string.IsNullOrWhiteSpace(ScriptPrompt) && _aiService.IsAvailable;
         }
 
 
@@ -254,39 +267,40 @@ namespace AutoTubeWpf.ViewModels
             string tempSrtFilePath = Path.Combine(Path.GetTempPath(), $"autotube_sub_{Guid.NewGuid()}.srt");
             string initialOutputPath = Path.Combine(OutputFolderPath!, $"AI_Short_{Path.GetFileNameWithoutExtension(BackgroundVideoPath)}_{DateTime.Now:yyyyMMddHHmmss}.mp4");
             string finalOrganizedPath = initialOutputPath;
+            SynthesisResult? ttsResult = null;
 
             try
             {
-                // 1. Synthesize Speech
+                // 1. Synthesize Speech (including speech marks)
                 _logger.LogDebug($"Synthesizing speech to temp file: {tempAudioFilePath}");
                 _progressReporter?.Report(new VideoProcessingProgress { Percentage = 0, Message = "Synthesizing speech..." });
-                bool ttsSuccess = await _ttsService.SynthesizeSpeechAsync(ScriptText!, SelectedPollyVoice!, tempAudioFilePath, _shortGenerationCts.Token);
-                if (!ttsSuccess) throw new Exception("TTS synthesis failed.");
+                ttsResult = await _ttsService.SynthesizeSpeechAsync(ScriptText!, SelectedPollyVoice!, tempAudioFilePath, true, _shortGenerationCts.Token); // Request speech marks
+                if (!ttsResult.Success || string.IsNullOrEmpty(ttsResult.OutputFilePath)) throw new Exception($"TTS synthesis failed: {ttsResult.ErrorMessage ?? "Unknown error"}");
                 _logger.LogInfo("TTS synthesis successful.");
 
                 // 2. Get Audio Duration
                 _progressReporter?.Report(new VideoProcessingProgress { Percentage = 0, Message = "Getting audio duration..." });
-                TimeSpan? audioDuration = await _videoProcessorService.GetVideoDurationAsync(tempAudioFilePath, _shortGenerationCts.Token);
+                TimeSpan? audioDuration = await _videoProcessorService.GetVideoDurationAsync(ttsResult.OutputFilePath, _shortGenerationCts.Token);
                 if (audioDuration == null) throw new Exception("Failed to get duration of generated audio file.");
                 _logger.LogInfo($"Generated audio duration: {audioDuration.Value}");
 
-                // 3. Generate Subtitle File
+                // 3. Generate Subtitle File using SubtitleService and Speech Marks
                 _progressReporter?.Report(new VideoProcessingProgress { Percentage = 0, Message = "Generating subtitles..." });
                 _logger.LogDebug($"Generating temporary SRT file: {tempSrtFilePath}");
-                await GenerateSrtFileAsync(ScriptText!, audioDuration.Value, tempSrtFilePath, _shortGenerationCts.Token);
+                // Pass speech marks to subtitle service if available
+                await _subtitleService.GenerateSrtFileAsync(ScriptText!, audioDuration.Value, tempSrtFilePath, speechMarks: ttsResult.SpeechMarks, cancellationToken: _shortGenerationCts.Token); // Pass marks
                 _logger.LogInfo("Temporary SRT file generated.");
 
                 // 4. Combine Video, Audio, Subtitles
                 _logger.LogDebug($"Combining inputs for output: {initialOutputPath}");
-                _progressReporter?.Report(new VideoProcessingProgress { Percentage = 0, Message = "Combining video/audio/subs..." });
                 await _videoProcessorService.CombineVideoAudioSubtitlesAsync(
                      BackgroundVideoPath!,
-                     tempAudioFilePath,
+                     ttsResult.OutputFilePath, // Use path from result
                      tempSrtFilePath,
                      initialOutputPath,
                      _progressReporter,
                      _shortGenerationCts.Token);
-                _logger.LogInfo("Video combination successful.");
+               _logger.LogInfo("Video combination successful.");
                 finalOrganizedPath = initialOutputPath;
 
                 // 5. Organize Output (if enabled)
@@ -330,14 +344,14 @@ namespace AutoTubeWpf.ViewModels
             }
             catch (Exception ex)
             {
-                _logger.LogError("An unexpected error occurred during AI Short generation.", ex);
+                _logger.LogError($"An unexpected error occurred during AI Short generation: {ex.Message}", ex);
                  _progressReporter?.Report(new VideoProcessingProgress { Percentage = 0, Message = $"Error: {ex.Message}" });
                 _dialogService.ShowErrorDialog($"An unexpected error occurred during AI Short generation:\n{ex.Message}", "Error");
             }
             finally
             {
                 // Clean up temporary files
-                try { if (File.Exists(tempAudioFilePath)) File.Delete(tempAudioFilePath); } catch (Exception ex) { _logger.LogWarning($"Failed to delete temp audio file '{tempAudioFilePath}': {ex.Message}"); }
+                if (ttsResult?.OutputFilePath != null) try { if (File.Exists(ttsResult.OutputFilePath)) File.Delete(ttsResult.OutputFilePath); } catch (Exception ex) { _logger.LogWarning($"Failed to delete temp audio file '{ttsResult.OutputFilePath}': {ex.Message}"); }
                 try { if (File.Exists(tempSrtFilePath)) File.Delete(tempSrtFilePath); } catch (Exception ex) { _logger.LogWarning($"Failed to delete temp SRT file '{tempSrtFilePath}': {ex.Message}"); }
 
                 IsGeneratingShort = false;
@@ -348,29 +362,16 @@ namespace AutoTubeWpf.ViewModels
         }
         private bool CanGenerateAiShort()
         {
-            return !IsGeneratingScript &amp;&amp; !IsGeneratingShort
-                &amp;&amp; !string.IsNullOrWhiteSpace(BackgroundVideoPath) &amp;&amp; File.Exists(BackgroundVideoPath)
-                &amp;&amp; !string.IsNullOrWhiteSpace(OutputFolderPath) &amp;&amp; Directory.Exists(OutputFolderPath)
-                &amp;&amp; !string.IsNullOrWhiteSpace(ScriptText)
-                &amp;&amp; !string.IsNullOrWhiteSpace(SelectedPollyVoice)
-                &amp;&amp; _aiService.IsAvailable
-                &amp;&amp; _ttsService.IsAvailable
-                &amp;&amp; _videoProcessorService.IsAvailable;
+            return !IsGeneratingScript && !IsGeneratingShort
+                && !string.IsNullOrWhiteSpace(BackgroundVideoPath) && File.Exists(BackgroundVideoPath)
+                && !string.IsNullOrWhiteSpace(OutputFolderPath) && Directory.Exists(OutputFolderPath)
+                && !string.IsNullOrWhiteSpace(ScriptText)
+                && !string.IsNullOrWhiteSpace(SelectedPollyVoice)
+                && _aiService.IsAvailable
+                && _ttsService.IsAvailable
+                && _videoProcessorService.IsAvailable;
         }
 
-        // Helper to generate a simple SRT file with one entry spanning the audio duration
-        private async Task GenerateSrtFileAsync(string text, TimeSpan duration, string outputPath, CancellationToken cancellationToken)
-        {
-            var srtContent = new StringBuilder();
-            string startTime = "00:00:00,000";
-            string endTime = duration.ToString(@"hh\:mm\:ss\,fff", CultureInfo.InvariantCulture);
-
-            srtContent.AppendLine("1");
-            srtContent.AppendLine($"{startTime} --> {endTime}");
-            srtContent.AppendLine(text.Trim());
-            srtContent.AppendLine();
-
-            await File.WriteAllTextAsync(outputPath, srtContent.ToString(), Encoding.UTF8, cancellationToken);
-        }
+        // Removed local GenerateSrtFileAsync helper method - now using ISubtitleService
     }
 }

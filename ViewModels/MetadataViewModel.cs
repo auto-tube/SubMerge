@@ -155,9 +155,9 @@ namespace AutoTubeWpf.ViewModels
 
         private bool CanGenerateMetadata()
         {
-            return !IsGeneratingHashtags &amp;&amp; !IsGeneratingTags &amp;&amp; !IsGeneratingTitles
-                &amp;&amp; !string.IsNullOrWhiteSpace(ContextText)
-                &amp;&amp; _aiService.IsAvailable;
+            return !IsGeneratingHashtags && !IsGeneratingTags && !IsGeneratingTitles
+                && !string.IsNullOrWhiteSpace(ContextText)
+                && _aiService.IsAvailable;
         }
 
         // Helper to notify CanExecuteChanged for all commands

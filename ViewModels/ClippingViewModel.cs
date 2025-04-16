@@ -41,13 +41,14 @@ namespace AutoTubeWpf.ViewModels
         private readonly IConfigurationService _configurationService;
         private readonly IFileOrganizerService _fileOrganizerService;
         private readonly IDialogService _dialogService;
-        private readonly IProgress<VideoProcessingProgress>? _progressReporter;
+        private readonly IProgress<VideoProcessingProgress>? _progressReporter; // Restore IProgress field
         private CancellationTokenSource? _clippingCts;
-        private DispatcherTimer? _playerTimer; // Timer to update slider position
-        private bool _isSeeking = false; // Flag to prevent slider updates during drag
+        // Timer removed
 
         // --- UI Bound Properties ---
 
+        [ObservableProperty]
+        private bool _isSeeking = false; // Flag to prevent slider updates during drag (set by slider behaviors)
         [ObservableProperty]
         private string? _inputDisplayPath;
 
@@ -116,37 +117,36 @@ namespace AutoTubeWpf.ViewModels
             IConfigurationService configService,
             IFileOrganizerService fileOrganizerService,
             IDialogService dialogService,
-            IProgress<VideoProcessingProgress>? progressReporter = null)
-        {
-            _logger = loggerService;
-            _videoProcessorService = videoProcessorService;
-            _configurationService = configService;
-            _fileOrganizerService = fileOrganizerService;
-            _dialogService = dialogService;
-            _progressReporter = progressReporter;
+            IProgress<VideoProcessingProgress>? progressReporter = null) // Restore IProgress injection
+       {
+           _logger = loggerService;
+           _videoProcessorService = videoProcessorService;
+           _configurationService = configService;
+           _fileOrganizerService = fileOrganizerService;
+           _dialogService = dialogService;
+           _progressReporter = progressReporter; // Restore assignment
             _logger.LogInfo("ClippingViewModel initialized.");
 
-            // Initialize player timer
-            InitializePlayerTimer();
+            // Timer initialization removed
         }
 
         // --- Partial Property Changed Methods ---
         partial void OnSelectedVideoItemChanged(VideoQueueItem? value)
         {
             _logger.LogDebug($"SelectedVideoItem changed: {value?.FileName ?? "null"}");
-            // Stop previous playback and timer
-            IsPlayerPlaying = false;
-            _playerTimer?.Stop();
+            // Stop previous playback
+            IsPlayerPlaying = false; // This should trigger behavior to stop MediaElement
+            // Timer stop removed
             PlayerPositionSeconds = 0;
-            PlayerDurationSeconds = 1.0; // Reset duration
+            PlayerDurationSeconds = 1.0; // Reset duration (will be updated by MediaOpened behavior)
 
-            if (value?.FilePath != null &amp;&amp; File.Exists(value.FilePath))
+            if (value?.FilePath != null && File.Exists(value.FilePath))
             {
                 try
                 {
                     PlayerSource = new Uri(value.FilePath);
                     _logger.LogInfo($"Player source set to: {PlayerSource}");
-                    // Duration will be updated in MediaOpened event handler in code-behind
+                    // Duration will be updated by MediaOpened behavior calling MediaOpenedCommand
                 }
                 catch (Exception ex)
                 {
@@ -168,33 +168,15 @@ namespace AutoTubeWpf.ViewModels
             StopCommand.NotifyCanExecuteChanged();
         }
 
-        // --- Player Timer ---
-        private void InitializePlayerTimer()
-        {
-            _playerTimer = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromMilliseconds(200) // Update slider roughly 5 times per second
-            };
-            _playerTimer.Tick += PlayerTimer_Tick;
-        }
+        // --- Player Timer Removed ---
 
-        private void PlayerTimer_Tick(object? sender, EventArgs e)
-        {
-            // Update slider only if user is not dragging it
-            if (!_isSeeking &amp;&amp; IsPlayerPlaying)
-            {
-                // This needs to get the actual position from the MediaElement in code-behind
-                // For now, we just simulate progress for testing ViewModel logic
-                // PlayerPositionSeconds += 0.2 * PlayerSpeedRatio;
-                // if (PlayerPositionSeconds >= PlayerDurationSeconds) StopPlayer();
-            }
-        }
 
         // --- Commands ---
 
         [RelayCommand]
         private void SelectInput()
         {
+            _logger.LogInfo("--- SelectInput command invoked ---"); // Added for debugging
             _logger.LogDebug("SelectInput command executed.");
             try
             {
@@ -219,54 +201,88 @@ namespace AutoTubeWpf.ViewModels
             _logger.LogInfo("ClearQueue command executed.");
              if (_dialogService.ShowConfirmationDialog($"Are you sure you want to remove all {VideoQueue.Count} video(s) from the queue?", "Confirm Clear Queue") == DialogResult.Yes)
             {
-                StopPlayer(); // Stop playback if clearing queue
+                // Stop playback if clearing queue
+                IsPlayerPlaying = false; // Should trigger behavior to stop MediaElement
+                PlayerPositionSeconds = 0;
                 VideoQueue.Clear();
                 SelectedVideoItem = null; // Clear selection
                 UpdateInputDisplayPath();
                 _logger.LogInfo("Video queue cleared.");
             }
         }
-        private bool CanClearQueue() => VideoQueue.Any() &amp;&amp; !IsProcessing;
+        private bool CanClearQueue() => VideoQueue.Any() && !IsProcessing;
 
         [RelayCommand(CanExecute = nameof(CanPlayPause))]
         private void PlayPause()
         {
-            IsPlayerPlaying = !IsPlayerPlaying; // Toggle state
-            if (IsPlayerPlaying) _playerTimer?.Start();
-            else _playerTimer?.Stop();
-            // Actual Play/Pause action happens in code-behind via binding or event
-            _logger.LogDebug($"Play/Pause command executed. IsPlaying: {IsPlayerPlaying}");
+            IsPlayerPlaying = !IsPlayerPlaying; // Toggle state. Behavior in XAML will react to this.
+            // Timer start/stop removed
+            _logger.LogDebug($"Play/Pause command executed. IsPlaying set to: {IsPlayerPlaying}");
         }
         private bool CanPlayPause() => SelectedVideoItem != null;
 
         [RelayCommand(CanExecute = nameof(CanStop))]
         private void Stop()
         {
-            StopPlayer();
-            // Actual Stop action happens in code-behind via binding or event
-             _logger.LogDebug("Stop command executed.");
+            // Set state, behavior in XAML will react
+            IsPlayerPlaying = false;
+            PlayerPositionSeconds = 0;
+            _logger.LogDebug("Stop command executed.");
         }
         private bool CanStop() => SelectedVideoItem != null;
 
-        private void StopPlayer()
+        // StopPlayer method removed
+
+        // Methods called from code-behind removed (StartSeek, EndSeek, SetMediaDuration, UpdatePlayerPosition, MediaPlaybackEnded)
+        // These will be replaced by commands triggered by XAML behaviors
+
+
+        // --- Commands for XAML Behaviors ---
+
+        [RelayCommand]
+        private void MediaOpened(TimeSpan duration) // Parameter passed from behavior if possible, otherwise read from property
         {
-             IsPlayerPlaying = false;
-             _playerTimer?.Stop();
-             PlayerPositionSeconds = 0; // Reset position
-             // Need to signal MediaElement in code-behind to stop and reset position
+            // This command will be triggered by MediaElement.MediaOpened event via Behavior
+            PlayerDurationSeconds = duration.TotalSeconds;
+            _logger.LogDebug($"Media opened, duration set to: {duration}");
         }
 
-        // Called from code-behind when slider drag starts
-        public void StartSeek() { _isSeeking = true; _playerTimer?.Stop(); }
-        // Called from code-behind when slider drag ends
-        public void EndSeek() { _isSeeking = false; if (IsPlayerPlaying) _playerTimer?.Start(); }
-        // Called from code-behind when MediaElement opens
-        public void SetMediaDuration(TimeSpan duration) { PlayerDurationSeconds = duration.TotalSeconds; }
-        // Called from code-behind to update position from MediaElement
-        public void UpdatePlayerPosition(TimeSpan position) { if (!_isSeeking) PlayerPositionSeconds = position.TotalSeconds; }
-        // Called from code-behind when media ends
-        public void MediaPlaybackEnded() { StopPlayer(); }
+        [RelayCommand]
+        private void MediaEnded()
+        {
+             // This command will be triggered by MediaElement.MediaEnded event via Behavior
+             IsPlayerPlaying = false;
+             PlayerPositionSeconds = 0; // Optionally reset position on end
+             _logger.LogDebug("Media ended.");
+        }
 
+         [RelayCommand]
+        private void MediaFailed(string? errorMessage) // Parameter passed from behavior if possible
+        {
+             // This command will be triggered by MediaElement.MediaFailed event via Behavior
+             IsPlayerPlaying = false;
+             PlayerPositionSeconds = 0;
+             _logger.LogError($"Media failed: {errorMessage ?? "Unknown error"}");
+             _dialogService.ShowErrorDialog($"Could not play the selected video.\nError: {errorMessage ?? "Unknown error"}", "Playback Error");
+        }
+
+        [RelayCommand]
+        private void SeekDragStarted()
+        {
+            IsSeeking = true;
+            _logger.LogDebug("Seek drag started."); // Changed from LogTrace to LogDebug
+        }
+
+        [RelayCommand]
+        private void SeekDragCompleted()
+        {
+            IsSeeking = false;
+            _logger.LogDebug("Seek drag completed."); // Changed from LogTrace to LogDebug
+            // Position is already updated via TwoWay binding on Slider
+        }
+
+
+        // --- Main Processing Command ---
 
         [RelayCommand(CanExecute = nameof(CanStartStopClipping))]
         private async Task StartStopClippingAsync()
@@ -310,7 +326,7 @@ namespace AutoTubeWpf.ViewModels
 
                         _logger.LogInfo($"Processing video {videoIndex + 1}/{totalVideos}: {item.FileName}");
                         item.Status = "Getting Duration...";
-                        _progressReporter?.Report(new VideoProcessingProgress { Percentage = (double)videosProcessed / totalVideos, Message = $"Processing video {videoIndex + 1}/{totalVideos}...", CurrentItemIndex = videoIndex, TotalItems = totalVideos });
+                        _progressReporter?.Report(new VideoProcessingProgress { Percentage = (double)videosProcessed / totalVideos, Message = $"Processing video {videoIndex + 1}/{totalVideos}...", CurrentItemIndex = videoIndex, TotalItems = totalVideos }); // Use injected _progressReporter
 
                         TimeSpan? duration = null;
                         try { duration = await _videoProcessorService.GetVideoDurationAsync(item.FilePath!, token); }
@@ -349,7 +365,7 @@ namespace AutoTubeWpf.ViewModels
                                 double sceneStart = sceneChanges[i].TimestampSeconds;
                                 double sceneEnd = sceneChanges[i + 1].TimestampSeconds;
                                 double sceneDuration = sceneEnd - sceneStart;
-                                if (sceneDuration >= MinClipLength &amp;&amp; sceneDuration <= MaxClipLength) { clipsToExtract.Add((TimeSpan.FromSeconds(sceneStart), TimeSpan.FromSeconds(sceneDuration))); }
+                                if (sceneDuration >= MinClipLength && sceneDuration <= MaxClipLength) { clipsToExtract.Add((TimeSpan.FromSeconds(sceneStart), TimeSpan.FromSeconds(sceneDuration))); }
                                 else if (sceneDuration > MaxClipLength)
                                 {
                                     double clipDurationSec = random.Next(MinClipLength, MaxClipLength + 1);
@@ -391,7 +407,7 @@ namespace AutoTubeWpf.ViewModels
                              item.Status = $"Clipping {i + 1}/{clipsToExtract.Count}...";
                              var clipProgress = new Progress<VideoProcessingProgress>(clipReport => {
                                  double overallPercentage = totalClipsToAttempt > 0 ? ((double)clipsAttemptedSoFar - 1 + clipReport.Percentage) / totalClipsToAttempt : 0;
-                                 _progressReporter?.Report(new VideoProcessingProgress { Percentage = overallPercentage, Message = $"Clipping {item.FileName} ({i + 1}/{clipsToExtract.Count}) {clipReport.Percentage:P0}", EstimatedRemaining = clipReport.EstimatedRemaining, CurrentItemIndex = videoIndex, TotalItems = totalVideos });
+                                 _progressReporter?.Report(new VideoProcessingProgress { Percentage = overallPercentage, Message = $"Clipping {item.FileName} ({i + 1}/{clipsToExtract.Count}) {clipReport.Percentage:P0}", EstimatedRemaining = clipReport.EstimatedRemaining, CurrentItemIndex = videoIndex, TotalItems = totalVideos }); // Use injected _progressReporter
                              });
 
                              try
@@ -423,20 +439,20 @@ namespace AutoTubeWpf.ViewModels
                     StartStopClippingCommand.NotifyCanExecuteChanged(); ClearQueueCommand.NotifyCanExecuteChanged();
                     string summary = token.IsCancellationRequested ? "Cancelled" : "Finished";
                     _logger.LogInfo($"Clipping process {summary}. Videos Processed: {videosProcessed}/{totalVideos}, Clips Generated: {clipsGenerated}, Errors: {errorsEncountered}.");
-                    _progressReporter?.Report(new VideoProcessingProgress { Percentage = 1.0, Message = $"Clipping {summary}." });
+                    _progressReporter?.Report(new VideoProcessingProgress { Percentage = 1.0, Message = $"Clipping {summary}." }); // Use injected _progressReporter
                     string finalMessage = $"Clipping {summary}!\n\nVideos Processed: {videosProcessed}/{totalVideos}\nClips Generated: {clipsGenerated}\nErrors: {errorsEncountered}";
                     if (errorsEncountered > 0) { _dialogService.ShowWarningDialog(finalMessage, "Clipping Complete with Errors"); }
                     else if (!token.IsCancellationRequested) { _dialogService.ShowInfoDialog(finalMessage, "Clipping Complete"); }
                 }
             }
         }
-        private bool CanStartStopClipping() { if (IsProcessing) return true; return VideoQueue.Any() &amp;&amp; _videoProcessorService.IsAvailable; }
+        private bool CanStartStopClipping() { if (IsProcessing) return true; return VideoQueue.Any() && _videoProcessorService.IsAvailable; }
 
         // --- Helper Methods ---
         public void AddFilesToQueue(string[] filePaths)
         {
             int addedCount = 0;
-            foreach (var path in filePaths) { if (File.Exists(path) &amp;&amp; !VideoQueue.Any(item => item.FilePath == path)) { VideoQueue.Add(new VideoQueueItem(path)); addedCount++; } }
+            foreach (var path in filePaths) { if (File.Exists(path) && !VideoQueue.Any(item => item.FilePath == path)) { VideoQueue.Add(new VideoQueueItem(path)); addedCount++; } }
             if (addedCount > 0) _logger.LogInfo($"Added {addedCount} file(s) to the queue.");
             UpdateInputDisplayPath(); ClearQueueCommand.NotifyCanExecuteChanged(); StartStopClippingCommand.NotifyCanExecuteChanged();
         }

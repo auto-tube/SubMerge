@@ -5,10 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:AutoTubeWpf.Views"
              xmlns:viewmodels="clr-namespace:AutoTubeWpf.ViewModels"
-             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" <!-- Added Toolkit namespace -->
-             mc:Ignorable="d"
-             d:DesignHeight="600" d:DesignWidth="800"
-             d:DataContext="{d:DesignInstance Type=viewmodels:MetadataViewModel}">
+            mc:Ignorable="d"
+            d:DesignHeight="600" d:DesignWidth="800"
+            d:DataContext="{d:DesignInstance Type=viewmodels:MetadataViewModel}">
 
     <Grid Margin="15">
         <Grid.RowDefinitions>
@@ -17,14 +16,12 @@
         </Grid.RowDefinitions>
 
         <!-- Context Input Area -->
-        <GroupBox Header="Context / Topic / Description" Grid.Row="0" Padding="10" Margin="0,0,0,10">
+        <GroupBox Header="Context / Topic / Description" Grid.Row="0" Padding="10" Margin="0,0,0,10"> <!-- Removed Style -->
             <TextBox Text="{Binding ContextText, UpdateSourceTrigger=PropertyChanged}"
-                     AcceptsReturn="True"
-                     TextWrapping="Wrap"
-                     VerticalScrollBarVisibility="Auto"
-                     MinHeight="80"
-                     SpellCheck.IsEnabled="True"
-                     Language="en-US"/>
+                     AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                     MinHeight="80" SpellCheck.IsEnabled="True" Language="en-US">
+                     <!-- Removed Style, HintAssist, TextFieldAssist -->
+            </TextBox>
         </GroupBox>
 
         <!-- Output Area -->
@@ -36,7 +33,7 @@
             </Grid.ColumnDefinitions>
 
             <!-- Hashtags Column -->
-            <GroupBox Header="Hashtags" Grid.Column="0" Padding="10" Margin="0,0,5,0">
+            <GroupBox Header="Hashtags" Grid.Column="0" Padding="10" Margin="0,0,5,0"> <!-- Removed Style -->
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/> <!-- Options -->
@@ -47,20 +44,23 @@
                     <!-- Hashtag Options -->
                     <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
                         <TextBlock Text="Count:" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                        <!-- Replaced Slider with IntegerUpDown -->
-                        <xctk:IntegerUpDown Value="{Binding HashtagCount}" Minimum="1" Maximum="50" Increment="1" Width="60"/>
+                        <TextBox Text="{Binding HashtagCount, UpdateSourceTrigger=PropertyChanged}" Width="80"/> <!-- Replaced IntegerUpDown -->
                     </StackPanel>
 
                     <!-- Hashtag Output -->
-                    <TextBox Grid.Row="1" Text="{Binding HashtagsOutput}" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+                    <TextBox Grid.Row="1" Text="{Binding HashtagsOutput}" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto">
+                             <!-- Removed Style, TextFieldAssist -->
+                    </TextBox>
 
                     <!-- Hashtag Button -->
-                    <Button Grid.Row="2" Content="Generate Hashtags" Command="{Binding GenerateHashtagsAsyncCommand}" IsEnabled="{Binding CanGenerateMetadata}" Padding="10,5" Margin="0,10,0,0" HorizontalAlignment="Center"/>
+                    <Button Grid.Row="2" Content="Generate Hashtags" Command="{Binding GenerateHashtagsAsyncCommand}" IsEnabled="{Binding CanGenerateMetadata}"
+                            Margin="0,10,0,0" HorizontalAlignment="Center"/>
+                            <!-- Removed Style, ButtonAssist -->
                 </Grid>
             </GroupBox>
 
             <!-- Tags Column -->
-            <GroupBox Header="Tags / Keywords" Grid.Column="1" Padding="10" Margin="5,0,5,0">
+            <GroupBox Header="Tags / Keywords" Grid.Column="1" Padding="10" Margin="5,0,5,0"> <!-- Removed Style -->
                  <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/> <!-- Options -->
@@ -71,20 +71,23 @@
                     <!-- Tag Options -->
                     <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
                         <TextBlock Text="Count:" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                         <!-- Replaced Slider with IntegerUpDown -->
-                        <xctk:IntegerUpDown Value="{Binding TagCount}" Minimum="1" Maximum="100" Increment="1" Width="60"/>
+                        <TextBox Text="{Binding TagCount, UpdateSourceTrigger=PropertyChanged}" Width="80"/> <!-- Replaced IntegerUpDown -->
                     </StackPanel>
 
                     <!-- Tag Output -->
-                    <TextBox Grid.Row="1" Text="{Binding TagsOutput}" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+                    <TextBox Grid.Row="1" Text="{Binding TagsOutput}" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto">
+                             <!-- Removed Style, TextFieldAssist -->
+                    </TextBox>
 
                     <!-- Tag Button -->
-                    <Button Grid.Row="2" Content="Generate Tags" Command="{Binding GenerateTagsAsyncCommand}" IsEnabled="{Binding CanGenerateMetadata}" Padding="10,5" Margin="0,10,0,0" HorizontalAlignment="Center"/>
+                    <Button Grid.Row="2" Content="Generate Tags" Command="{Binding GenerateTagsAsyncCommand}" IsEnabled="{Binding CanGenerateMetadata}"
+                            Margin="0,10,0,0" HorizontalAlignment="Center"/>
+                            <!-- Removed Style, ButtonAssist -->
                 </Grid>
             </GroupBox>
 
             <!-- Titles Column -->
-            <GroupBox Header="Titles / Headlines" Grid.Column="2" Padding="10" Margin="5,0,0,0">
+            <GroupBox Header="Titles / Headlines" Grid.Column="2" Padding="10" Margin="5,0,0,0"> <!-- Removed Style -->
                  <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/> <!-- Options -->
@@ -95,15 +98,18 @@
                     <!-- Title Options -->
                     <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
                         <TextBlock Text="Count:" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                         <!-- Replaced Slider with IntegerUpDown -->
-                        <xctk:IntegerUpDown Value="{Binding TitleCount}" Minimum="1" Maximum="20" Increment="1" Width="60"/>
+                        <TextBox Text="{Binding TitleCount, UpdateSourceTrigger=PropertyChanged}" Width="80"/> <!-- Replaced IntegerUpDown -->
                     </StackPanel>
 
                     <!-- Title Output -->
-                    <TextBox Grid.Row="1" Text="{Binding TitlesOutput}" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+                    <TextBox Grid.Row="1" Text="{Binding TitlesOutput}" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto">
+                             <!-- Removed Style, TextFieldAssist -->
+                    </TextBox>
 
                     <!-- Title Button -->
-                    <Button Grid.Row="2" Content="Generate Titles" Command="{Binding GenerateTitlesAsyncCommand}" IsEnabled="{Binding CanGenerateMetadata}" Padding="10,5" Margin="0,10,0,0" HorizontalAlignment="Center"/>
+                    <Button Grid.Row="2" Content="Generate Titles" Command="{Binding GenerateTitlesAsyncCommand}" IsEnabled="{Binding CanGenerateMetadata}"
+                            Margin="0,10,0,0" HorizontalAlignment="Center"/>
+                            <!-- Removed Style, ButtonAssist -->
                 </Grid>
             </GroupBox>
 

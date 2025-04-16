@@ -1,8 +1,8 @@
 using AutoTubeWpf.Services; // For ILoggerService
-using Google.Api.Gax.Grpc; // For ApiKeyCredentials
+using Google.Api.Gax.Grpc; // For CallSettings
 using Google.Cloud.AIPlatform.V1; // Using Vertex AI client for Gemini Pro
 // Or potentially: using Google.Ai.Generativelanguage.V1Beta; if using that specific endpoint/package
-using Grpc.Core; // For RpcException
+using Grpc.Core; // For RpcException, SslCredentials
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +28,7 @@ namespace AutoTubeWpf.Services
         private const string Publisher = "google";
         private const string Model = "gemini-1.0-pro-001"; // Or the specific Gemini model you want to use
 
-        public bool IsAvailable => _isConfigured &amp;&amp; _predictionServiceClient != null;
+        public bool IsAvailable => _isConfigured && _predictionServiceClient != null;
 
         public GeminiService(ILoggerService logger)
         {
@@ -52,7 +52,16 @@ namespace AutoTubeWpf.Services
                     // Credentials = !string.IsNullOrEmpty(_apiKey) ? new ApiKeyCredentials(_apiKey) : null
                 };
 
-                _predictionServiceClient = clientBuilder.Build();
+                if (!string.IsNullOrEmpty(_apiKey))
+                {
+                    // Set basic ChannelCredentials when using API key to potentially bypass ADC check during Build()
+                    // The actual authentication will happen via the x-goog-api-key header in CallSettings.
+                    _logger.LogWarning("Setting basic SslCredentials for builder due to API key usage. Actual auth relies on x-goog-api-key header in CallSettings.");
+                    clientBuilder.ChannelCredentials = new SslCredentials();
+                }
+                // If _apiKey is null/empty, ChannelCredentials remains null, and Build() should default to ADC search.
+
+                _predictionServiceClient = clientBuilder.Build(); // Try building again
 
                 // A simple check to see if configuration seems okay (doesn't guarantee auth works yet)
                 // A better check would be a small test call if possible without cost.
@@ -65,7 +74,11 @@ namespace AutoTubeWpf.Services
                 // If an API key was intended, ensure the builder/client handles it correctly.
                 if (!string.IsNullOrEmpty(_apiKey))
                 {
-                     _logger.LogWarning("API Key provided to GeminiService.Configure, but direct API key usage with Vertex AI PredictionServiceClientBuilder might require specific setup (e.g., custom credentials or headers). Ensure your environment is configured for authentication (ADC, Env Var).");
+                     _logger.LogInfo("API Key provided. Calls will use 'x-goog-api-key' header via CallSettings.");
+                }
+                else
+                {
+                    _logger.LogInfo("No API Key provided. Attempting authentication via Application Default Credentials (ADC) or environment during client build.");
                 }
 
             }
@@ -101,7 +114,12 @@ namespace AutoTubeWpf.Services
                 };
 
                 _logger.LogDebug("Sending prediction request to Vertex AI...");
-                PredictResponse response = await _predictionServiceClient!.PredictAsync(predictionRequest, cancellationToken);
+                // Add API key header if available
+                var callSettings = !string.IsNullOrEmpty(_apiKey)
+                    ? CallSettings.FromHeader("x-goog-api-key", _apiKey).WithCancellationToken(cancellationToken)
+                    : CallSettings.FromCancellationToken(cancellationToken);
+
+                PredictResponse response = await _predictionServiceClient!.PredictAsync(predictionRequest, callSettings);
                 _logger.LogDebug("Received prediction response from Vertex AI.");
 
                 // Extract the generated text (assuming simple text output)
@@ -190,7 +208,12 @@ namespace AutoTubeWpf.Services
                 };
 
                 _logger.LogDebug("Sending prediction request to Vertex AI...");
-                PredictResponse response = await _predictionServiceClient!.PredictAsync(predictionRequest, cancellationToken);
+                // Add API key header if available
+                var callSettings = !string.IsNullOrEmpty(_apiKey)
+                    ? CallSettings.FromHeader("x-goog-api-key", _apiKey).WithCancellationToken(cancellationToken)
+                    : CallSettings.FromCancellationToken(cancellationToken);
+
+                PredictResponse response = await _predictionServiceClient!.PredictAsync(predictionRequest, callSettings);
                 _logger.LogDebug("Received prediction response from Vertex AI.");
 
                 string? generatedText = response?.Predictions?.FirstOrDefault()?.ToString();

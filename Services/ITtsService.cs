@@ -6,6 +6,30 @@ using System.Threading.Tasks;
 namespace AutoTubeWpf.Services
 {
     /// <summary>
+    /// Represents a single speech mark with timing and value.
+    /// </summary>
+    public class SpeechMark
+    {
+        public int Time { get; set; } // Time offset in milliseconds
+        public string Type { get; set; } = string.Empty; // e.g., "sentence", "word", "viseme", "ssml"
+        public int? Start { get; set; } // Start offset in bytes (for word/viseme)
+        public int? End { get; set; } // End offset in bytes (for word/viseme)
+        public string Value { get; set; } = string.Empty; // e.g., the word or sentence text
+    }
+
+    /// <summary>
+    /// Holds the result of a speech synthesis operation, including the audio path and speech marks.
+    /// </summary>
+    public class SynthesisResult
+    {
+        public bool Success { get; set; }
+        public string? OutputFilePath { get; set; }
+        public List<SpeechMark>? SpeechMarks { get; set; }
+        public string? ErrorMessage { get; set; }
+    }
+
+
+    /// <summary>
     /// Defines the contract for Text-to-Speech services.
     /// </summary>
     public interface ITtsService
@@ -17,31 +41,23 @@ namespace AutoTubeWpf.Services
 
         /// <summary>
         /// Configures the TTS service, typically with cloud credentials.
-        /// Should be called during application initialization.
         /// </summary>
-        /// <param name="accessKeyId">AWS Access Key ID.</param>
-        /// <param name="secretAccessKey">AWS Secret Access Key.</param>
-        /// <param name="regionName">AWS Region (e.g., "us-east-1").</param>
         void Configure(string? accessKeyId, string? secretAccessKey, string? regionName);
 
         /// <summary>
         /// Asynchronously retrieves a list of available voices for a specific language (optional).
         /// </summary>
-        /// <param name="languageCode">The language code (e.g., "en-US").</param>
-        /// <param name="cancellationToken">Optional cancellation token.</param>
-        /// <returns>A list of voice IDs, or an empty list if retrieval fails or is not supported.</returns>
         Task<List<string>> GetAvailableVoicesAsync(string languageCode = "en-US", CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Asynchronously synthesizes speech from text and saves it to an audio file.
+        /// Asynchronously synthesizes speech from text and saves it to an audio file, optionally returning speech marks.
         /// </summary>
-        /// <param name="text">The text to synthesize.</param>
-        /// <param name="voiceId">The voice ID to use (e.g., "Joanna").</param>
-        /// <param name="outputFilePath">The full path where the output audio file (e.g., MP3) should be saved.</param>
-        /// <param name="cancellationToken">Optional cancellation token.</param>
-        /// <returns>True if synthesis was successful, false otherwise.</returns>
-        /// <exception cref="InvalidOperationException">Thrown if the service is not configured/available.</exception>
-        /// <exception cref="ArgumentException">Thrown for invalid input parameters.</exception>
-        Task<bool> SynthesizeSpeechAsync(string text, string voiceId, string outputFilePath, CancellationToken cancellationToken = default);
+        /// <returns>A SynthesisResult object indicating success/failure and containing the output path and speech marks (if successful).</returns>
+        Task<SynthesisResult> SynthesizeSpeechAsync(
+            string text,
+            string voiceId,
+            string outputFilePath,
+            bool includeSpeechMarks = true, // Default to true to get marks
+            CancellationToken cancellationToken = default);
     }
 }
