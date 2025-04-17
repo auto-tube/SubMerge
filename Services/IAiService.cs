@@ -17,11 +17,10 @@ namespace AutoTubeWpf.Services
         bool IsAvailable { get; }
 
         /// <summary>
-        /// Configures the AI service, typically with an API key.
+        /// Configures the AI service. Relies on ADC or environment variables.
         /// Should be called during application initialization after loading settings/environment variables.
         /// </summary>
-        /// <param name="apiKey">The API key to use, or null/empty to rely on other configuration methods.</param>
-        void Configure(string? apiKey);
+        void Configure(); // Removed apiKey parameter
 
         /// <summary>
         /// Asynchronously generates a video script based on a given prompt.

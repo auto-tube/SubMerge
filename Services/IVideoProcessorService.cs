@@ -146,6 +146,15 @@ namespace AutoTubeWpf.Services
             string audioPath,
             string subtitlePath,
             string outputPath,
+            string subtitleAlignment,
+            string subtitleFontName,
+            System.Windows.Media.Color subtitleFontColor,           // Changed type
+            System.Windows.Media.Color subtitleOutlineColor,     // Changed type
+            int subtitleOutlineThickness,
+            bool useSubtitleBackgroundBox,
+            System.Windows.Media.Color subtitleBackgroundColor,
+            bool applyBackgroundBlur,           // Added
+            bool applyBackgroundGrayscale,     // Added
             IProgress<VideoProcessingProgress>? progress = null,
             CancellationToken cancellationToken = default);
 

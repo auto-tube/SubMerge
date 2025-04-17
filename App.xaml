@@ -3,13 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:AutoTubeWpf"
              > <!-- Removed xmlns:materialDesign -->
-   <Application.Resources>
-       <ResourceDictionary>
-           <ResourceDictionary.MergedDictionaries>
-               <!-- MahApps.Metro resource dictionaries removed -->
-               <!-- Material Design resource dictionaries removed -->
-           </ResourceDictionary.MergedDictionaries>
-
+  <!-- Temporarily commenting out resources to isolate startup issue -->
+  
+  <Application.Resources>
+      <ResourceDictionary>
+          
            <!-- Define Colors and Brushes -->
            <!-- Gradient for Backgrounds (Main Window/UserControl) -->
            <LinearGradientBrush x:Key="AppGradientBackgroundBrush" StartPoint="0,0" EndPoint="1,1">
@@ -102,43 +100,56 @@
                <Setter Property="Background" Value="Transparent"/>
            </Style>
 
-           <!-- === MODIFIED Button Style === -->
+           <!-- === Custom Implicit Button Style === -->
            <Style TargetType="{x:Type Button}">
-               <Setter Property="Padding" Value="10,5"/>
-               <Setter Property="Margin" Value="5"/>
-               <Setter Property="MinWidth" Value="75"/>
-               <Setter Property="Background" Value="Black"/>
-               <Setter Property="Foreground" Value="White"/> <!-- Set default foreground to White -->
-               <Setter Property="BorderBrush" Value="{StaticResource AppControlBorderBrush}"/>
+               <Setter Property="BorderBrush">
+                   <Setter.Value>
+                       <SolidColorBrush Color="#FF00C3BA"/>
+                   </Setter.Value>
+               </Setter>
                <Setter Property="Template">
                    <Setter.Value>
-                       <ControlTemplate TargetType="{x:Type Button}">
-                           <Border Background="{TemplateBinding Background}"
-                                   BorderBrush="{TemplateBinding BorderBrush}"
-                                   BorderThickness="{TemplateBinding BorderThickness}"
-                                   CornerRadius="3">
-                               <!-- Use TemplateBinding for Foreground on ContentPresenter -->
-                               <ContentPresenter HorizontalAlignment="Center"
-                                                 VerticalAlignment="Center"
-                                                 Margin="{TemplateBinding Padding}"
-                                                 TextBlock.Foreground="{TemplateBinding Foreground}"/>
+                       <ControlTemplate TargetType="Button">
+                           <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0.8" CornerRadius="3" Background="Transparent">
+                               <Border.Effect>
+                                   <DropShadowEffect x:Name="shadow" Color="#FF72FFE5" ShadowDepth="0" BlurRadius="5" Opacity="0"/>
+                               </Border.Effect>
+                               <TextBlock Foreground="{TemplateBinding BorderBrush}" Text="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
                            </Border>
                            <ControlTemplate.Triggers>
                                <Trigger Property="IsMouseOver" Value="True">
-                                   <Setter Property="Background" Value="#FF333333"/>
+                                   <!-- Apply effect directly in trigger -->
+                                   <Setter TargetName="border" Property="Effect">
+                                       <Setter.Value>
+                                           <DropShadowEffect Color="#FF72FFE5" ShadowDepth="0" BlurRadius="5" Opacity="1"/>
+                                       </Setter.Value>
+                                   </Setter>
+                                   <Setter TargetName="border" Property="Background" Value="#1A00C3BA"/> <!-- Semi-transparent background on hover -->
                                </Trigger>
                                <Trigger Property="IsPressed" Value="True">
-                                   <Setter Property="Background" Value="#FF555555"/>
+                                    <!-- Apply effect directly in trigger -->
+                                   <Setter TargetName="border" Property="Effect">
+                                       <Setter.Value>
+                                           <DropShadowEffect Color="#FF72FFE5" ShadowDepth="0" BlurRadius="5" Opacity="0.5"/>
+                                       </Setter.Value>
+                                   </Setter>
+                                   <Setter TargetName="border" Property="Background" Value="#3300C3BA"/> <!-- Darker background when pressed -->
+                                   <!-- TextBlock Foreground is bound to BorderBrush, no need to set here -->
                                </Trigger>
                                <Trigger Property="IsEnabled" Value="False">
                                    <Setter Property="Opacity" Value="0.5"/>
+                                   <!-- Remove effect when disabled -->
+                                   <Setter TargetName="border" Property="Effect" Value="{x:Null}"/>
                                </Trigger>
                            </ControlTemplate.Triggers>
                        </ControlTemplate>
                    </Setter.Value>
                </Setter>
+               <!-- Add default padding/margin if needed, otherwise handled by specific instances -->
+                <Setter Property="Padding" Value="8,4"/>
+                <Setter Property="Margin" Value="5"/>
            </Style>
-           <!-- === END MODIFIED Style === -->
+           <!-- === END Custom Style === -->
 
            <Style TargetType="TextBox">
                <Setter Property="Padding" Value="5"/>
@@ -226,4 +237,5 @@
 
        </ResourceDictionary>
    </Application.Resources>
+   
 </Application>

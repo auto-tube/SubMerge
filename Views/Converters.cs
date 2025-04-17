@@ -69,6 +69,30 @@ namespace AutoTubeWpf.Views // Keep namespace consistent with Views
     }
 
     /// <summary>
+    /// Converts between a specific string value (passed as parameter) and a boolean (IsChecked).
+    /// Used for binding RadioButtons to a single string property representing the selected option.
+    /// </summary>
+    public class AlignmentToStringConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            // Convert from ViewModel string to RadioButton IsChecked (bool)
+            // Returns true if the ViewModel's value matches the button's parameter
+            string? valueString = value as string;
+            string? parameterString = parameter as string;
+            return !string.IsNullOrEmpty(valueString) && valueString.Equals(parameterString, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            // Convert from RadioButton IsChecked (bool) to ViewModel string
+            // If this button is checked (value is true), return its parameter (the alignment string)
+            // Otherwise, return Binding.DoNothing to let other RadioButtons handle it.
+            return (value is true) ? parameter : Binding.DoNothing;
+        }
+    }
+
+    /// <summary>
     /// Converts a null value to Visibility.Collapsed and non-null to Visibility.Visible.
     /// Useful for hiding controls when a related item (like SelectedVideoItem) is null.
     /// </summary>

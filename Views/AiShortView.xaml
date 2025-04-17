@@ -5,9 +5,44 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:AutoTubeWpf.Views"
              xmlns:viewmodels="clr-namespace:AutoTubeWpf.ViewModels"
-            mc:Ignorable="d"
-            d:DesignHeight="600" d:DesignWidth="800"
-            d:DataContext="{d:DesignInstance Type=viewmodels:AiShortViewModel}">
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance Type=viewmodels:AiShortViewModel}">
+
+    <UserControl.Resources>
+        <!-- Define implicit styles for common controls -->
+        <Style TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,5,0"/> <!-- Default right margin -->
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,5,0"/> <!-- Default right margin -->
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,10,0"/> <!-- Default right margin -->
+            <Setter Property="MinWidth" Value="120"/>
+        </Style>
+        <Style TargetType="CheckBox">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,5,0"/>
+        </Style>
+        <!-- Removed implicit Button Style -->
+        <Style TargetType="xctk:ColorPicker">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,10,0"/>
+            <Setter Property="Width" Value="120"/>
+            <Setter Property="DisplayColorAndName" Value="True"/>
+        </Style>
+
+        <!-- Moved AlignmentConverter here -->
+        <local:AlignmentToStringConverter x:Key="AlignmentConverter"/>
+
+        <!-- Removed Custom Button Style (Moved to App.xaml) -->
+
+    </UserControl.Resources>
 
     <Grid Margin="15">
         <Grid.RowDefinitions>
@@ -18,7 +53,7 @@
         </Grid.RowDefinitions>
 
         <!-- Input Selection Area -->
-        <GroupBox Header="Inputs" Grid.Row="0" Padding="10" Margin="0,0,0,10"> <!-- Removed Style -->
+        <GroupBox Header="Inputs" Grid.Row="0" Padding="10" Margin="0,0,0,10">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -31,75 +66,130 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- Background Video -->
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="Background Video:" VerticalAlignment="Center" Margin="0,0,10,5"/>
-                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding BackgroundVideoPath}" IsReadOnly="True" VerticalContentAlignment="Center" Margin="0,0,5,5"/>
-                         <!-- Removed Style and HintAssist -->
-                <Button Grid.Row="0" Grid.Column="2" Content="Browse..." Command="{Binding BrowseBackgroundVideoCommand}" Margin="0,0,0,5"/> <!-- Removed Style -->
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Background Video:" Margin="0,0,10,5"/> <!-- Style applied -->
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding BackgroundVideoPath}" IsReadOnly="True" Margin="0,0,5,5"/> <!-- Style applied -->
+                <Button Grid.Row="0" Grid.Column="2" Content="Browse..." Command="{Binding BrowseBackgroundVideoCommand}" Margin="0,0,0,5"/> <!-- Implicit style applied -->
 
                 <!-- Output Folder -->
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="Output Folder:" VerticalAlignment="Center" Margin="0,5,10,0"/>
-                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding OutputFolderPath}" IsReadOnly="True" VerticalContentAlignment="Center" Margin="0,5,5,0"/>
-                         <!-- Removed Style and HintAssist -->
-                <Button Grid.Row="1" Grid.Column="2" Content="Browse..." Command="{Binding BrowseOutputFolderCommand}" Margin="0,5,0,0"/> <!-- Removed Style -->
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Output Folder:" Margin="0,5,10,0"/> <!-- Style applied -->
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding OutputFolderPath}" IsReadOnly="True" Margin="0,5,5,0"/> <!-- Style applied -->
+                <Button Grid.Row="1" Grid.Column="2" Content="Browse..." Command="{Binding BrowseOutputFolderCommand}" Margin="0,5,0,0"/> <!-- Implicit style applied -->
             </Grid>
         </GroupBox>
 
         <!-- Script Area -->
-        <GroupBox Header="Script" Grid.Row="1" Padding="10" Margin="0,0,0,10"> <!-- Removed Style -->
+        <GroupBox Header="Script" Grid.Row="1" Padding="10" Margin="0,0,0,10">
              <Grid>
                  <Grid.RowDefinitions>
                      <RowDefinition Height="Auto"/> <!-- Prompt Area -->
                      <RowDefinition Height="*"/>    <!-- Script Textbox -->
                  </Grid.RowDefinitions>
 
-                 <!-- Script Prompt & Generation -->
+                 <!-- Script Prompt &amp; Generation -->
                  <Grid Grid.Row="0" Margin="0,0,0,10">
                      <Grid.ColumnDefinitions>
                          <ColumnDefinition Width="*"/>
                          <ColumnDefinition Width="Auto"/>
                      </Grid.ColumnDefinitions>
-                     <TextBox Grid.Column="0" Text="{Binding ScriptPrompt, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,5,0" VerticalContentAlignment="Center"/>
-                              <!-- Removed Style and HintAssist -->
-                     <Button Grid.Column="1" Content="Generate Script" Command="{Binding GenerateScriptAsyncCommand}" IsEnabled="{Binding CanGenerateScript}"/>
-                             <!-- Removed Style and ButtonAssist -->
-                 </Grid>
+                     <TextBox Grid.Column="0" Text="{Binding ScriptPrompt, UpdateSourceTrigger=PropertyChanged}"/> <!-- Style applied -->
+                     <!-- REMOVED Command Binding, relying on Click handler -->
+                     <Button Grid.Column="1" Content="Generate Script" IsEnabled="{Binding CanGenerateScript}" Click="GenerateScriptButton_Click"/> 
+                </Grid>
 
                  <!-- Script Textbox -->
                  <TextBox Grid.Row="1"
                           Text="{Binding ScriptText, UpdateSourceTrigger=PropertyChanged}"
                           AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
-                          SpellCheck.IsEnabled="True" Language="en-US" MinHeight="150">
-                          <!-- Removed Style, HintAssist, TextFieldAssist -->
+                          SpellCheck.IsEnabled="True" Language="en-US" MinHeight="150" Margin="0,5,0,0"> <!-- Removed VA from Style, added top margin -->
                  </TextBox>
              </Grid>
         </GroupBox>
 
         <!-- Options Area -->
-        <GroupBox Header="Generation Options" Grid.Row="2" Padding="10" Margin="0,0,0,10"> <!-- Removed Style -->
-            <StackPanel Orientation="Horizontal">
-                <!-- Polly Voice -->
-                <ComboBox ItemsSource="{Binding AvailablePollyVoices}"
-                          SelectedItem="{Binding SelectedPollyVoice}"
-                          MinWidth="150" Margin="0,0,20,0"/>
-                          <!-- Removed Style and HintAssist -->
+        <GroupBox Header="Generation Options" Grid.Row="2" Padding="10" Margin="0,0,0,10">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/> <!-- Added row for effects -->
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-                <!-- Font Size -->
-                <TextBlock Text="Subtitle Font Size:" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                <TextBox Text="{Binding FontSize, UpdateSourceTrigger=PropertyChanged}" Width="80"/> <!-- Replaced IntegerUpDown -->
-            </StackPanel>
+                <!-- Row 0: Voice, Font Size, Alignment -->
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="TTS Voice:" Margin="0,0,5,5"/> <!-- Style applied -->
+                <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding AvailablePollyVoices}" SelectedItem="{Binding SelectedPollyVoice}" Margin="0,0,10,5"/> <!-- Style applied -->
+
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="Font Size:" Margin="10,0,5,5"/> <!-- Style applied -->
+                <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding FontSize, UpdateSourceTrigger=PropertyChanged}" Width="60" Margin="0,0,10,5"/> <!-- Style applied (Width override) -->
+
+                <TextBlock Grid.Row="0" Grid.Column="4" Text="Alignment:" Margin="10,0,5,5"/> <!-- Style applied -->
+                <StackPanel Grid.Row="0" Grid.Column="5" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,5"> <!-- Keep VA here for StackPanel -->
+                    <StackPanel.Resources>
+                        <Style TargetType="RadioButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+                            <Setter Property="Margin" Value="0,0,5,0"/>
+                            <Setter Property="MinWidth" Value="35"/>
+                        </Style>
+                    </StackPanel.Resources>
+                    <RadioButton Content="Left"
+                                 IsChecked="{Binding SelectedSubtitleAlignment, Converter={StaticResource AlignmentConverter}, ConverterParameter='Bottom Left'}"/>
+                    <RadioButton Content="Center"
+                                 IsChecked="{Binding SelectedSubtitleAlignment, Converter={StaticResource AlignmentConverter}, ConverterParameter='Bottom Center'}"/>
+                    <RadioButton Content="Right"
+                                 IsChecked="{Binding SelectedSubtitleAlignment, Converter={StaticResource AlignmentConverter}, ConverterParameter='Bottom Right'}"/>
+                </StackPanel>
+
+                <!-- Row 1: Font Name, Font Color, Outline Color -->
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Font Name:" Margin="0,5,5,5"/> <!-- Style applied -->
+                <ComboBox Grid.Row="1" Grid.Column="1"
+                          ItemsSource="{Binding AvailableSubtitleFonts}"
+                          SelectedItem="{Binding SubtitleFontName}"
+                          Margin="0,5,10,5"/> <!-- Style applied -->
+
+                <TextBlock Grid.Row="1" Grid.Column="2" Text="Font Color:" Margin="10,5,5,5"/> <!-- Style applied -->
+                <xctk:ColorPicker Grid.Row="1" Grid.Column="3"
+                                  SelectedColor="{Binding SubtitleFontColor}"
+                                  Margin="0,5,10,5"/> <!-- Style applied -->
+
+                <TextBlock Grid.Row="1" Grid.Column="4" Text="Outline Color:" Margin="10,5,5,5"/> <!-- Style applied -->
+                <xctk:ColorPicker Grid.Row="1" Grid.Column="5"
+                                  SelectedColor="{Binding SubtitleOutlineColor}"
+                                  Margin="0,5,0,5"/> <!-- Style applied -->
+
+                <!-- Row 2: Outline Thickness, Background Box, Background Color -->
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Outline Size:" Margin="0,5,5,5"/> <!-- Style applied -->
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding SubtitleOutlineThickness, UpdateSourceTrigger=PropertyChanged}" Width="60" Margin="0,5,10,5"/> <!-- Style applied (Width override) -->
+
+                <CheckBox Grid.Row="2" Grid.Column="2" Content="Background Box" IsChecked="{Binding UseSubtitleBackgroundBox}" Margin="10,5,5,5"/> <!-- Style applied -->
+
+                <TextBlock Grid.Row="2" Grid.Column="3" Text="BG Color:" Margin="10,5,5,5" IsEnabled="{Binding UseSubtitleBackgroundBox}"/> <!-- Style applied -->
+                <xctk:ColorPicker Grid.Row="2" Grid.Column="4" Grid.ColumnSpan="2"
+                                  SelectedColor="{Binding SubtitleBackgroundColor}"
+                                  IsEnabled="{Binding UseSubtitleBackgroundBox}"
+                                  Margin="0,5,0,5"/> <!-- Style applied -->
+
+                <!-- Row 3: Background Effects -->
+                <CheckBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Content="Blur Background" IsChecked="{Binding ApplyBackgroundBlur}" Margin="0,5,5,0"/> <!-- Style applied -->
+                <CheckBox Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" Content="Grayscale Background" IsChecked="{Binding ApplyBackgroundGrayscale}" Margin="10,5,5,0"/> <!-- Style applied -->
+
+            </Grid>
         </GroupBox>
 
         <!-- Action Buttons Area -->
-        <!-- MODIFIED: Added Click handler -->
         <Button Grid.Row="3" Content="Generate AI Short"
                 Command="{Binding GenerateAiShortAsyncCommand}"
                 IsEnabled="{Binding CanGenerateAiShort}"
                 Click="GenerateAiShortButton_Click"
                 HorizontalAlignment="Left"
-                Margin="0,0,0,0">
-                <!-- Removed Style and ButtonAssist -->
+                Margin="0,10,0,0"> <!-- Implicit style applied -->
         </Button>
-        <!-- END MODIFIED -->
 
     </Grid>
 </UserControl>

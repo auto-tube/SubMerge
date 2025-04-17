@@ -444,10 +444,19 @@ namespace AutoTubeWpf.Services
             string audioPath,
             string subtitlePath,
             string outputPath,
+            string subtitleAlignment,
+            string subtitleFontName,
+            System.Windows.Media.Color subtitleFontColor,
+            System.Windows.Media.Color subtitleOutlineColor,
+            int subtitleOutlineThickness,
+            bool useSubtitleBackgroundBox,
+            System.Windows.Media.Color subtitleBackgroundColor,
+            bool applyBackgroundBlur,           // Added
+            bool applyBackgroundGrayscale,     // Added
             IProgress<VideoProcessingProgress>? progress = null,
             CancellationToken cancellationToken = default)
         {
-             _logger.LogDebug($"Attempting to combine inputs for AI Short: Video='{backgroundVideoPath}', Audio='{audioPath}', Subtitles='{subtitlePath}', Output='{outputPath}'");
+             _logger.LogDebug($"Attempting to combine inputs for AI Short: Video='{backgroundVideoPath}', Audio='{audioPath}', Subtitles='{subtitlePath}', Output='{outputPath}', Alignment='{subtitleAlignment}', Font='{subtitleFontName}', Color='{subtitleFontColor}', Blur='{applyBackgroundBlur}', Grayscale='{applyBackgroundGrayscale}'"); // Updated logging
              if (!IsAvailable || string.IsNullOrEmpty(FfmpegPath) || string.IsNullOrEmpty(FfprobePath)) throw new InvalidOperationException("FFmpeg/FFprobe is not available or path is invalid.");
              if (!File.Exists(backgroundVideoPath)) throw new FileNotFoundException("Background video file not found.", backgroundVideoPath);
              if (!File.Exists(audioPath)) throw new FileNotFoundException("Audio file not found.", audioPath);
@@ -467,13 +476,68 @@ namespace AutoTubeWpf.Services
              // --- END MODIFIED ---
              argsBuilder.Append($"-i \"{audioPath}\" ");
              string escapedSubtitlePath = subtitlePath.Replace("\\", "/").Replace(":", "\\:");
-
+ 
+             // --- Map ViewModel string to FFmpeg Alignment number ---
+             string alignmentValue = subtitleAlignment switch
+             {
+                 "Bottom Left" => "1",
+                 "Bottom Right" => "3",
+                 "Bottom Center" => "2",
+                 _ => "2" // Default to Bottom Center
+             };
+ 
+             // --- Build force_style string dynamically ---
+             var styleSettings = new List<string>
+             {
+                 $"Alignment={alignmentValue}",
+                 $"FontName='{subtitleFontName.Replace("'", "\\'")}'", // Escape single quotes in font name
+                 $"PrimaryColour={ConvertColorToAss(subtitleFontColor)}", // Convert hex to ASS format (&HBBGGRR)
+                 $"OutlineColour={ConvertColorToAss(subtitleOutlineColor)}",
+                 $"Outline={subtitleOutlineThickness}",
+                 $"MarginV=30", // Keep vertical margin
+                 $"MarginL=20", // Keep left margin
+                 $"MarginR=20", // Keep right margin
+                 $"WrapStyle=0" // Keep EOL wrap
+             };
+             if (useSubtitleBackgroundBox)
+             {
+                 styleSettings.Add("BorderStyle=3"); // Style with opaque box
+                 styleSettings.Add($"BackColour={ConvertColorToAss(subtitleBackgroundColor)}");
+             }
+             else
+             {
+                 styleSettings.Add("BorderStyle=1"); // Outline only
+             }
+             string forceStyle = string.Join(",", styleSettings);
+             _logger.LogDebug($"Generated force_style: {forceStyle}");
+             // --- End Build force_style ---
+ 
+             // --- Build Video Filter Chain ---
+             var videoFilters = new List<string>
+             {
+                 "crop=ih*9/16:ih", // Crop to 9:16 aspect ratio first
+                 "scale=1080:1920", // Scale to 1080x1920
+                 "setsar=1"         // Set Sample Aspect Ratio
+             };
+             if (applyBackgroundBlur)
+             {
+                 videoFilters.Add("boxblur=5:1"); // Add blur (adjust luma_radius:luma_power as needed)
+                 _logger.LogDebug("Adding boxblur filter.");
+             }
+             if (applyBackgroundGrayscale)
+             {
+                 videoFilters.Add("format=gray"); // Add grayscale filter
+                 _logger.LogDebug("Adding format=gray filter.");
+             }
+             // Add subtitles filter last, applying the generated style
+             videoFilters.Add($"subtitles='{escapedSubtitlePath}':force_style='{forceStyle}'");
+             string videoFilterChain = string.Join(",", videoFilters);
+             _logger.LogDebug($"Generated video filter chain: {videoFilterChain}");
+             // --- End Build Video Filter Chain ---
+ 
              argsBuilder.Append("-filter_complex \"");
-             argsBuilder.Append("[0:v]crop=ih*9/16:ih,scale=1080:1920,setsar=1");
-             // --- MODIFIED: Added subtitle styling ---
-             argsBuilder.Append($",subtitles='{escapedSubtitlePath}':force_style='Alignment=2,MarginV=30,WrapStyle=2'"); // Alignment=2 (BottomCenter), MarginV=30px, WrapStyle=2 (SmartWrap)
-             // --- END MODIFIED ---
-             argsBuilder.Append("[outv]\"");
+             argsBuilder.Append($"[0:v]{videoFilterChain}[outv]"); // Apply the full chain
+             argsBuilder.Append("\"");
 
              argsBuilder.Append(" -map \"[outv]\" ");
              argsBuilder.Append("-map 1:a ");
@@ -638,6 +702,23 @@ namespace AutoTubeWpf.Services
             catch (OperationCanceledException) { _logger.LogInfo($"Scene detection cancelled for '{inputFile}'."); return null; }
             catch (Exception ex) when (ex is not OperationCanceledException) { _logger.LogError($"Error detecting scenes for '{inputFile}': {ex.Message}", ex); return null; }
         }
+
+        // --- Modified Helper Method ---
+        private string ConvertColorToAss(System.Windows.Media.Color color)
+        {
+            // Converts System.Windows.Media.Color to &HAABBGGRR format used by ASS/FFmpeg
+            try
+            {
+                // ASS format is &HAABBGGRR
+                return $"&H{color.A:X2}{color.B:X2}{color.G:X2}{color.R:X2}".ToUpperInvariant();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error converting Color '{color}' to ASS format: {ex.Message}", ex);
+                return "&H00FFFFFF"; // Default to opaque white on error
+            }
+        }
+        // --- End Added Helper ---
 
     }
 }

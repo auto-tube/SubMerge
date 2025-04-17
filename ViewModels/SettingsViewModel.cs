@@ -13,7 +13,8 @@ namespace AutoTubeWpf.ViewModels
     {
         private readonly IConfigurationService _configurationService;
         private readonly ILoggerService _loggerService;
-        private readonly IDialogService _dialogService; // Added Dialog service
+        private readonly IDialogService _dialogService;
+        private readonly IAiService _aiService; // Added AI service
 
         // Observable properties bound to the UI
         [ObservableProperty]
@@ -42,13 +43,18 @@ namespace AutoTubeWpf.ViewModels
         public SettingsViewModel(
             IConfigurationService configurationService,
             ILoggerService loggerService,
-            IDialogService dialogService) // Added Dialog service
+            IDialogService dialogService,
+            IAiService aiService) // Added AI service
         {
             _configurationService = configurationService;
             _loggerService = loggerService;
-            _dialogService = dialogService; // Store Dialog service
+            _dialogService = dialogService;
+            _aiService = aiService; // Store AI service
 
             _loggerService.LogInfo("SettingsViewModel initializing...");
+            // Log if the injected service is null
+            if (_aiService == null) _loggerService.LogError("IAiService is NULL in SettingsViewModel constructor!");
+            else _loggerService.LogDebug("IAiService successfully injected into SettingsViewModel.");
             LoadSettings();
             _loggerService.LogInfo("SettingsViewModel initialized.");
         }
@@ -75,7 +81,7 @@ namespace AutoTubeWpf.ViewModels
             {
                 // Update the settings object before saving
                 var settings = _configurationService.CurrentSettings;
-                settings.GoogleApiKey = GoogleApiKey;
+                settings.GoogleApiKey = GoogleApiKey; // Still save the key to settings if needed elsewhere
                 settings.AwsAccessKeyId = AwsAccessKeyId;
                 settings.AwsSecretAccessKey = AwsSecretAccessKey;
                 settings.AwsRegionName = AwsRegionName;
@@ -86,9 +92,20 @@ namespace AutoTubeWpf.ViewModels
                 await _configurationService.SaveSettingsAsync();
                 _loggerService.LogInfo("Settings saved successfully via ConfigurationService.");
 
-                // TODO: Trigger re-configuration of dependent services (API clients, ThemeManager)
+                // Re-configure dependent services
+                _loggerService.LogInfo("Re-configuring AI Service..."); // Updated log message
+                if (_aiService == null)
+                {
+                    _loggerService.LogError("Cannot re-configure AI Service: _aiService is NULL in SaveSettingsAsync!");
+                }
+                else
+                {
+                    _aiService.Configure(); // Call parameterless Configure
+                    _loggerService.LogDebug($"AI Service IsAvailable after re-configure: {_aiService.IsAvailable}"); // Log availability status
+                }
+                // TODO: Add similar calls for other services like ITtsService if needed
 
-                _dialogService.ShowInfoDialog("Settings saved successfully.", "Save Settings"); // Use DialogService
+                _dialogService.ShowInfoDialog("Settings saved and services reconfigured.", "Save Settings"); // Updated message
             }
             catch (Exception ex)
             {

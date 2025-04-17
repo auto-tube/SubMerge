@@ -9,7 +9,7 @@ using System.Linq; // For FirstOrDefault
 using System.Text; // For StringBuilder in SRT
 using System.Threading; // For CancellationTokenSource
 using System.Threading.Tasks;
-// using System.Windows; // No longer needed
+using System.Diagnostics; // Added for Debug.WriteLine
 
 namespace AutoTubeWpf.ViewModels
 {
@@ -50,10 +50,62 @@ namespace AutoTubeWpf.ViewModels
 
         [ObservableProperty]
         private List<string> _availablePollyVoices = new List<string> { "Joanna", "Matthew", "Salli", "Ivy", "Kendra", "Justin" };
-
+ 
+        [ObservableProperty]
+        private List<string> _availableSubtitleAlignments = new List<string> { "Bottom Center", "Bottom Left", "Bottom Right" }; // Added
+ 
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(GenerateAiShortCommand))] // Added Notify
+        private string? _selectedSubtitleAlignment = "Bottom Center"; // Added, default to center
+ 
+        // --- Added Subtitle Styling Options ---
+        [ObservableProperty]
+        private List<string> _availableSubtitleFonts = new List<string> { "Arial", "Impact", "Verdana", "Tahoma", "Comic Sans MS", "Segoe UI" }; // Added Font List
+ 
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(GenerateAiShortCommand))]
+        private string _subtitleFontName = "Arial"; // Default remains
+ 
+        // Use System.Windows.Media.Color for binding to ColorPicker
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(GenerateAiShortCommand))]
+        private System.Windows.Media.Color _subtitleFontColor = System.Windows.Media.Colors.White;
+ 
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(GenerateAiShortCommand))]
+        private System.Windows.Media.Color _subtitleOutlineColor = System.Windows.Media.Colors.Black;
+ 
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(GenerateAiShortCommand))]
+        private int _subtitleOutlineThickness = 2;
+ 
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(GenerateAiShortCommand))]
+        private bool _useSubtitleBackgroundBox = false;
+ 
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(GenerateAiShortCommand))]
+        private System.Windows.Media.Color _subtitleBackgroundColor = System.Windows.Media.Color.FromArgb(128, 0, 0, 0); // Semi-transparent black
+ 
+        // --- Added Background Effects ---
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(GenerateAiShortCommand))]
+        private bool _applyBackgroundBlur = false;
+ 
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(GenerateAiShortCommand))]
+        private bool _applyBackgroundGrayscale = false;
+        // --- End Added ---
+ 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(GenerateScriptCommand))]
         private string? _scriptPrompt;
+
+        partial void OnScriptPromptChanged(string? value)
+        {
+            GenerateScriptCommand.NotifyCanExecuteChanged();
+            GenerateAiShortCommand.NotifyCanExecuteChanged();
+        }
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(GenerateScriptCommand))]
@@ -87,6 +139,10 @@ namespace AutoTubeWpf.ViewModels
            _dialogService = dialogService;
            _subtitleService = subtitleService; // Store Subtitle service
            _progressReporter = progressReporter;
+
+            // Explicitly initialize flags to false
+            _isGeneratingScript = false;
+            _isGeneratingShort = false;
 
             _logger.LogInfo("AiShortViewModel initialized.");
             if (string.IsNullOrWhiteSpace(OutputFolderPath))
@@ -187,21 +243,27 @@ namespace AutoTubeWpf.ViewModels
         [RelayCommand(CanExecute = nameof(CanGenerateScript))]
         private async Task GenerateScriptAsync()
         {
+            _logger.LogInfo("[ViewModel] GenerateScriptAsync command entered."); 
+
             if (string.IsNullOrWhiteSpace(ScriptPrompt))
             {
+                 _logger.LogWarning("[ViewModel] ScriptPrompt is null or whitespace. Aborting.");
                  _dialogService.ShowWarningDialog("Please enter a prompt for script generation.", "Input Required");
                  return;
             }
 
-            _logger.LogInfo("GenerateScript command executed.");
+            _logger.LogInfo("GenerateScript command executed."); // Original log
             _scriptGenerationCts = new CancellationTokenSource();
             IsGeneratingScript = true;
             GenerateScriptCommand.NotifyCanExecuteChanged();
+            GenerateAiShortCommand.NotifyCanExecuteChanged(); // Also update other command
 
             try
             {
                 ScriptText = "Generating script...";
+                _logger.LogInfo("[ViewModel] Calling _aiService.GenerateScriptAsync..."); 
                 string? generatedScript = await _aiService.GenerateScriptAsync(ScriptPrompt, _scriptGenerationCts.Token);
+                _logger.LogInfo("[ViewModel] _aiService.GenerateScriptAsync returned."); 
 
                 if (generatedScript != null)
                 {
@@ -211,8 +273,9 @@ namespace AutoTubeWpf.ViewModels
                 }
                 else
                 {
+                    _logger.LogWarning("[ViewModel] Script generation returned null or empty from service. Attempting to show warning dialog."); 
                     ScriptText = "Script generation failed or returned empty.";
-                    _logger.LogWarning("Script generation failed or returned empty.");
+                    _logger.LogWarning("Script generation failed or returned empty."); // Original log
                      _dialogService.ShowWarningDialog("Script generation failed or returned an empty result. Check logs for details.", "Generation Failed");
                 }
             }
@@ -231,35 +294,63 @@ namespace AutoTubeWpf.ViewModels
             catch (Exception ex)
             {
                 ScriptText = $"Script generation failed: {ex.Message}";
-                _logger.LogError("An unexpected error occurred during script generation.", ex);
+                _logger.LogError($"An unexpected error occurred during script generation.", ex);
                 _dialogService.ShowErrorDialog($"An unexpected error occurred during script generation:\n{ex.Message}", "Error");
             }
             finally
             {
+                _logger.LogInfo("[ViewModel] Entering finally block for GenerateScriptAsync."); 
                 IsGeneratingScript = false;
                 _scriptGenerationCts?.Dispose();
                 _scriptGenerationCts = null;
                 GenerateScriptCommand.NotifyCanExecuteChanged();
+                GenerateAiShortCommand.NotifyCanExecuteChanged(); // Also update other command
             }
         }
         private bool CanGenerateScript()
         {
-            return !IsGeneratingScript && !IsGeneratingShort && !string.IsNullOrWhiteSpace(ScriptPrompt) && _aiService.IsAvailable;
+            // Use Debug.WriteLine as a fallback if _logger is null or not working
+            try 
+            {
+                 bool isAvailable = _aiService?.IsAvailable ?? false; 
+                 bool hasPrompt = !string.IsNullOrWhiteSpace(ScriptPrompt);
+                 bool notBusy = !IsGeneratingScript && !IsGeneratingShort;
+                 bool result = notBusy && hasPrompt && isAvailable;
+
+                 string logMessage = $"[Debug] Checking CanGenerateScript: IsGeneratingScript={IsGeneratingScript}, IsGeneratingShort={IsGeneratingShort}, HasPrompt={hasPrompt}, IsAiAvailable={isAvailable} ==> Result={result}";
+                 Debug.WriteLine(logMessage); // Write to VS Output window
+
+                 // Also try the main logger just in case
+                 if (_logger != null) 
+                 {
+                    _logger.LogDebug($"Checking CanGenerateScript: IsGeneratingScript={IsGeneratingScript}, IsGeneratingShort={IsGeneratingShort}, ScriptPrompt='{ScriptPrompt}', IsAiAvailable={isAvailable}");
+                 } 
+                 else 
+                 {
+                    Debug.WriteLine("[Debug] _logger is NULL in CanGenerateScript");
+                 }
+
+                 return result;
+            } 
+            catch (Exception ex) 
+            {
+                 Debug.WriteLine($"[Debug] EXCEPTION in CanGenerateScript: {ex.Message}");
+                 return false; // Prevent execution if check fails
+            }
         }
 
 
         [RelayCommand(CanExecute = nameof(CanGenerateAiShort))]
         private async Task GenerateAiShortAsync()
         {
-            // --- ADDED Logging ---
             _logger.LogInfo("--- GenerateAiShortAsync method entered ---");
-            // --- END ADDED ---
 
             // Relying on CanExecute check
 
             _shortGenerationCts = new CancellationTokenSource();
             IsGeneratingShort = true;
-            GenerateAiShortCommand.NotifyCanExecuteChanged(); // Still notify to potentially disable during run
+            GenerateAiShortCommand.NotifyCanExecuteChanged(); 
+            GenerateScriptCommand.NotifyCanExecuteChanged(); // Also update other command
 
             string tempAudioFilePath = Path.Combine(Path.GetTempPath(), $"autotube_tts_{Guid.NewGuid()}.mp3");
             string tempSrtFilePath = Path.Combine(Path.GetTempPath(), $"autotube_sub_{Guid.NewGuid()}.srt");
@@ -290,15 +381,24 @@ namespace AutoTubeWpf.ViewModels
                 _logger.LogInfo("Temporary SRT file generated.");
 
                 // 4. Combine Video, Audio, Subtitles
-                _logger.LogDebug($"Combining inputs for output: {initialOutputPath}");
+                _logger.LogDebug($"Combining inputs for output: {initialOutputPath} with alignment: {SelectedSubtitleAlignment}, Font: {SubtitleFontName}, Color: {SubtitleFontColor}"); // Added more logging
                 await _videoProcessorService.CombineVideoAudioSubtitlesAsync(
-                     BackgroundVideoPath!,
-                     ttsResult.OutputFilePath, // Use path from result
-                     tempSrtFilePath,
-                     initialOutputPath,
-                     _progressReporter,
-                     _shortGenerationCts.Token);
-               _logger.LogInfo("Video combination successful.");
+                     backgroundVideoPath: BackgroundVideoPath!,
+                     audioPath: ttsResult.OutputFilePath, // Use path from result
+                     subtitlePath: tempSrtFilePath,
+                     outputPath: initialOutputPath,
+                     subtitleAlignment: SelectedSubtitleAlignment!,
+                     subtitleFontName: SubtitleFontName,
+                     subtitleFontColor: SubtitleFontColor,
+                     subtitleOutlineColor: SubtitleOutlineColor,
+                     subtitleOutlineThickness: SubtitleOutlineThickness,
+                     useSubtitleBackgroundBox: UseSubtitleBackgroundBox,
+                     subtitleBackgroundColor: SubtitleBackgroundColor,
+                     applyBackgroundBlur: ApplyBackgroundBlur,           // Pass Blur flag
+                     applyBackgroundGrayscale: ApplyBackgroundGrayscale, // Pass Grayscale flag
+                     progress: _progressReporter,
+                     cancellationToken: _shortGenerationCts.Token);
+                _logger.LogInfo("Video combination successful.");
                 finalOrganizedPath = initialOutputPath;
 
                 // 5. Organize Output (if enabled)
@@ -348,6 +448,7 @@ namespace AutoTubeWpf.ViewModels
             }
             finally
             {
+                 _logger.LogInfo("[ViewModel] Entering finally block for GenerateAiShortAsync."); // ADDED LOGGING HERE
                 // Clean up temporary files
                 if (ttsResult?.OutputFilePath != null) try { if (File.Exists(ttsResult.OutputFilePath)) File.Delete(ttsResult.OutputFilePath); } catch (Exception ex) { _logger.LogWarning($"Failed to delete temp audio file '{ttsResult.OutputFilePath}': {ex.Message}"); }
                 try { if (File.Exists(tempSrtFilePath)) File.Delete(tempSrtFilePath); } catch (Exception ex) { _logger.LogWarning($"Failed to delete temp SRT file '{tempSrtFilePath}': {ex.Message}"); }
@@ -356,9 +457,10 @@ namespace AutoTubeWpf.ViewModels
                 _shortGenerationCts?.Dispose();
                 _shortGenerationCts = null;
                 GenerateAiShortCommand.NotifyCanExecuteChanged();
+                GenerateScriptCommand.NotifyCanExecuteChanged(); // Also update other command
             }
         }
-        // CanGenerateAiShort method still exists and includes logging
+        
         private bool CanGenerateAiShort()
         {
             // Log entry point
@@ -371,17 +473,25 @@ namespace AutoTubeWpf.ViewModels
             bool aiOk = _aiService.IsAvailable;
             bool ttsOk = _ttsService.IsAvailable;
             bool videoOk = _videoProcessorService.IsAvailable;
+            bool alignmentOk = !string.IsNullOrWhiteSpace(SelectedSubtitleAlignment);
+            bool fontOk = !string.IsNullOrWhiteSpace(SubtitleFontName);
+            // Color objects are value types, no need for null checks
+            bool fontColorOk = true; // Assume Color object is always valid
+            bool outlineColorOk = true;
+            bool backgroundColorOk = true;
+            // Blur/Grayscale flags don't affect CanExecute logic directly
             bool notBusy = !IsGeneratingScript && !IsGeneratingShort;
-
-            bool canGenerate = notBusy && bgVideoOk && outputFolderOk && scriptOk && voiceOk && aiOk && ttsOk && videoOk;
-
-            // Log the state of each check
-            _logger.LogDebug($"CanGenerateAiShort Result: NotBusy={notBusy}, BgVideoOk={bgVideoOk} ('{BackgroundVideoPath}'), OutputFolderOk={outputFolderOk} ('{OutputFolderPath}'), ScriptOk={scriptOk}, VoiceOk={voiceOk} ('{SelectedPollyVoice}'), AiOk={aiOk}, TtsOk={ttsOk}, VideoOk={videoOk} ==> CanGenerate={canGenerate}");
+ 
+            bool canGenerate = notBusy && bgVideoOk && outputFolderOk && scriptOk && voiceOk && alignmentOk && fontOk && fontColorOk && outlineColorOk && backgroundColorOk && aiOk && ttsOk && videoOk;
+ 
+            // Log the state of each check - Using Color.ToString() for logging
+            _logger.LogDebug($"CanGenerateAiShort Result: NotBusy={notBusy}, BgVideoOk={bgVideoOk}, OutputFolderOk={outputFolderOk}, ScriptOk={scriptOk}, VoiceOk={voiceOk}, AlignmentOk={alignmentOk}, FontOk={fontOk}, FontColorOk={SubtitleFontColor}, OutlineColorOk={SubtitleOutlineColor}, BgColorOk={SubtitleBackgroundColor}, Blur={ApplyBackgroundBlur}, Grayscale={ApplyBackgroundGrayscale}, AiOk={aiOk}, TtsOk={ttsOk}, VideoOk={videoOk} ==> CanGenerate={canGenerate}"); // Added effect logging
 
             return canGenerate;
         }
 
         // --- ADDED: Public helper method for logging status ---
+        // This method was missing, causing the build error in Views/AiShortView.xaml.cs
         public void LogCanGenerateAiShortStatus()
         {
              // This just calls the existing private method to log the details

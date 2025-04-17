@@ -1,4 +1,5 @@
 using AutoTubeWpf.Services; // For ILoggerService
+using Google.Api.Gax; // Added for Expiration
 using Google.Api.Gax.Grpc; // For CallSettings
 using Google.Cloud.AIPlatform.V1; // Using Vertex AI client for Gemini Pro
 // Or potentially: using Google.Ai.Generativelanguage.V1Beta; if using that specific endpoint/package
@@ -14,17 +15,18 @@ namespace AutoTubeWpf.Services
 {
     /// <summary>
     /// Implements IAiService using Google's Gemini model via the Vertex AI API.
+    /// Relies on Application Default Credentials (ADC) or GOOGLE_APPLICATION_CREDENTIALS environment variable.
     /// </summary>
     public class GeminiService : IAiService
     {
         private readonly ILoggerService _logger;
         private PredictionServiceClient? _predictionServiceClient;
-        private string? _apiKey; // Store the API key if provided directly
+        // private string? _apiKey; // REMOVED API Key field
         private bool _isConfigured = false;
 
         // TODO: Update these with your actual project ID and location (region)
-        private const string ProjectId = "your-gcp-project-id";
-        private const string LocationId = "us-central1"; // e.g., us-central1
+        private const string ProjectId = "my-project-name-123456"; // Updated Project ID
+        private const string LocationId = "us-central1"; // Confirmed Location ID
         private const string Publisher = "google";
         private const string Model = "gemini-1.0-pro-001"; // Or the specific Gemini model you want to use
 
@@ -36,50 +38,34 @@ namespace AutoTubeWpf.Services
             _logger.LogInfo("GeminiService created.");
         }
 
-        public void Configure(string? apiKey)
+        // Modified Configure method - no longer accepts API key
+        public void Configure() 
         {
-            _apiKey = apiKey; // Store key even if null/empty, client creation handles auth
+            _logger.LogInfo($"GeminiService.Configure called."); // Log entry
+            // _apiKey = null; // REMOVED
             _isConfigured = false; // Reset configured state until client is created
             _predictionServiceClient = null; // Dispose existing client if any
 
             try
             {
-                // Client creation handles authentication (ADC, GOOGLE_APPLICATION_CREDENTIALS, or API Key if supported by builder)
+                _logger.LogDebug("Attempting to create PredictionServiceClientBuilder..."); // Log step
+                // Client creation handles authentication (ADC, GOOGLE_APPLICATION_CREDENTIALS)
                 var clientBuilder = new PredictionServiceClientBuilder
                 {
                     Endpoint = $"{LocationId}-aiplatform.googleapis.com", // Standard Vertex AI endpoint
-                    // If using API Key directly (check if builder supports this, might need custom headers/credentials)
-                    // Credentials = !string.IsNullOrEmpty(_apiKey) ? new ApiKeyCredentials(_apiKey) : null
                 };
 
-                if (!string.IsNullOrEmpty(_apiKey))
-                {
-                    // Set basic ChannelCredentials when using API key to potentially bypass ADC check during Build()
-                    // The actual authentication will happen via the x-goog-api-key header in CallSettings.
-                    _logger.LogWarning("Setting basic SslCredentials for builder due to API key usage. Actual auth relies on x-goog-api-key header in CallSettings.");
-                    clientBuilder.ChannelCredentials = new SslCredentials();
-                }
-                // If _apiKey is null/empty, ChannelCredentials remains null, and Build() should default to ADC search.
+                // REMOVED API Key specific logic for ChannelCredentials
 
-                _predictionServiceClient = clientBuilder.Build(); // Try building again
+                _logger.LogDebug("Attempting to build PredictionServiceClient..."); // Log step
+                _predictionServiceClient = clientBuilder.Build(); 
+                _logger.LogInfo("PredictionServiceClient built successfully."); // Log success
 
-                // A simple check to see if configuration seems okay (doesn't guarantee auth works yet)
-                // A better check would be a small test call if possible without cost.
-                _isConfigured = true;
-                _logger.LogInfo($"GeminiService configured. Endpoint: {clientBuilder.Endpoint}. Project: {ProjectId}, Location: {LocationId}");
+                _isConfigured = true; // Set configured flag ONLY after successful build
+                _logger.LogInfo($"GeminiService configuration successful. IsAvailable: {IsAvailable}. Endpoint: {clientBuilder.Endpoint}. Project: {ProjectId}, Location: {LocationId}"); // Log final state
 
-                // Note: Actual authentication happens on the first API call.
-                // If GOOGLE_APPLICATION_CREDENTIALS env var is set, it will be used.
-                // If running on GCP infra, Application Default Credentials (ADC) will be used.
-                // If an API key was intended, ensure the builder/client handles it correctly.
-                if (!string.IsNullOrEmpty(_apiKey))
-                {
-                     _logger.LogInfo("API Key provided. Calls will use 'x-goog-api-key' header via CallSettings.");
-                }
-                else
-                {
-                    _logger.LogInfo("No API Key provided. Attempting authentication via Application Default Credentials (ADC) or environment during client build.");
-                }
+                // Note: Authentication happens via ADC or GOOGLE_APPLICATION_CREDENTIALS during client build.
+                _logger.LogInfo("Attempting authentication via Application Default Credentials (ADC) or GOOGLE_APPLICATION_CREDENTIALS environment variable.");
 
             }
             catch (Exception ex)
@@ -109,22 +95,20 @@ namespace AutoTubeWpf.Services
                 {
                     EndpointAsEndpointName = EndpointName.FromProjectLocationPublisherModel(ProjectId, LocationId, Publisher, Model),
                     Instances = { Google.Protobuf.WellKnownTypes.Value.ForString(fullPrompt) },
-                    // Add parameters if needed (e.g., temperature, max output tokens)
                     // Parameters = Google.Protobuf.WellKnownTypes.Value.ForStruct(new Google.Protobuf.WellKnownTypes.Struct { ... })
                 };
 
                 _logger.LogDebug("Sending prediction request to Vertex AI...");
-                // Add API key header if available
-                var callSettings = !string.IsNullOrEmpty(_apiKey)
-                    ? CallSettings.FromHeader("x-goog-api-key", _apiKey).WithCancellationToken(cancellationToken)
-                    : CallSettings.FromCancellationToken(cancellationToken);
+                
+                // --- MODIFIED: Remove API Key header logic, add timeout ---
+                var finalCallSettings = CallSettings.FromCancellationToken(cancellationToken)
+                                                    .WithExpiration(Expiration.FromTimeout(TimeSpan.FromSeconds(30))); // 30-second timeout
+                // --- END MODIFIED ---
 
-                PredictResponse response = await _predictionServiceClient!.PredictAsync(predictionRequest, callSettings);
+                _logger.LogDebug("Calling PredictAsync with timeout..."); 
+                PredictResponse response = await _predictionServiceClient!.PredictAsync(predictionRequest, finalCallSettings); 
                 _logger.LogDebug("Received prediction response from Vertex AI.");
 
-                // Extract the generated text (assuming simple text output)
-                // The structure of the response depends on the model. Inspect the response object.
-                // This is a common pattern for text generation models:
                 string? generatedText = response?.Predictions?.FirstOrDefault()?.ToString();
 
                 if (string.IsNullOrWhiteSpace(generatedText))
@@ -133,16 +117,19 @@ namespace AutoTubeWpf.Services
                     return null;
                 }
 
-                // Basic cleanup (remove potential quotes, trim)
                 generatedText = generatedText.Trim('"', '\'', ' ', '\n', '\r');
                 _logger.LogInfo($"Script generated successfully (Length: {generatedText.Length}).");
                 return generatedText;
 
             }
+            catch (RpcException rpcEx) when (rpcEx.StatusCode == StatusCode.DeadlineExceeded) 
+            {
+                 _logger.LogError($"RPC error generating script: Call timed out after 30 seconds. Status: {rpcEx.Status}", rpcEx);
+                 throw new Exception($"AI service call timed out. Check network or API status.", rpcEx);
+            }
             catch (RpcException rpcEx)
             {
                  _logger.LogError($"RPC error generating script: {rpcEx.Status}", rpcEx);
-                 // Handle specific gRPC errors (e.g., authentication, quota)
                  throw new Exception($"AI service communication error: {rpcEx.Status.Detail}", rpcEx);
             }
             catch (OperationCanceledException)
@@ -153,7 +140,7 @@ namespace AutoTubeWpf.Services
             catch (Exception ex)
             {
                 _logger.LogError($"Unexpected error generating script: {ex.Message}", ex);
-                throw; // Re-throw unexpected errors
+                throw; 
             }
         }
 
@@ -195,8 +182,7 @@ namespace AutoTubeWpf.Services
 
             _logger.LogInfo($"Generating {count} {metadataType} based on context: '{context.Substring(0, Math.Min(context.Length, 50))}...'");
 
-            // Construct the prompt
-            string fullPrompt = $"Generate exactly {count} {itemType} based on the following context:\n\nContext: \"{context}\"\n\n{formatInstruction}\n\n{metadataType.CapitalizeFirst()}:"; // Capitalize first letter for output clarity
+            string fullPrompt = $"Generate exactly {count} {itemType} based on the following context:\n\nContext: \"{context}\"\n\n{formatInstruction}\n\n{metadataType.CapitalizeFirst()}:"; 
 
             try
             {
@@ -204,16 +190,18 @@ namespace AutoTubeWpf.Services
                 {
                     EndpointAsEndpointName = EndpointName.FromProjectLocationPublisherModel(ProjectId, LocationId, Publisher, Model),
                     Instances = { Google.Protobuf.WellKnownTypes.Value.ForString(fullPrompt) },
-                    // Parameters = ... // Adjust temperature, etc. if needed
+                    // Parameters = ... 
                 };
 
                 _logger.LogDebug("Sending prediction request to Vertex AI...");
-                // Add API key header if available
-                var callSettings = !string.IsNullOrEmpty(_apiKey)
-                    ? CallSettings.FromHeader("x-goog-api-key", _apiKey).WithCancellationToken(cancellationToken)
-                    : CallSettings.FromCancellationToken(cancellationToken);
+                
+                // --- MODIFIED: Remove API Key header logic, add timeout ---
+                var finalCallSettings = CallSettings.FromCancellationToken(cancellationToken)
+                                                    .WithExpiration(Expiration.FromTimeout(TimeSpan.FromSeconds(30))); // 30-second timeout
+                // --- END MODIFIED ---
 
-                PredictResponse response = await _predictionServiceClient!.PredictAsync(predictionRequest, callSettings);
+                _logger.LogDebug("Calling PredictAsync with timeout..."); 
+                PredictResponse response = await _predictionServiceClient!.PredictAsync(predictionRequest, finalCallSettings); 
                 _logger.LogDebug("Received prediction response from Vertex AI.");
 
                 string? generatedText = response?.Predictions?.FirstOrDefault()?.ToString();
@@ -224,15 +212,19 @@ namespace AutoTubeWpf.Services
                     return null;
                 }
 
-                // Parse the response (split by new lines, remove empty entries, trim)
                 var results = generatedText.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
-                                           .Select(line => line.Trim('"', '\'', ' ', '*','-')) // Basic cleanup
+                                           .Select(line => line.Trim('"', '\'', ' ', '*','-')) 
                                            .Where(line => !string.IsNullOrWhiteSpace(line))
-                                           .Take(count) // Ensure we don't exceed requested count
+                                           .Take(count) 
                                            .ToList();
 
                 _logger.LogInfo($"Successfully generated {results.Count} {metadataType}.");
                 return results;
+            }
+             catch (RpcException rpcEx) when (rpcEx.StatusCode == StatusCode.DeadlineExceeded) 
+            {
+                 _logger.LogError($"RPC error generating {metadataType}: Call timed out after 30 seconds. Status: {rpcEx.Status}", rpcEx);
+                 throw new Exception($"AI service call timed out. Check network or API status.", rpcEx);
             }
              catch (RpcException rpcEx)
             {
