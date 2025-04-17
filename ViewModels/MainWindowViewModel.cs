@@ -4,6 +4,7 @@ using System; // For IProgress
 using System.Collections.ObjectModel; // For potential tab viewmodels later
 using System.Threading.Tasks;
 using AutoTubeWpf.Services; // Added for service interfaces
+using System.Windows; // Keep for potential future use
 
 namespace AutoTubeWpf.ViewModels
 {
@@ -116,5 +117,11 @@ namespace AutoTubeWpf.ViewModels
             StatusText = "Did something!";
             _logger.LogDebug("DoSomething command executed.");
         }
+
+        // --- REMOVED: Test Command ---
+        // [RelayCommand]
+        // private void TestButtonCommand()
+        // { ... }
+        // --- END REMOVED ---
     }
 }

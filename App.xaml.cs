@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection; // Added for DI
 using System;
 using System.Diagnostics;
 using System.Windows;
+using System.Threading.Tasks; // Added for async Task
 
 namespace AutoTubeWpf
 {
@@ -12,7 +13,9 @@ namespace AutoTubeWpf
     /// </summary>
     public partial class App : Application
     {
-        private ServiceProvider? _serviceProvider; // Store the service provider
+        // --- MODIFIED: Made public for access from views ---
+        public ServiceProvider? _serviceProvider; // Store the service provider
+        // --- END MODIFIED ---
         private ILoggerService? _logger; // Keep logger accessible for OnExit
 
         public App()
@@ -218,12 +221,37 @@ namespace AutoTubeWpf
             }
         }
 
-        protected override void OnExit(ExitEventArgs e)
+        // --- MODIFIED OnExit ---
+        protected override async void OnExit(ExitEventArgs e) // Made async
         {
+            _logger?.LogInfo($"Application attempting to save settings before exiting...");
+            try
+            {
+                if (_serviceProvider != null)
+                {
+                    var configService = _serviceProvider.GetService<IConfigurationService>();
+                    if (configService != null)
+                    {
+                        await configService.SaveSettingsAsync();
+                        _logger?.LogInfo("Settings saved successfully.");
+                    }
+                    else
+                    {
+                        _logger?.LogError("Could not resolve ConfigurationService to save settings on exit.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError($"Failed to save settings on exit: {ex.Message}", ex);
+                // Optionally inform the user, but might be too late if app is closing forcefully
+            }
+
             _logger?.LogInfo($"Application exiting with code {e.ApplicationExitCode}.");
             // Dispose the service provider
-            _serviceProvider?.Dispose();
+            _serviceProvider?.Dispose(); // Dispose after saving attempt
             base.OnExit(e);
         }
+        // --- END MODIFIED OnExit ---
     }
 }

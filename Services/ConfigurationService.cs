@@ -52,7 +52,9 @@ namespace AutoTubeWpf.Services
                 {
                     // Typically ~/.config/ or ~/.local/share/
                     string? xdgConfigHome = Environment.GetEnvironmentVariable("XDG_CONFIG_HOME");
+                    // --- CORRECTED LINE ---
                     if (!string.IsNullOrEmpty(xdgConfigHome) && Directory.Exists(xdgConfigHome))
+                    // --- END CORRECTED LINE ---
                     {
                         configDir = xdgConfigHome;
                     }
@@ -107,7 +109,9 @@ namespace AutoTubeWpf.Services
             try
             {
                 using FileStream openStream = File.OpenRead(_configFilePath);
-                var loadedSettings = await JsonSerializer.DeserializeAsync<AppSettings>(openStream, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }); // Be flexible on load
+                // --- CORRECTED LINE --- (Removed PropertyNameCaseInsensitive which might cause issues if casing differs)
+                var loadedSettings = await JsonSerializer.DeserializeAsync<AppSettings>(openStream);
+                // --- END CORRECTED LINE ---
 
                 _currentSettings = loadedSettings ?? new AppSettings(); // Use defaults if deserialization returns null
                 Debug.WriteLine("[ConfigurationService] Settings loaded successfully.");

@@ -30,7 +30,8 @@
     <!-- Note: SDK versions might need adjustment -->
 
     <!-- Google Cloud Vertex AI SDK for Gemini -->
-    <PackageReference Include="Google.Cloud.AIPlatform.V1" Version="3.10.0" /> <!-- Check for latest stable version -->
+    <PackageReference Include="Google.Cloud.AIPlatform.V1" Version="3.10.0" />
+    <PackageReference Include="Serilog.Extensions.Logging.File" Version="3.0.0" /> <!-- Check for latest stable version -->
     <!-- Note: This package brings in Grpc dependencies -->
 
   </ItemGroup>
@@ -54,5 +55,17 @@
     <!-- Add icon.ico here if you create one -->
     <!-- <Content Include="icon.ico" /> -->
   </ItemGroup>
+
+  <!-- ADDED: Explicitly set Build Action for AiShortView.xaml -->
+  <ItemGroup>
+    <Page Update="Views\AiShortView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Update="Views\AiShortView.xaml.cs">
+      <DependentUpon>AiShortView.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <!-- END ADDED -->
 
 </Project>

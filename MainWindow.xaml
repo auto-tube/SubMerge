@@ -7,8 +7,8 @@
         xmlns:viewmodels="clr-namespace:AutoTubeWpf.ViewModels"
         xmlns:views="clr-namespace:AutoTubeWpf.Views"
         mc:Ignorable="d"
-        Title="AutoTube WPF" Height="850" Width="1200" MinHeight="800" MinWidth="1000">
-        <!-- Removed MahApps GlowBrush, BorderThickness, BorderBrush -->
+        Title="AutoTube WPF" Height="850" Width="1200" MinHeight="800" MinWidth="1000"
+        Background="{StaticResource AppGradientBackgroundBrush}"> <!-- Keep overall window background -->
 
     <!-- DataContext is set in App.xaml.cs -->
 
@@ -20,32 +20,31 @@
         </Grid.RowDefinitions>
 
         <!-- Progress Bar Area -->
-        <!-- Using Standard Progress Bar -->
         <ProgressBar Grid.Row="0" Value="{Binding ProgressValue}" Minimum="0" Maximum="1" Height="10" Margin="5,5,5,10"/>
-        <!-- Removed Border and TextBlock for progress, integrated into status bar -->
 
         <!-- Tab Control Area -->
-        <!-- Using Standard TabControl -->
         <TabControl Grid.Row="1" Margin="0,0,0,0">
             <TabItem Header="Video Clipper">
-                <views:ClippingView DataContext="{Binding ClippingVM}" />
+                <!-- Apply VideoClipperTabBrush -->
+                <views:ClippingView DataContext="{Binding ClippingVM}" Background="{StaticResource VideoClipperTabBrush}" />
             </TabItem>
 
             <TabItem Header="AI Short Generator">
-                 <views:AiShortView DataContext="{Binding AiShortVM}" />
+                 <!-- Apply AiShortsTabBrush -->
+                 <views:AiShortView DataContext="{Binding AiShortVM}" Background="{StaticResource AiShortsTabBrush}" />
            </TabItem>
 
             <TabItem Header="Metadata Tools">
-                 <views:MetadataView DataContext="{Binding MetadataVM}" />
+                 <!-- Apply MetadataTabBrush -->
+                 <views:MetadataView DataContext="{Binding MetadataVM}" Background="{StaticResource MetadataTabBrush}" />
             </TabItem>
 
             <TabItem Header="Settings">
-                <views:SettingsView DataContext="{Binding SettingsVM}" />
+                 <!-- Apply SettingsTabBrush -->
+                <views:SettingsView DataContext="{Binding SettingsVM}" Background="{StaticResource SettingsTabBrush}" />
             </TabItem>
 
         </TabControl>
-        <!-- Removed placeholder TextBlock -->
-
 
         <!-- Status Bar Area -->
         <StatusBar Grid.Row="2" Margin="0,5,0,0">

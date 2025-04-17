@@ -81,15 +81,34 @@ namespace AutoTubeWpf.Services
             var voices = new List<string>();
             try
             {
-                var request = new DescribeVoicesRequest { LanguageCode = languageCode };
+                // Try Neural first
+                var request = new DescribeVoicesRequest
+                {
+                    LanguageCode = languageCode,
+                    Engine = Engine.Neural
+                };
                 DescribeVoicesResponse response;
                 do
                 {
-                    // IsAvailable check at the start ensures _pollyClient is not null here
-                    response = await this._pollyClient!.DescribeVoicesAsync(request, cancellationToken); // Added ! to satisfy CS8602
+                    response = await this._pollyClient!.DescribeVoicesAsync(request, cancellationToken);
                     voices.AddRange(response.Voices.Select(v => v.Id.Value));
                     request.NextToken = response.NextToken;
                 } while (!string.IsNullOrEmpty(response.NextToken) && !cancellationToken.IsCancellationRequested);
+
+                // Fallback to Standard if no Neural found
+                if (!voices.Any())
+                {
+                    this._logger.LogWarning($"No Neural voices found for {languageCode}. Trying Standard voices...");
+                    request.Engine = Engine.Standard;
+                    request.NextToken = null; // Reset token
+                     do
+                    {
+                        response = await this._pollyClient!.DescribeVoicesAsync(request, cancellationToken);
+                        voices.AddRange(response.Voices.Select(v => v.Id.Value));
+                        request.NextToken = response.NextToken;
+                    } while (!string.IsNullOrEmpty(response.NextToken) && !cancellationToken.IsCancellationRequested);
+                }
+
                 this._logger.LogInfo($"Retrieved {voices.Count} Polly voices for {languageCode}.");
                 return voices;
             }
@@ -102,7 +121,7 @@ namespace AutoTubeWpf.Services
             string text,
             string voiceId,
             string outputFilePath,
-            bool includeSpeechMarks = true, // Default to true
+            bool includeSpeechMarks = true,
             CancellationToken cancellationToken = default)
         {
             var result = new SynthesisResult { Success = false, OutputFilePath = outputFilePath };
@@ -110,8 +129,9 @@ namespace AutoTubeWpf.Services
             {
                 result.ErrorMessage = "PollyTtsService is not configured or failed to initialize.";
                 this._logger.LogError($"Cannot synthesize speech: {result.ErrorMessage}");
-                return result; // Return failure result instead of throwing
+                return result;
             }
+            // Argument checks... (same as before)
             if (string.IsNullOrWhiteSpace(text)) throw new ArgumentException("Text cannot be empty.", nameof(text));
             if (string.IsNullOrWhiteSpace(voiceId)) throw new ArgumentException("Voice ID cannot be empty.", nameof(voiceId));
             if (string.IsNullOrWhiteSpace(outputFilePath)) throw new ArgumentException("Output file path cannot be empty.", nameof(outputFilePath));
@@ -119,57 +139,89 @@ namespace AutoTubeWpf.Services
             this._logger.LogInfo($"Synthesizing speech to '{outputFilePath}' using voice '{voiceId}'. IncludeSpeechMarks: {includeSpeechMarks}. Text length: {text.Length}");
 
             MemoryStream? speechMarksStream = null;
+            Engine actualEngineUsed = Engine.Standard; // Keep track of which engine worked
+
             try
             {
                 string? outputDir = Path.GetDirectoryName(outputFilePath);
                 if (!string.IsNullOrEmpty(outputDir)) Directory.CreateDirectory(outputDir);
 
-                var request = new SynthesizeSpeechRequest
+                // --- Step 1: Get Speech Marks (JSON format) ---
+                if (includeSpeechMarks)
+                {
+                    this._logger.LogDebug("Requesting speech marks (JSON format)...");
+                    var marksRequest = new SynthesizeSpeechRequest
+                    {
+                        Text = text,
+                        VoiceId = VoiceId.FindValue(voiceId),
+                        OutputFormat = OutputFormat.Json,
+                        SpeechMarkTypes = new List<string> { SpeechMarkType.Sentence, SpeechMarkType.Word }
+                        // Engine preference can be added here if needed, but marks usually work with either
+                    };
+
+                    try
+                    {
+                        // Try Neural first for marks if preferred, but fallback might not be needed for JSON
+                        marksRequest.Engine = Engine.Neural;
+                        SynthesizeSpeechResponse marksResponse = await this._pollyClient!.SynthesizeSpeechAsync(marksRequest, cancellationToken);
+                        speechMarksStream = new MemoryStream();
+                        await marksResponse.AudioStream.CopyToAsync(speechMarksStream, cancellationToken);
+                        speechMarksStream.Position = 0;
+                        result.SpeechMarks = this.ParseSpeechMarks(speechMarksStream);
+                        this._logger.LogInfo($"Parsed {result.SpeechMarks?.Count ?? 0} speech marks (using Neural engine preference).");
+                    }
+                    catch (AmazonPollyException pollyEx) when (pollyEx.Message.Contains("Engine incompatibility") || pollyEx.Message.Contains("standard engine")) // Broader catch for standard fallback
+                    {
+                         _logger.LogWarning($"Neural engine likely incompatible for marks with voice '{voiceId}'. Trying Standard engine for marks.");
+                         marksRequest.Engine = Engine.Standard; // Fallback to Standard for marks
+                         SynthesizeSpeechResponse marksResponse = await this._pollyClient!.SynthesizeSpeechAsync(marksRequest, cancellationToken);
+                         speechMarksStream = new MemoryStream();
+                         await marksResponse.AudioStream.CopyToAsync(speechMarksStream, cancellationToken);
+                         speechMarksStream.Position = 0;
+                         result.SpeechMarks = this.ParseSpeechMarks(speechMarksStream);
+                         this._logger.LogInfo($"Parsed {result.SpeechMarks?.Count ?? 0} speech marks (using Standard engine fallback).");
+                    }
+                    // Let other PollyExceptions bubble up
+                }
+
+                // --- Step 2: Get Audio (MP3 format) ---
+                this._logger.LogDebug("Requesting audio stream (MP3 format)...");
+                var audioRequest = new SynthesizeSpeechRequest
                 {
                     Text = text,
-                    VoiceId = VoiceId.FindValue(voiceId), // Use FindValue to get VoiceId object from string
+                    VoiceId = VoiceId.FindValue(voiceId),
                     OutputFormat = OutputFormat.Mp3,
-                    // Request speech marks if needed
-                    SpeechMarkTypes = includeSpeechMarks ? new List<string> { SpeechMarkType.Sentence, SpeechMarkType.Word } : new List<string>()
+                    // Do NOT request SpeechMarkTypes here for MP3
                 };
 
-                // IsAvailable check at the start ensures _pollyClient is not null here
-                SynthesizeSpeechResponse response = await this._pollyClient!.SynthesizeSpeechAsync(request, cancellationToken); // Added ! to satisfy CS8602
+                SynthesizeSpeechResponse audioResponse;
+                try
+                {
+                    // Try Neural first for audio
+                    audioRequest.Engine = Engine.Neural;
+                    audioResponse = await this._pollyClient!.SynthesizeSpeechAsync(audioRequest, cancellationToken);
+                    actualEngineUsed = Engine.Neural; // Record that Neural worked
+                     _logger.LogDebug("Synthesized audio using Neural engine.");
+                }
+                catch (AmazonPollyException pollyEx) when (pollyEx.Message.Contains("Engine incompatibility") || pollyEx.Message.Contains("standard engine"))
+                {
+                     _logger.LogWarning($"Voice '{voiceId}' does not support Neural engine for audio. Retrying with Standard engine.");
+                     audioRequest.Engine = Engine.Standard; // Fallback to Standard
+                     audioResponse = await this._pollyClient!.SynthesizeSpeechAsync(audioRequest, cancellationToken);
+                     actualEngineUsed = Engine.Standard; // Record that Standard worked
+                      _logger.LogDebug("Synthesized audio using Standard engine.");
+                }
+                 // Let other PollyExceptions bubble up
 
                 // Write audio stream
                 using (var fileStream = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write, FileShare.None))
                 {
-                    await response.AudioStream.CopyToAsync(fileStream, cancellationToken);
+                    await audioResponse.AudioStream.CopyToAsync(fileStream, cancellationToken);
                 }
                 this._logger.LogDebug($"Audio stream saved to '{outputFilePath}'.");
 
                 result.Success = true;
-
-                // Process speech marks if requested and available
-                if (includeSpeechMarks && response.AudioStream.Length > 0) // Check AudioStream length as SpeechMarks stream might be separate
-                {
-                    // Note: Polly requires a separate request to get speech marks (OutputFormat.Json).
-                    // This is less efficient than getting both in one call if the API supported it.
-                    this._logger.LogDebug("Requesting speech marks (requires separate API call)...");
-                    var marksRequest = new SynthesizeSpeechRequest
-                    {
-                        Text = text,
-                        VoiceId = VoiceId.FindValue(voiceId), // Re-use the found VoiceId
-                        OutputFormat = OutputFormat.Json, // Request JSON for speech marks
-                        SpeechMarkTypes = new List<string> { SpeechMarkType.Sentence, SpeechMarkType.Word } // Must specify types even for JSON format
-                    };
-                    // IsAvailable check at the start ensures _pollyClient is not null here
-                    SynthesizeSpeechResponse marksResponse = await this._pollyClient.SynthesizeSpeechAsync(marksRequest, cancellationToken);
-
-                    speechMarksStream = new MemoryStream();
-                    await marksResponse.AudioStream.CopyToAsync(speechMarksStream, cancellationToken);
-                     speechMarksStream.Position = 0; // Reset stream position
-
-                     result.SpeechMarks = this.ParseSpeechMarks(speechMarksStream); // Explicit this.
-                     this._logger.LogInfo($"Parsed {result.SpeechMarks?.Count ?? 0} speech marks.");
-                }
-
-                this._logger.LogInfo($"Successfully synthesized speech (Success: {result.Success}).");
+                this._logger.LogInfo($"Successfully synthesized speech (Success: {result.Success}, Engine Used: {actualEngineUsed}).");
                 return result;
             }
             catch (OperationCanceledException)
@@ -177,7 +229,7 @@ namespace AutoTubeWpf.Services
                  result.ErrorMessage = "Speech synthesis cancelled.";
                  this._logger.LogInfo($"Speech synthesis cancelled for output '{outputFilePath}'.");
                  try { if (File.Exists(outputFilePath)) File.Delete(outputFilePath); } catch (Exception delEx) { this._logger.LogWarning($"Failed to delete partial TTS output file '{outputFilePath}' on cancellation: {delEx.Message}"); }
-                 return result; // Return result indicating failure
+                 return result;
             }
             catch (AmazonPollyException pollyEx)
             {

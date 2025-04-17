@@ -9,7 +9,7 @@ using System.Linq; // For FirstOrDefault
 using System.Text; // For StringBuilder in SRT
 using System.Threading; // For CancellationTokenSource
 using System.Threading.Tasks;
-// using System.Windows; // No longer needed for MessageBox
+// using System.Windows; // No longer needed
 
 namespace AutoTubeWpf.ViewModels
 {
@@ -251,17 +251,15 @@ namespace AutoTubeWpf.ViewModels
         [RelayCommand(CanExecute = nameof(CanGenerateAiShort))]
         private async Task GenerateAiShortAsync()
         {
-            _logger.LogInfo("GenerateAiShort command executed.");
+            // --- ADDED Logging ---
+            _logger.LogInfo("--- GenerateAiShortAsync method entered ---");
+            // --- END ADDED ---
 
-            if (!CanGenerateAiShort())
-            {
-                 _dialogService.ShowWarningDialog("Cannot generate AI Short. Please ensure all inputs are valid and required services are available.", "Prerequisites Not Met");
-                 return;
-            }
+            // Relying on CanExecute check
 
             _shortGenerationCts = new CancellationTokenSource();
             IsGeneratingShort = true;
-            GenerateAiShortCommand.NotifyCanExecuteChanged();
+            GenerateAiShortCommand.NotifyCanExecuteChanged(); // Still notify to potentially disable during run
 
             string tempAudioFilePath = Path.Combine(Path.GetTempPath(), $"autotube_tts_{Guid.NewGuid()}.mp3");
             string tempSrtFilePath = Path.Combine(Path.GetTempPath(), $"autotube_sub_{Guid.NewGuid()}.srt");
@@ -360,17 +358,37 @@ namespace AutoTubeWpf.ViewModels
                 GenerateAiShortCommand.NotifyCanExecuteChanged();
             }
         }
+        // CanGenerateAiShort method still exists and includes logging
         private bool CanGenerateAiShort()
         {
-            return !IsGeneratingScript && !IsGeneratingShort
-                && !string.IsNullOrWhiteSpace(BackgroundVideoPath) && File.Exists(BackgroundVideoPath)
-                && !string.IsNullOrWhiteSpace(OutputFolderPath) && Directory.Exists(OutputFolderPath)
-                && !string.IsNullOrWhiteSpace(ScriptText)
-                && !string.IsNullOrWhiteSpace(SelectedPollyVoice)
-                && _aiService.IsAvailable
-                && _ttsService.IsAvailable
-                && _videoProcessorService.IsAvailable;
+            // Log entry point
+            _logger.LogDebug($"Checking CanGenerateAiShort...");
+
+            bool bgVideoOk = !string.IsNullOrWhiteSpace(BackgroundVideoPath) && File.Exists(BackgroundVideoPath);
+            bool outputFolderOk = !string.IsNullOrWhiteSpace(OutputFolderPath) && Directory.Exists(OutputFolderPath);
+            bool scriptOk = !string.IsNullOrWhiteSpace(ScriptText);
+            bool voiceOk = !string.IsNullOrWhiteSpace(SelectedPollyVoice);
+            bool aiOk = _aiService.IsAvailable;
+            bool ttsOk = _ttsService.IsAvailable;
+            bool videoOk = _videoProcessorService.IsAvailable;
+            bool notBusy = !IsGeneratingScript && !IsGeneratingShort;
+
+            bool canGenerate = notBusy && bgVideoOk && outputFolderOk && scriptOk && voiceOk && aiOk && ttsOk && videoOk;
+
+            // Log the state of each check
+            _logger.LogDebug($"CanGenerateAiShort Result: NotBusy={notBusy}, BgVideoOk={bgVideoOk} ('{BackgroundVideoPath}'), OutputFolderOk={outputFolderOk} ('{OutputFolderPath}'), ScriptOk={scriptOk}, VoiceOk={voiceOk} ('{SelectedPollyVoice}'), AiOk={aiOk}, TtsOk={ttsOk}, VideoOk={videoOk} ==> CanGenerate={canGenerate}");
+
+            return canGenerate;
         }
+
+        // --- ADDED: Public helper method for logging status ---
+        public void LogCanGenerateAiShortStatus()
+        {
+             // This just calls the existing private method to log the details
+             _logger.LogDebug("LogCanGenerateAiShortStatus called from code-behind."); // Add specific marker
+             CanGenerateAiShort();
+        }
+        // --- END ADDED ---
 
         // Removed local GenerateSrtFileAsync helper method - now using ISubtitleService
     }

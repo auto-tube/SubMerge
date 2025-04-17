@@ -90,13 +90,16 @@
         </GroupBox>
 
         <!-- Action Buttons Area -->
-        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Left">
-            <Button Content="Generate AI Short"
-                    Command="{Binding GenerateAiShortAsyncCommand}"
-                    IsEnabled="{Binding CanGenerateAiShort}">
-                    <!-- Removed Style and ButtonAssist -->
-            </Button>
-        </StackPanel>
+        <!-- MODIFIED: Added Click handler -->
+        <Button Grid.Row="3" Content="Generate AI Short"
+                Command="{Binding GenerateAiShortAsyncCommand}"
+                IsEnabled="{Binding CanGenerateAiShort}"
+                Click="GenerateAiShortButton_Click"
+                HorizontalAlignment="Left"
+                Margin="0,0,0,0">
+                <!-- Removed Style and ButtonAssist -->
+        </Button>
+        <!-- END MODIFIED -->
 
     </Grid>
 </UserControl>

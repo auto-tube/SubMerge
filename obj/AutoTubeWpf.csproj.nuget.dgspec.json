@@ -82,6 +82,10 @@
             "Ookii.Dialogs.Wpf": {
               "target": "Package",
               "version": "[5.0.1, )"
+            },
+            "Serilog.Extensions.Logging.File": {
+              "target": "Package",
+              "version": "[3.0.0, )"
             }
           },
           "imports": [

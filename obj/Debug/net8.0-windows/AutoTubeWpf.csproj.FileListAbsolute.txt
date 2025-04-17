@@ -30,6 +30,8 @@ C:\Users\V0iD\auto-tube\bin\Debug\net8.0-windows\Grpc.Core.Api.dll
 C:\Users\V0iD\auto-tube\bin\Debug\net8.0-windows\Grpc.Net.Client.dll
 C:\Users\V0iD\auto-tube\bin\Debug\net8.0-windows\Grpc.Net.Common.dll
 C:\Users\V0iD\auto-tube\bin\Debug\net8.0-windows\Microsoft.Bcl.AsyncInterfaces.dll
+C:\Users\V0iD\auto-tube\bin\Debug\net8.0-windows\Microsoft.Extensions.Configuration.Abstractions.dll
+C:\Users\V0iD\auto-tube\bin\Debug\net8.0-windows\Microsoft.Extensions.Configuration.Binder.dll
 C:\Users\V0iD\auto-tube\bin\Debug\net8.0-windows\Microsoft.Extensions.DependencyInjection.dll
 C:\Users\V0iD\auto-tube\bin\Debug\net8.0-windows\Microsoft.Extensions.DependencyInjection.Abstractions.dll
 C:\Users\V0iD\auto-tube\bin\Debug\net8.0-windows\Microsoft.Extensions.Logging.dll
@@ -39,6 +41,13 @@ C:\Users\V0iD\auto-tube\bin\Debug\net8.0-windows\Microsoft.Extensions.Options.dl
 C:\Users\V0iD\auto-tube\bin\Debug\net8.0-windows\Microsoft.Extensions.Primitives.dll
 C:\Users\V0iD\auto-tube\bin\Debug\net8.0-windows\Newtonsoft.Json.dll
 C:\Users\V0iD\auto-tube\bin\Debug\net8.0-windows\Ookii.Dialogs.Wpf.dll
+C:\Users\V0iD\auto-tube\bin\Debug\net8.0-windows\Serilog.dll
+C:\Users\V0iD\auto-tube\bin\Debug\net8.0-windows\Serilog.Extensions.Logging.dll
+C:\Users\V0iD\auto-tube\bin\Debug\net8.0-windows\Serilog.Extensions.Logging.File.dll
+C:\Users\V0iD\auto-tube\bin\Debug\net8.0-windows\Serilog.Formatting.Compact.dll
+C:\Users\V0iD\auto-tube\bin\Debug\net8.0-windows\Serilog.Sinks.Async.dll
+C:\Users\V0iD\auto-tube\bin\Debug\net8.0-windows\Serilog.Sinks.File.dll
+C:\Users\V0iD\auto-tube\bin\Debug\net8.0-windows\Serilog.Sinks.RollingFile.dll
 C:\Users\V0iD\auto-tube\bin\Debug\net8.0-windows\System.Management.dll
 C:\Users\V0iD\auto-tube\bin\Debug\net8.0-windows\cs-CZ\Xceed.Wpf.AvalonDock.resources.dll
 C:\Users\V0iD\auto-tube\bin\Debug\net8.0-windows\de\Xceed.Wpf.AvalonDock.resources.dll
@@ -64,6 +73,7 @@ C:\Users\V0iD\auto-tube\obj\Debug\net8.0-windows\AutoTubeWpf_Content.g.cs
 C:\Users\V0iD\auto-tube\obj\Debug\net8.0-windows\GeneratedInternalTypeHelper.g.cs
 C:\Users\V0iD\auto-tube\obj\Debug\net8.0-windows\AutoTubeWpf_MarkupCompile.cache
 C:\Users\V0iD\auto-tube\obj\Debug\net8.0-windows\AutoTubeWpf_MarkupCompile.lref
+C:\Users\V0iD\auto-tube\obj\Debug\net8.0-windows\App.baml
 C:\Users\V0iD\auto-tube\obj\Debug\net8.0-windows\MainWindow.baml
 C:\Users\V0iD\auto-tube\obj\Debug\net8.0-windows\Views\AiShortView.baml
 C:\Users\V0iD\auto-tube\obj\Debug\net8.0-windows\Views\ClippingView.baml
@@ -81,4 +91,3 @@ C:\Users\V0iD\auto-tube\obj\Debug\net8.0-windows\refint\AutoTubeWpf.dll
 C:\Users\V0iD\auto-tube\obj\Debug\net8.0-windows\AutoTubeWpf.pdb
 C:\Users\V0iD\auto-tube\obj\Debug\net8.0-windows\AutoTubeWpf.genruntimeconfig.cache
 C:\Users\V0iD\auto-tube\obj\Debug\net8.0-windows\ref\AutoTubeWpf.dll
-C:\Users\V0iD\auto-tube\obj\Debug\net8.0-windows\App.baml

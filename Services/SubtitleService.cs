@@ -4,9 +4,11 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json; // For parsing speech marks
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Diagnostics; // Added for Debug
 
 namespace AutoTubeWpf.Services
 {
@@ -31,7 +33,7 @@ namespace AutoTubeWpf.Services
             string outputSrtPath,
             List<SpeechMark>? speechMarks = null, // Added optional speech marks
             int wordsPerMinute = 150,
-            int maxCharsPerLine = 42,
+            int maxCharsPerLine = 38, // MODIFIED: Reduced default max chars
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(scriptText)) throw new ArgumentException("Script text cannot be empty.", nameof(scriptText));
@@ -40,127 +42,130 @@ namespace AutoTubeWpf.Services
             if (wordsPerMinute <= 0) throw new ArgumentException("Words per minute must be positive.", nameof(wordsPerMinute));
             if (maxCharsPerLine <= 0) throw new ArgumentException("Max chars per line must be positive.", nameof(maxCharsPerLine));
 
-            _logger.LogInfo($"Generating SRT file at '{outputSrtPath}'. Using speech marks: {speechMarks != null && speechMarks.Any()}");
+            _logger.LogInfo($"Generating SRT file at '{outputSrtPath}'. Speech marks provided: {speechMarks != null && speechMarks.Any()}. Max Chars/Line: {maxCharsPerLine}"); // Log max chars
 
             var srtBuilder = new StringBuilder();
             int sequenceNumber = 1;
+            bool usedSpeechMarksSuccessfully = false;
 
             // --- Generate SRT Entries ---
-            bool usedSpeechMarks = false;
-            if (speechMarks != null && speechMarks.Any(m => m.Type == "sentence" || m.Type == "word"))
+            // --- Prioritize Word Marks ---
+            if (speechMarks != null && speechMarks.Any(m => m.Type == "word"))
             {
-                // --- Use Speech Marks for Timing ---
-                _logger.LogDebug("Attempting to generate SRT using speech marks.");
-                var sentenceMarks = speechMarks.Where(m => m.Type == "sentence").OrderBy(m => m.Time).ToList();
-
-                if (sentenceMarks.Any())
+                _logger.LogInfo("--- Attempting SRT generation using Word Marks ---");
+                var wordMarks = speechMarks.Where(m => m.Type == "word").OrderBy(m => m.Time).ToList();
+                if (wordMarks.Any())
                 {
-                    _logger.LogDebug($"Using {sentenceMarks.Count} sentence marks for timing.");
-                    for (int i = 0; i < sentenceMarks.Count; i++)
+                    _logger.LogDebug($"Processing {wordMarks.Count} word marks.");
+                    var currentLine = new StringBuilder();
+                    TimeSpan lineStartTime = TimeSpan.Zero;
+
+                    for (int i = 0; i < wordMarks.Count; i++)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        var currentMark = sentenceMarks[i];
-                        // End time is start time of next sentence mark, or total duration for the last one.
-                        // Subtract a small buffer (e.g., 50ms) to avoid overlap.
-                        var nextMarkTimeMs = (i + 1 < sentenceMarks.Count)
-                            ? sentenceMarks[i + 1].Time
-                            : (int)totalDuration.TotalMilliseconds;
-
-                        TimeSpan startTime = TimeSpan.FromMilliseconds(currentMark.Time);
-                        TimeSpan endTime = TimeSpan.FromMilliseconds(Math.Max(currentMark.Time + 50, nextMarkTimeMs - 50)); // Ensure min duration and buffer
-
-                        // Clamp end time to total duration
-                        if (endTime > totalDuration) endTime = totalDuration;
-                        // Ensure end time is after start time
-                        if (endTime <= startTime) endTime = startTime + TimeSpan.FromMilliseconds(500); // Minimum display time if overlap occurs
-
-                        string formattedText = FormatTextForSrt(currentMark.Value, maxCharsPerLine);
-
-                        srtBuilder.AppendLine(sequenceNumber.ToString());
-                        srtBuilder.AppendLine($"{startTime:hh\\:mm\\:ss\\,fff} --> {endTime:hh\\:mm\\:ss\\,fff}");
-                        srtBuilder.AppendLine(formattedText);
-                        srtBuilder.AppendLine();
-                        sequenceNumber++;
-                    }
-                    usedSpeechMarks = true;
-                }
-                else // Fallback to grouping word marks if no sentence marks
-                {
-                    _logger.LogDebug("No sentence marks found, attempting to group word marks.");
-                    var wordMarks = speechMarks.Where(m => m.Type == "word").OrderBy(m => m.Time).ToList();
-                    if (wordMarks.Any())
-                    {
-                        var currentLine = new StringBuilder();
-                        TimeSpan lineStartTime = TimeSpan.Zero;
-                        int lineStartIndex = 0;
-
-                        for (int i = 0; i < wordMarks.Count; i++)
+                        var currentWordMark = wordMarks[i];
+                        if (currentLine.Length == 0)
                         {
-                            cancellationToken.ThrowIfCancellationRequested();
-                            var currentWordMark = wordMarks[i];
-                            if (currentLine.Length == 0)
+                            lineStartTime = TimeSpan.FromMilliseconds(currentWordMark.Time);
+                        }
+
+                        string wordToAdd = currentWordMark.Value;
+                        string wordWithSpace = wordToAdd + " ";
+                        bool isLastWord = (i == wordMarks.Count - 1);
+
+                        if ((currentLine.Length > 0 && currentLine.Length + wordWithSpace.Length > maxCharsPerLine) || isLastWord)
+                        {
+                            if (isLastWord && (currentLine.Length + wordToAdd.Length <= maxCharsPerLine || currentLine.Length == 0))
                             {
-                                lineStartTime = TimeSpan.FromMilliseconds(currentWordMark.Time);
-                                lineStartIndex = i; // Remember the index of the first word in the line
+                                if (currentLine.Length > 0) currentLine.Append(" ");
+                                currentLine.Append(wordToAdd);
                             }
 
-                            string wordToAdd = currentWordMark.Value + " ";
-                            bool isLastWord = (i == wordMarks.Count - 1);
+                            TimeSpan lineEndTime = isLastWord
+                                                ? totalDuration
+                                                : TimeSpan.FromMilliseconds(currentWordMark.Time - 50);
 
-                            // Check if adding the next word exceeds the line limit OR if it's the last word
-                            if ((currentLine.Length + wordToAdd.Length > maxCharsPerLine && currentLine.Length > 0) || isLastWord)
+                            if (lineEndTime <= lineStartTime) lineEndTime = lineStartTime + TimeSpan.FromMilliseconds(500);
+                            if (lineEndTime > totalDuration) lineEndTime = totalDuration;
+
+                            string formattedText = FormatTextForSrt(currentLine.ToString(), maxCharsPerLine); // Format the built line
+
+                            srtBuilder.AppendLine(sequenceNumber.ToString());
+                            srtBuilder.AppendLine($"{lineStartTime:hh\\:mm\\:ss\\,fff} --> {lineEndTime:hh\\:mm\\:ss\\,fff}");
+                            srtBuilder.AppendLine(formattedText);
+                            srtBuilder.AppendLine();
+                            sequenceNumber++;
+
+                            if (!isLastWord)
                             {
-                                // If it's the last word, add it before finalizing
-                                if (isLastWord) currentLine.Append(wordToAdd);
-
-                                // Finalize previous line
-                                // End time is the start time of the current word (which starts the *next* line), minus buffer
-                                // Or, if it's the very last word, use the total duration.
-                                TimeSpan lineEndTime = isLastWord
-                                                    ? totalDuration
-                                                    : TimeSpan.FromMilliseconds(currentWordMark.Time - 10);
-
-                                // Ensure minimum duration and end time is after start time
-                                if (lineEndTime <= lineStartTime) lineEndTime = lineStartTime + TimeSpan.FromMilliseconds(500);
-                                // Clamp to total duration
-                                if (lineEndTime > totalDuration) lineEndTime = totalDuration;
-
-
-                                string formattedText = FormatTextForSrt(currentLine.ToString().Trim(), maxCharsPerLine); // Format the built line
-
-                                srtBuilder.AppendLine(sequenceNumber.ToString());
-                                srtBuilder.AppendLine($"{lineStartTime:hh\\:mm\\:ss\\,fff} --> {lineEndTime:hh\\:mm\\:ss\\,fff}");
-                                srtBuilder.AppendLine(formattedText);
-                                srtBuilder.AppendLine();
-                                sequenceNumber++;
-
-                                // Start new line only if it wasn't the last word
-                                if (!isLastWord)
-                                {
-                                    currentLine.Clear().Append(wordToAdd.Trim());
-                                    lineStartTime = TimeSpan.FromMilliseconds(currentWordMark.Time);
-                                    lineStartIndex = i;
-                                }
-                                else
-                                {
-                                    currentLine.Clear(); // Clear if it was the last word
-                                }
+                                currentLine.Clear().Append(wordToAdd);
+                                lineStartTime = TimeSpan.FromMilliseconds(currentWordMark.Time);
                             }
                             else
                             {
-                                currentLine.Append(wordToAdd);
+                                currentLine.Clear();
                             }
                         }
-                        usedSpeechMarks = true;
+                        else
+                        {
+                             if (currentLine.Length > 0) currentLine.Append(" ");
+                             currentLine.Append(wordToAdd);
+                        }
                     }
+                    usedSpeechMarksSuccessfully = true;
+                    _logger.LogInfo($"--- Successfully generated {sequenceNumber - 1} SRT entries using Word Marks ---");
+                }
+                else
+                {
+                     _logger.LogWarning("Speech marks provided, but no word marks found within them.");
                 }
             }
-
-            // --- Fallback to Estimated Timing if speech marks weren't used ---
-            if (!usedSpeechMarks)
+            // --- Fallback to Sentence Marks ---
+            else if (speechMarks != null && speechMarks.Any(m => m.Type == "sentence"))
             {
-                _logger.LogWarning("No usable speech marks found or provided. Falling back to estimated timing (WPM).");
+                 _logger.LogInfo("--- No Word Marks found/used. Attempting SRT generation using Sentence Marks ---");
+                 var sentenceMarks = speechMarks.Where(m => m.Type == "sentence").OrderBy(m => m.Time).ToList();
+
+                 if (sentenceMarks.Any())
+                 {
+                     _logger.LogDebug($"Processing {sentenceMarks.Count} sentence marks.");
+                     for (int i = 0; i < sentenceMarks.Count; i++)
+                     {
+                         cancellationToken.ThrowIfCancellationRequested();
+                         var currentMark = sentenceMarks[i];
+                         var nextMarkTimeMs = (i + 1 < sentenceMarks.Count)
+                             ? sentenceMarks[i + 1].Time
+                             : (int)totalDuration.TotalMilliseconds;
+
+                         TimeSpan startTime = TimeSpan.FromMilliseconds(currentMark.Time);
+                         TimeSpan endTime = TimeSpan.FromMilliseconds(Math.Max(currentMark.Time + 50, nextMarkTimeMs - 50));
+
+                         if (endTime > totalDuration) endTime = totalDuration;
+                         if (endTime <= startTime) endTime = startTime + TimeSpan.FromMilliseconds(500);
+
+                         string formattedText = FormatTextForSrt(currentMark.Value, maxCharsPerLine);
+
+                         srtBuilder.AppendLine(sequenceNumber.ToString());
+                         srtBuilder.AppendLine($"{startTime:hh\\:mm\\:ss\\,fff} --> {endTime:hh\\:mm\\:ss\\,fff}");
+                         srtBuilder.AppendLine(formattedText);
+                         srtBuilder.AppendLine();
+                         sequenceNumber++;
+                     }
+                     usedSpeechMarksSuccessfully = true;
+                     _logger.LogInfo($"--- Successfully generated {sequenceNumber - 1} SRT entries using Sentence Marks ---");
+                 }
+                 else
+                 {
+                      _logger.LogWarning("Speech marks provided, but no sentence marks found either.");
+                 }
+            }
+
+            // --- Fallback to Estimated Timing ---
+            if (!usedSpeechMarksSuccessfully)
+            {
+                _logger.LogInfo("--- Falling back to SRT generation using Estimated Timing (WPM) ---");
                 await GenerateSrtByEstimationAsync(srtBuilder, scriptText, totalDuration, wordsPerMinute, maxCharsPerLine, cancellationToken);
+                 _logger.LogInfo($"--- Finished generating {srtBuilder.ToString().Split(new[] { "\r\n\r\n", "\n\n" }, StringSplitOptions.RemoveEmptyEntries).Length} SRT entries using Estimation ---");
             }
 
 
@@ -170,7 +175,7 @@ namespace AutoTubeWpf.Services
                 string? outputDir = Path.GetDirectoryName(outputSrtPath);
                 if (!string.IsNullOrEmpty(outputDir)) Directory.CreateDirectory(outputDir);
                 await File.WriteAllTextAsync(outputSrtPath, srtBuilder.ToString(), Encoding.UTF8, cancellationToken);
-                _logger.LogInfo($"Successfully generated SRT file: {outputSrtPath}");
+                _logger.LogInfo($"Successfully wrote SRT file: {outputSrtPath}");
             }
             catch (IOException ioEx) { _logger.LogError($"IO error writing SRT file '{outputSrtPath}': {ioEx.Message}", ioEx); throw; }
             catch (Exception ex) { _logger.LogError($"Unexpected error generating SRT file '{outputSrtPath}': {ex.Message}", ex); throw new Exception($"Failed to generate SRT file: {ex.Message}", ex); }
@@ -203,12 +208,15 @@ namespace AutoTubeWpf.Services
                 int wordCount = cleanedSegment.Split(new[] { ' ', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Length;
                 double estimatedDurationSeconds = wordCount * secondsPerWord;
                 estimatedDurationSeconds = Math.Max(1.0, estimatedDurationSeconds);
-                estimatedDurationSeconds = Math.Min(estimatedDurationSeconds, totalDuration.TotalSeconds - currentTimeSeconds);
+                double remainingTime = totalDuration.TotalSeconds - currentTimeSeconds;
+                estimatedDurationSeconds = Math.Min(estimatedDurationSeconds, Math.Max(0.1, remainingTime - 0.1));
 
-                if (currentTimeSeconds >= totalDuration.TotalSeconds) break;
+                if (currentTimeSeconds >= totalDuration.TotalSeconds || estimatedDurationSeconds <= 0) break;
 
                 TimeSpan startTime = TimeSpan.FromSeconds(currentTimeSeconds);
                 TimeSpan endTime = TimeSpan.FromSeconds(currentTimeSeconds + estimatedDurationSeconds);
+                 if (endTime > totalDuration) endTime = totalDuration;
+
                 string formattedText = FormatTextForSrt(cleanedSegment, maxCharsPerLine);
 
                 srtBuilder.AppendLine(sequenceNumber.ToString());
@@ -219,30 +227,6 @@ namespace AutoTubeWpf.Services
                 sequenceNumber++;
                 currentTimeSeconds += estimatedDurationSeconds;
             }
-
-             if (currentTimeSeconds < totalDuration.TotalSeconds && srtBuilder.Length > 0)
-             {
-                 _logger.LogDebug($"Adjusting end time of last subtitle entry from {currentTimeSeconds}s to {totalDuration.TotalSeconds}s.");
-                 string srtString = srtBuilder.ToString();
-                 int lastTimestampIndex = srtString.LastIndexOf(" --> ");
-                 if (lastTimestampIndex > 0)
-                 {
-                     int lineStartIndex = srtString.LastIndexOf('\n', lastTimestampIndex) + 1;
-                     if (lineStartIndex > 0 && lineStartIndex < srtString.Length) // Added boundary check
-                     {
-                         int lineEndIndex = srtString.IndexOf('\n', lastTimestampIndex);
-                         if (lineEndIndex < 0) lineEndIndex = srtString.Length; // Handle case where it's the very last line
-                         string timestampLine = srtString.Substring(lineStartIndex, lineEndIndex - lineStartIndex).TrimEnd(); // Trim potential trailing CR
-                         string[] times = timestampLine.Split(new[] { " --> " }, StringSplitOptions.None);
-                         if (times.Length == 2)
-                         {
-                             string newEndTime = totalDuration.ToString(@"hh\:mm\:ss\,fff", CultureInfo.InvariantCulture);
-                             string newTimestampLine = $"{times[0]} --> {newEndTime}";
-                             srtBuilder.Replace(timestampLine, newTimestampLine, lineStartIndex, timestampLine.Length);
-                         }
-                     }
-                 }
-             }
              await Task.CompletedTask;
         }
 
@@ -261,8 +245,9 @@ namespace AutoTubeWpf.Services
                 else { lines.Add(currentLine.ToString()); currentLine.Clear().Append(word); }
             }
             if (currentLine.Length > 0) { lines.Add(currentLine.ToString()); }
-            // Limit to max 2 lines for typical SRT display
-            return string.Join(Environment.NewLine, lines.Take(2));
+            // --- MODIFIED: Limit to max 3 lines ---
+            return string.Join(Environment.NewLine, lines.Take(3));
+            // --- END MODIFIED ---
         }
     }
 }

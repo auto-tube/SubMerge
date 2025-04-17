@@ -256,11 +256,11 @@ namespace AutoTubeWpf.Services
             var processStartInfo = new ProcessStartInfo { /* ... */
                 FileName = FfmpegPath,
                 Arguments = arguments,
-                RedirectStandardOutput = false,
-                RedirectStandardError = true,
+                RedirectStandardOutput = false, // Keep false
+                RedirectStandardError = true,   // Keep true for progress/errors
                 UseShellExecute = false,
                 CreateNoWindow = true,
-                StandardOutputEncoding = Encoding.UTF8,
+                // StandardOutputEncoding = Encoding.UTF8, // REMOVED THIS LINE
                 StandardErrorEncoding = Encoding.UTF8
             };
             DateTime startTime = DateTime.UtcNow;
@@ -462,18 +462,22 @@ namespace AutoTubeWpf.Services
              catch (Exception ex) { _logger.LogError($"Failed to create output directory for '{outputPath}': {ex.Message}", ex); throw new IOException($"Failed to create output directory: {ex.Message}", ex); }
 
              var argsBuilder = new StringBuilder();
-             argsBuilder.Append($"-stream_loop -1 -i \"{backgroundVideoPath}\" ");
+             // --- MODIFIED: Removed stream_loop ---
+             argsBuilder.Append($"-i \"{backgroundVideoPath}\" ");
+             // --- END MODIFIED ---
              argsBuilder.Append($"-i \"{audioPath}\" ");
              string escapedSubtitlePath = subtitlePath.Replace("\\", "/").Replace(":", "\\:");
 
              argsBuilder.Append("-filter_complex \"");
              argsBuilder.Append("[0:v]crop=ih*9/16:ih,scale=1080:1920,setsar=1");
-             argsBuilder.Append($",subtitles='{escapedSubtitlePath}'");
+             // --- MODIFIED: Added subtitle styling ---
+             argsBuilder.Append($",subtitles='{escapedSubtitlePath}':force_style='Alignment=2,MarginV=30,WrapStyle=2'"); // Alignment=2 (BottomCenter), MarginV=30px, WrapStyle=2 (SmartWrap)
+             // --- END MODIFIED ---
              argsBuilder.Append("[outv]\"");
 
              argsBuilder.Append(" -map \"[outv]\" ");
              argsBuilder.Append("-map 1:a ");
-             argsBuilder.Append($"-t {audioDurationSeconds.ToString(CultureInfo.InvariantCulture)} ");
+             argsBuilder.Append($"-t {audioDurationSeconds.ToString(CultureInfo.InvariantCulture)} "); // Trim output to audio duration
              argsBuilder.Append("-c:v libx264 -preset medium -crf 23 ");
              argsBuilder.Append("-c:a aac -b:a 128k ");
              argsBuilder.Append("-movflags +faststart ");

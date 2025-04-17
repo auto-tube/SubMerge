@@ -11,9 +11,9 @@
            </ResourceDictionary.MergedDictionaries>
 
            <!-- Define Colors and Brushes -->
-           <!-- Gradient for Backgrounds -->
+           <!-- Gradient for Backgrounds (Main Window/UserControl) -->
            <LinearGradientBrush x:Key="AppGradientBackgroundBrush" StartPoint="0,0" EndPoint="1,1">
-               <GradientStop Color="#FF00d9f6" Offset="0.0" />  <!-- Adjusted #0d9f6 -->
+               <GradientStop Color="#FF00d9f6" Offset="0.0" />
                <GradientStop Color="#FF00def1" Offset="0.11" />
                <GradientStop Color="#FF00e3ea" Offset="0.22" />
                <GradientStop Color="#FF00e8e1" Offset="0.33" />
@@ -26,13 +26,62 @@
            </LinearGradientBrush>
 
            <!-- Dark Theme Colors for Specific Controls -->
-           <SolidColorBrush x:Key="AppForegroundBrush" Color="Black"/> <!-- Changed to Black -->
-           <SolidColorBrush x:Key="AppControlForegroundBrush" Color="Black"/> <!-- Changed to Black -->
+           <SolidColorBrush x:Key="AppForegroundBrush" Color="Black"/>
+           <SolidColorBrush x:Key="AppControlForegroundBrush" Color="Black"/>
            <SolidColorBrush x:Key="AppControlBorderBrush" Color="#FF555555"/>
-           <SolidColorBrush x:Key="AppButtonBackgroundBrush" Color="#FF505055"/>
-           <SolidColorBrush x:Key="AppButtonForegroundBrush" Color="#FFF1F1F1"/> <!-- Keep button text white -->
            <SolidColorBrush x:Key="AppProgressBarBrush" Color="LimeGreen"/>
-           <SolidColorBrush x:Key="DataGridHeaderForegroundBrush" Color="#FFF1F1F1"/> <!-- Keep header text white -->
+           <SolidColorBrush x:Key="DataGridHeaderForegroundBrush" Color="#FFF1F1F1"/>
+
+           <!-- === Gradient Brushes for Tabs === -->
+           <LinearGradientBrush x:Key="VideoClipperTabBrush" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#FF19ffe8" Offset="0.0"/>
+                <GradientStop Color="#FF00e2ed" Offset="0.111"/>
+                <GradientStop Color="#FF1bc4e6" Offset="0.222"/>
+                <GradientStop Color="#FF46a6d4" Offset="0.333"/>
+                <GradientStop Color="#FF5b88b9" Offset="0.444"/>
+                <GradientStop Color="#FF626d98" Offset="0.555"/>
+                <GradientStop Color="#FF5d5474" Offset="0.666"/>
+                <GradientStop Color="#FF4e3f52" Offset="0.777"/>
+                <GradientStop Color="#FF392d35" Offset="0.888"/>
+                <GradientStop Color="#FF201d1e" Offset="1.0"/>
+           </LinearGradientBrush>
+           <LinearGradientBrush x:Key="AiShortsTabBrush" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#FFff9e15" Offset="0.0"/>
+                <GradientStop Color="#FFef8731" Offset="0.111"/>
+                <GradientStop Color="#FFdc723c" Offset="0.222"/>
+                <GradientStop Color="#FFc56042" Offset="0.333"/>
+                <GradientStop Color="#FFab5144" Offset="0.444"/>
+                <GradientStop Color="#FF904543" Offset="0.555"/>
+                <GradientStop Color="#FF733a3f" Offset="0.666"/>
+                <GradientStop Color="#FF573037" Offset="0.777"/>
+                <GradientStop Color="#FF3b272c" Offset="0.888"/>
+                <GradientStop Color="#FF201d1e" Offset="1.0"/>
+           </LinearGradientBrush>
+           <LinearGradientBrush x:Key="MetadataTabBrush" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#FF201d1e" Offset="0.0"/>
+                <GradientStop Color="#FF40292d" Offset="0.111"/>
+                <GradientStop Color="#FF613637" Offset="0.222"/>
+                <GradientStop Color="#FF80443a" Offset="0.333"/>
+                <GradientStop Color="#FF9c5737" Offset="0.444"/>
+                <GradientStop Color="#FFb16f2f" Offset="0.555"/>
+                <GradientStop Color="#FFbf8b21" Offset="0.666"/>
+                <GradientStop Color="#FFc4aa08" Offset="0.777"/>
+                <GradientStop Color="#FFbdcb00" Offset="0.888"/>
+                <GradientStop Color="#FFa9ee17" Offset="1.0"/>
+           </LinearGradientBrush>
+           <LinearGradientBrush x:Key="SettingsTabBrush" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#FF201d1e" Offset="0.0"/>
+                <GradientStop Color="#FF353133" Offset="0.111"/>
+                <GradientStop Color="#FF4b4749" Offset="0.222"/>
+                <GradientStop Color="#FF625e60" Offset="0.333"/>
+                <GradientStop Color="#FF7a7678" Offset="0.444"/>
+                <GradientStop Color="#FF938f91" Offset="0.555"/>
+                <GradientStop Color="#FFada9ab" Offset="0.666"/>
+                <GradientStop Color="#FFc8c3c6" Offset="0.777"/>
+                <GradientStop Color="#FFe3dee2" Offset="0.888"/>
+                <GradientStop Color="#FFfffafe" Offset="1.0"/>
+           </LinearGradientBrush>
+           <!-- === END Gradient Brushes === -->
 
 
            <!-- Add simple application-wide styles -->
@@ -50,21 +99,52 @@
                <Setter Property="BorderBrush" Value="{StaticResource AppControlBorderBrush}"/>
                <Setter Property="BorderThickness" Value="1"/>
                <Setter Property="Foreground" Value="{StaticResource AppForegroundBrush}"/>
-               <Setter Property="Background" Value="{StaticResource AppGradientBackgroundBrush}"/> <!-- Use Gradient -->
+               <Setter Property="Background" Value="Transparent"/>
            </Style>
-           <Style TargetType="Button">
+
+           <!-- === MODIFIED Button Style === -->
+           <Style TargetType="{x:Type Button}">
                <Setter Property="Padding" Value="10,5"/>
                <Setter Property="Margin" Value="5"/>
                <Setter Property="MinWidth" Value="75"/>
-               <Setter Property="Background" Value="{StaticResource AppButtonBackgroundBrush}"/>
-               <Setter Property="Foreground" Value="{StaticResource AppButtonForegroundBrush}"/> <!-- Keep White -->
+               <Setter Property="Background" Value="Black"/>
+               <Setter Property="Foreground" Value="White"/> <!-- Set default foreground to White -->
                <Setter Property="BorderBrush" Value="{StaticResource AppControlBorderBrush}"/>
+               <Setter Property="Template">
+                   <Setter.Value>
+                       <ControlTemplate TargetType="{x:Type Button}">
+                           <Border Background="{TemplateBinding Background}"
+                                   BorderBrush="{TemplateBinding BorderBrush}"
+                                   BorderThickness="{TemplateBinding BorderThickness}"
+                                   CornerRadius="3">
+                               <!-- Use TemplateBinding for Foreground on ContentPresenter -->
+                               <ContentPresenter HorizontalAlignment="Center"
+                                                 VerticalAlignment="Center"
+                                                 Margin="{TemplateBinding Padding}"
+                                                 TextBlock.Foreground="{TemplateBinding Foreground}"/>
+                           </Border>
+                           <ControlTemplate.Triggers>
+                               <Trigger Property="IsMouseOver" Value="True">
+                                   <Setter Property="Background" Value="#FF333333"/>
+                               </Trigger>
+                               <Trigger Property="IsPressed" Value="True">
+                                   <Setter Property="Background" Value="#FF555555"/>
+                               </Trigger>
+                               <Trigger Property="IsEnabled" Value="False">
+                                   <Setter Property="Opacity" Value="0.5"/>
+                               </Trigger>
+                           </ControlTemplate.Triggers>
+                       </ControlTemplate>
+                   </Setter.Value>
+               </Setter>
            </Style>
+           <!-- === END MODIFIED Style === -->
+
            <Style TargetType="TextBox">
                <Setter Property="Padding" Value="5"/>
                <Setter Property="Margin" Value="5"/>
                <Setter Property="VerticalContentAlignment" Value="Center"/>
-               <Setter Property="Background" Value="{StaticResource AppGradientBackgroundBrush}"/> <!-- Use Gradient -->
+               <Setter Property="Background" Value="White"/>
                <Setter Property="Foreground" Value="{StaticResource AppControlForegroundBrush}"/>
                <Setter Property="BorderBrush" Value="{StaticResource AppControlBorderBrush}"/>
            </Style>
@@ -72,7 +152,7 @@
                <Setter Property="Padding" Value="5"/>
                <Setter Property="Margin" Value="5"/>
                <Setter Property="VerticalContentAlignment" Value="Center"/>
-               <Setter Property="Background" Value="{StaticResource AppGradientBackgroundBrush}"/> <!-- Use Gradient -->
+               <Setter Property="Background" Value="White"/>
                <Setter Property="Foreground" Value="{StaticResource AppControlForegroundBrush}"/>
                <Setter Property="BorderBrush" Value="{StaticResource AppControlBorderBrush}"/>
            </Style>
@@ -80,7 +160,7 @@
                <Setter Property="Padding" Value="5"/>
                <Setter Property="Margin" Value="5"/>
                <Setter Property="VerticalContentAlignment" Value="Center"/>
-               <Setter Property="Background" Value="{StaticResource AppGradientBackgroundBrush}"/> <!-- Use Gradient -->
+               <Setter Property="Background" Value="White"/>
                <Setter Property="Foreground" Value="{StaticResource AppControlForegroundBrush}"/>
                <Setter Property="BorderBrush" Value="{StaticResource AppControlBorderBrush}"/>
            </Style>
@@ -98,22 +178,27 @@
                <Setter Property="BorderBrush" Value="{StaticResource AppControlBorderBrush}"/>
            </Style>
            <Style TargetType="TabItem">
-               <Setter Property="Background" Value="{StaticResource AppGradientBackgroundBrush}"/>
-               <Setter Property="Foreground" Value="{StaticResource AppForegroundBrush}"/> <!-- Use main foreground -->
+               <Setter Property="Background" Value="#FFE0E0E0"/>
+               <Setter Property="Foreground" Value="{StaticResource AppForegroundBrush}"/>
                <Setter Property="BorderBrush" Value="{StaticResource AppControlBorderBrush}"/>
                <Setter Property="Padding" Value="10,5"/>
                <Setter Property="Margin" Value="0,0,2,0"/>
+               <Style.Triggers>
+                    <Trigger Property="IsSelected" Value="True">
+                         <Setter Property="Background" Value="WhiteSmoke"/>
+                    </Trigger>
+               </Style.Triggers>
            </Style>
            <Style TargetType="DataGrid">
-               <Setter Property="Background" Value="{StaticResource AppGradientBackgroundBrush}"/> <!-- Use Gradient -->
+               <Setter Property="Background" Value="White"/>
                <Setter Property="Foreground" Value="{StaticResource AppControlForegroundBrush}"/>
                <Setter Property="BorderBrush" Value="{StaticResource AppControlBorderBrush}"/>
                <Setter Property="HorizontalGridLinesBrush" Value="{StaticResource AppControlBorderBrush}"/>
                <Setter Property="VerticalGridLinesBrush" Value="{StaticResource AppControlBorderBrush}"/>
            </Style>
            <Style TargetType="DataGridColumnHeader">
-               <Setter Property="Background" Value="{StaticResource AppButtonBackgroundBrush}"/> <!-- Keep Header distinct -->
-               <Setter Property="Foreground" Value="{StaticResource DataGridHeaderForegroundBrush}"/> <!-- Keep White -->
+               <Setter Property="Background" Value="#FF505055"/>
+               <Setter Property="Foreground" Value="{StaticResource DataGridHeaderForegroundBrush}"/>
                <Setter Property="BorderBrush" Value="{StaticResource AppControlBorderBrush}"/>
                <Setter Property="BorderThickness" Value="0,0,1,1"/>
                <Setter Property="Padding" Value="5"/>
@@ -123,16 +208,16 @@
                <Setter Property="BorderBrush" Value="{StaticResource AppControlBorderBrush}"/>
                <Setter Property="BorderThickness" Value="0,0,1,1"/>
                <Setter Property="Foreground" Value="{StaticResource AppControlForegroundBrush}"/>
-               <Setter Property="Background" Value="Transparent"/> <!-- Make cell background transparent -->
+               <Setter Property="Background" Value="Transparent"/>
            </Style>
            <Style TargetType="ProgressBar">
                <Setter Property="Foreground" Value="{StaticResource AppProgressBarBrush}"/>
-               <Setter Property="Background" Value="{StaticResource AppGradientBackgroundBrush}"/> <!-- Use Gradient -->
+               <Setter Property="Background" Value="#FFE0E0E0"/>
                <Setter Property="BorderBrush" Value="{StaticResource AppControlBorderBrush}"/>
                <Setter Property="BorderThickness" Value="1"/>
            </Style>
            <Style TargetType="StatusBar">
-               <Setter Property="Background" Value="{StaticResource AppGradientBackgroundBrush}"/>
+               <Setter Property="Background" Value="#FFE0E0E0"/>
                <Setter Property="Foreground" Value="{StaticResource AppForegroundBrush}"/>
            </Style>
            <Style TargetType="StatusBarItem">

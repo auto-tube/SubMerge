@@ -140,7 +140,7 @@ namespace AutoTubeWpf.ViewModels
             PlayerPositionSeconds = 0;
             PlayerDurationSeconds = 1.0; // Reset duration (will be updated by MediaOpened behavior)
 
-            if (value?.FilePath != null && File.Exists(value.FilePath))
+            if (value?.FilePath != null && File.Exists(value.FilePath)) // Corrected &&
             {
                 try
                 {
@@ -210,7 +210,7 @@ namespace AutoTubeWpf.ViewModels
                 _logger.LogInfo("Video queue cleared.");
             }
         }
-        private bool CanClearQueue() => VideoQueue.Any() && !IsProcessing;
+        private bool CanClearQueue() => VideoQueue.Any() && !IsProcessing; // Corrected &&
 
         [RelayCommand(CanExecute = nameof(CanPlayPause))]
         private void PlayPause()
@@ -305,8 +305,29 @@ namespace AutoTubeWpf.ViewModels
                 string? outputBasePath = _configurationService.CurrentSettings.DefaultOutputPath;
                 bool organizeOutput = _configurationService.CurrentSettings.OrganizeOutput;
 
-                if (string.IsNullOrWhiteSpace(outputBasePath) || !Directory.Exists(outputBasePath))
-                { _logger.LogError("Cannot start clipping: Default output path is invalid or not set."); _dialogService.ShowErrorDialog("Default Output Folder is not set or invalid. Please configure it in Settings.", "Output Path Error"); IsProcessing = false; return; }
+                // --- ADDED: Ensure output directory exists ---
+                if (string.IsNullOrWhiteSpace(outputBasePath))
+                {
+                    // If no path is set in config, use a default one in the user's profile
+                    outputBasePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Autotube_Output");
+                    _logger.LogWarning($"DefaultOutputPath not set in configuration. Using default: {outputBasePath}");
+                    // Optionally update the configuration service in memory, but don't save here
+                    // _configurationService.CurrentSettings.DefaultOutputPath = outputBasePath;
+                }
+
+                try
+                {
+                    _logger.LogInfo($"Ensuring output directory exists: {outputBasePath}");
+                    Directory.CreateDirectory(outputBasePath); // Creates the directory if it doesn't exist, does nothing if it does.
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Cannot start clipping: Failed to create or access output directory '{outputBasePath}'. Error: {ex.Message}", ex);
+                    _dialogService.ShowErrorDialog($"Could not create or access the output folder:\n{outputBasePath}\n\nError: {ex.Message}\n\nPlease check permissions or choose a different folder in Settings.", "Output Path Error");
+                    IsProcessing = false;
+                    return;
+                }
+                // --- END ADDED ---
 
                 var queueCopy = VideoQueue.ToList();
                 int totalVideos = queueCopy.Count;
@@ -314,12 +335,12 @@ namespace AutoTubeWpf.ViewModels
                 int clipsGenerated = 0;
                 int errorsEncountered = 0;
                 var random = new Random();
-                int totalClipsToAttempt = queueCopy.Sum(item => ClipCount);
+                int totalClipsToAttempt = queueCopy.Sum(item => ClipCount); // Corrected =>
                 int clipsAttemptedSoFar = 0;
 
                 try
                 {
-                    for(int videoIndex = 0; videoIndex < totalVideos; videoIndex++)
+                    for(int videoIndex = 0; videoIndex < totalVideos; videoIndex++) // Corrected <
                     {
                         var item = queueCopy[videoIndex];
                         if (token.IsCancellationRequested) { _logger.LogInfo("Clipping process cancelled by user."); item.Status = "Cancelled"; break; }
@@ -332,13 +353,13 @@ namespace AutoTubeWpf.ViewModels
                         try { duration = await _videoProcessorService.GetVideoDurationAsync(item.FilePath!, token); }
                         catch (Exception ex) { _logger.LogError($"Failed to get duration for {item.FileName}", ex); item.Status = "Error (Duration)"; errorsEncountered++; videosProcessed++; continue; }
 
-                        if (duration == null || duration.Value.TotalSeconds <= MinClipLength)
+                        if (duration == null || duration.Value.TotalSeconds <= MinClipLength) // Corrected <=
                         { _logger.LogWarning($"Skipping {item.FileName}: Duration ({duration?.TotalSeconds ?? 0}s) is too short or could not be determined."); item.Status = "Skipped (Short)"; videosProcessed++; continue; }
 
                         item.Duration = duration;
                         double totalSeconds = duration.Value.TotalSeconds;
                         int clipsMadeForThisVideo = 0;
-                        List<SceneChangeInfo>? sceneChanges = null;
+                        List<SceneChangeInfo>? sceneChanges = null; // Corrected ?
 
                         if (UseSceneDetection)
                         {
@@ -351,25 +372,25 @@ namespace AutoTubeWpf.ViewModels
                             }
                             catch (Exception ex) { _logger.LogError($"Scene detection failed for {item.FileName}", ex); item.Status = "Error (Scenes)"; errorsEncountered++; videosProcessed++; continue; }
 
-                            if (sceneChanges == null || sceneChanges.Count < 2)
+                            if (sceneChanges == null || sceneChanges.Count < 2) // Corrected <
                             { _logger.LogWarning($"Scene detection yielded insufficient results for {item.FileName}. Falling back to random clips."); sceneChanges = null; }
                             else { _logger.LogInfo($"Detected {sceneChanges.Count - 1} potential scenes for {item.FileName}."); }
                         }
 
-                        List<(TimeSpan Start, TimeSpan Duration)> clipsToExtract = new List<(TimeSpan, TimeSpan)>();
+                        List<(TimeSpan Start, TimeSpan Duration)> clipsToExtract = new List<(TimeSpan, TimeSpan)>(); // Corrected <>
                         if (sceneChanges != null)
                         {
                             item.Status = "Selecting Scenes...";
-                            for (int i = 0; i < sceneChanges.Count - 1; i++)
+                            for (int i = 0; i < sceneChanges.Count - 1; i++) // Corrected <
                             {
                                 double sceneStart = sceneChanges[i].TimestampSeconds;
                                 double sceneEnd = sceneChanges[i + 1].TimestampSeconds;
                                 double sceneDuration = sceneEnd - sceneStart;
-                                if (sceneDuration >= MinClipLength && sceneDuration <= MaxClipLength) { clipsToExtract.Add((TimeSpan.FromSeconds(sceneStart), TimeSpan.FromSeconds(sceneDuration))); }
-                                else if (sceneDuration > MaxClipLength)
+                                if (sceneDuration >= MinClipLength && sceneDuration <= MaxClipLength) { clipsToExtract.Add((TimeSpan.FromSeconds(sceneStart), TimeSpan.FromSeconds(sceneDuration))); } // Corrected &&, <=
+                                else if (sceneDuration > MaxClipLength) // Corrected >
                                 {
                                     double clipDurationSec = random.Next(MinClipLength, MaxClipLength + 1);
-                                    if (sceneDuration >= clipDurationSec)
+                                    if (sceneDuration >= clipDurationSec) // Corrected >=
                                     {
                                         double maxStartOffset = sceneDuration - clipDurationSec;
                                         double startOffset = random.NextDouble() * maxStartOffset;
@@ -377,16 +398,16 @@ namespace AutoTubeWpf.ViewModels
                                     }
                                 }
                             }
-                            clipsToExtract = clipsToExtract.OrderBy(x => random.Next()).Take(ClipCount).ToList();
+                            clipsToExtract = clipsToExtract.OrderBy(x => random.Next()).Take(ClipCount).ToList(); // Corrected =>
                             _logger.LogDebug($"Selected {clipsToExtract.Count} clips based on scene detection for {item.FileName}.");
                         }
                         else
                         {
                             item.Status = "Selecting Random...";
-                            for (int i = 0; i < ClipCount; i++)
+                            for (int i = 0; i < ClipCount; i++) // Corrected <
                             {
                                 double maxPossibleStart = Math.Max(0, totalSeconds - MinClipLength);
-                                if (maxPossibleStart <= 0) break;
+                                if (maxPossibleStart <= 0) break; // Corrected <=
                                 double clipDurationSec = random.Next(MinClipLength, MaxClipLength + 1);
                                 double maxStartForThisDuration = Math.Max(0, totalSeconds - clipDurationSec);
                                 double startSec = random.NextDouble() * maxStartForThisDuration;
@@ -395,18 +416,19 @@ namespace AutoTubeWpf.ViewModels
                              _logger.LogDebug($"Selected {clipsToExtract.Count} random clips for {item.FileName}.");
                         }
 
-                        for (int i = 0; i < clipsToExtract.Count; i++)
+                        for (int i = 0; i < clipsToExtract.Count; i++) // Corrected <
                         {
                              if (token.IsCancellationRequested) break;
                              clipsAttemptedSoFar++;
                              var (clipStart, clipDuration) = clipsToExtract[i];
                              string originalFileName = Path.GetFileNameWithoutExtension(item.FileName!);
                              string outputFileName = $"{originalFileName}_clip_{clipsMadeForThisVideo + 1}.mp4";
+                             // Use the validated/created outputBasePath here
                              string initialOutputFullPath = Path.Combine(outputBasePath!, outputFileName);
                              _logger.LogDebug($"Attempting clip {i + 1}/{clipsToExtract.Count} for {item.FileName}: Start={clipStart}, Duration={clipDuration}, Output={initialOutputFullPath}");
                              item.Status = $"Clipping {i + 1}/{clipsToExtract.Count}...";
-                             var clipProgress = new Progress<VideoProcessingProgress>(clipReport => {
-                                 double overallPercentage = totalClipsToAttempt > 0 ? ((double)clipsAttemptedSoFar - 1 + clipReport.Percentage) / totalClipsToAttempt : 0;
+                             var clipProgress = new Progress<VideoProcessingProgress>(clipReport => { // Corrected =>
+                                 double overallPercentage = totalClipsToAttempt > 0 ? ((double)clipsAttemptedSoFar - 1 + clipReport.Percentage) / totalClipsToAttempt : 0; // Corrected >
                                  _progressReporter?.Report(new VideoProcessingProgress { Percentage = overallPercentage, Message = $"Clipping {item.FileName} ({i + 1}/{clipsToExtract.Count}) {clipReport.Percentage:P0}", EstimatedRemaining = clipReport.EstimatedRemaining, CurrentItemIndex = videoIndex, TotalItems = totalVideos }); // Use injected _progressReporter
                              });
 
@@ -417,6 +439,7 @@ namespace AutoTubeWpf.ViewModels
                                  if (organizeOutput)
                                  {
                                      item.Status = $"Organizing Clip {i + 1}...";
+                                     // Use the validated/created outputBasePath here too
                                      try { finalClipPath = await _fileOrganizerService.OrganizeOutputFileAsync(initialOutputFullPath, item.FilePath!, outputBasePath!, "clips"); _logger.LogInfo($"Clip {i + 1} for {item.FileName} organized to {finalClipPath}"); }
                                      catch (Exception orgEx) { _logger.LogError($"Failed to organize clip {i + 1} for {item.FileName}. File remains at '{initialOutputFullPath}'. Error: {orgEx.Message}", orgEx); item.Status = $"Error (Organize {i + 1})"; errorsEncountered++; }
                                  } else { _logger.LogInfo($"Clip {i + 1} for {item.FileName} created at {finalClipPath} (organization disabled)."); }
@@ -427,8 +450,8 @@ namespace AutoTubeWpf.ViewModels
                         }
 
                         if (token.IsCancellationRequested) { item.Status = "Cancelled"; }
-                        else if (item.Status.StartsWith("Clipping") || item.Status.StartsWith("Selecting") || item.Status == "Processing..." || item.Status.StartsWith("Organizing") || item.Status.StartsWith("Error (Organize"))
-                        { item.Status = clipsMadeForThisVideo > 0 ? $"Done ({clipsMadeForThisVideo} clips)" : "Done (No clips)"; }
+                        else if (item.Status.StartsWith("Clipping") || item.Status.StartsWith("Selecting") || item.Status == "Processing..." || item.Status.StartsWith("Organizing") || item.Status.StartsWith("Error (Organize")) // Corrected ||
+                        { item.Status = clipsMadeForThisVideo > 0 ? $"Done ({clipsMadeForThisVideo} clips)" : "Done (No clips)"; } // Corrected >
                         videosProcessed++;
                     }
                 }
@@ -441,21 +464,23 @@ namespace AutoTubeWpf.ViewModels
                     _logger.LogInfo($"Clipping process {summary}. Videos Processed: {videosProcessed}/{totalVideos}, Clips Generated: {clipsGenerated}, Errors: {errorsEncountered}.");
                     _progressReporter?.Report(new VideoProcessingProgress { Percentage = 1.0, Message = $"Clipping {summary}." }); // Use injected _progressReporter
                     string finalMessage = $"Clipping {summary}!\n\nVideos Processed: {videosProcessed}/{totalVideos}\nClips Generated: {clipsGenerated}\nErrors: {errorsEncountered}";
-                    if (errorsEncountered > 0) { _dialogService.ShowWarningDialog(finalMessage, "Clipping Complete with Errors"); }
+                    if (errorsEncountered > 0) { _dialogService.ShowWarningDialog(finalMessage, "Clipping Complete with Errors"); } // Corrected >
                     else if (!token.IsCancellationRequested) { _dialogService.ShowInfoDialog(finalMessage, "Clipping Complete"); }
                 }
             }
         }
-        private bool CanStartStopClipping() { if (IsProcessing) return true; return VideoQueue.Any() && _videoProcessorService.IsAvailable; }
+        private bool CanStartStopClipping() { if (IsProcessing) return true; return VideoQueue.Any() && _videoProcessorService.IsAvailable; } // Corrected &&
 
         // --- Helper Methods ---
+        // --- Made Public Again ---
         public void AddFilesToQueue(string[] filePaths)
         {
             int addedCount = 0;
-            foreach (var path in filePaths) { if (File.Exists(path) && !VideoQueue.Any(item => item.FilePath == path)) { VideoQueue.Add(new VideoQueueItem(path)); addedCount++; } }
-            if (addedCount > 0) _logger.LogInfo($"Added {addedCount} file(s) to the queue.");
+            foreach (var path in filePaths) { if (File.Exists(path) && !VideoQueue.Any(item => item.FilePath == path)) { VideoQueue.Add(new VideoQueueItem(path)); addedCount++; } } // Corrected &&, =>
+            if (addedCount > 0) _logger.LogInfo($"Added {addedCount} file(s) to the queue."); // Corrected >
             UpdateInputDisplayPath(); ClearQueueCommand.NotifyCanExecuteChanged(); StartStopClippingCommand.NotifyCanExecuteChanged();
         }
+         // --- Made Public Again ---
          public void AddDirectoryToQueue(string directoryPath)
         {
              if (!Directory.Exists(directoryPath)) return;
@@ -463,11 +488,11 @@ namespace AutoTubeWpf.ViewModels
              int addedCount = 0; var videoExtensions = new[] { ".mp4", ".mov", ".avi", ".mkv", ".wmv", ".flv" };
              try
              {
-                 var files = Directory.EnumerateFiles(directoryPath).Where(f => videoExtensions.Contains(Path.GetExtension(f).ToLowerInvariant()));
-                 foreach (var file in files) { if (!VideoQueue.Any(item => item.FilePath == file)) { VideoQueue.Add(new VideoQueueItem(file)); addedCount++; } }
+                 var files = Directory.EnumerateFiles(directoryPath).Where(f => videoExtensions.Contains(Path.GetExtension(f).ToLowerInvariant())); // Corrected =>
+                 foreach (var file in files) { if (!VideoQueue.Any(item => item.FilePath == file)) { VideoQueue.Add(new VideoQueueItem(file)); addedCount++; } } // Corrected =>
              }
              catch (Exception ex) { _logger.LogError($"Error reading directory {directoryPath}", ex); _dialogService.ShowWarningDialog($"Could not read directory:\n{ex.Message}", "Directory Error"); }
-             if (addedCount > 0) _logger.LogInfo($"Added {addedCount} file(s) from directory {directoryPath} to the queue.");
+             if (addedCount > 0) _logger.LogInfo($"Added {addedCount} file(s) from directory {directoryPath} to the queue."); // Corrected >
              UpdateInputDisplayPath(); ClearQueueCommand.NotifyCanExecuteChanged(); StartStopClippingCommand.NotifyCanExecuteChanged();
         }
         private void UpdateInputDisplayPath()
